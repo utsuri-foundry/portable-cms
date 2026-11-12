@@ -1,0 +1,18 @@
+parameters:
+    level: 6
+    phpVersion: 80200
+    paths:
+        - engine/src/cms/conventional
+        - profiles/reference-studio/renderers
+        - profiles/reference-studio/src
+        - tools
+        - tests/php
+    bootstrapFiles:
+        - vendor/autoload.php
+    stubFiles:
+        - tools/quality/php-cs-fixer.stub
+    scanFiles:
+        - tools/quality/php-cs-fixer.stub
+    treatPhpDocTypesAsCertain: false
+    tmpDir: build/phpstan
+    reportUnmatchedIgnoredErrors: true

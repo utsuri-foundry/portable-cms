@@ -1,0 +1,1802 @@
+{
+  "formatVersion": 3,
+  "contentFeed": {
+    "formatVersion": 1,
+    "pageSize": 100,
+    "recordTypes": [
+      {
+        "typeId": "project",
+        "fields": [
+          "title",
+          "body",
+          "gallery"
+        ]
+      },
+      {
+        "typeId": "article",
+        "fields": [
+          "title",
+          "excerpt"
+        ]
+      }
+    ]
+  },
+  "id": "reference-studio",
+  "version": "1.1.1",
+  "compatibility": {
+    "engine": {
+      "minimum": "0.2.0",
+      "maximumExclusive": "1.0.0"
+    },
+    "contracts": {
+      "record": 1,
+      "protocol": 1,
+      "snapshot": 1,
+      "artifact": 1,
+      "search": 1,
+      "export": 1,
+      "capabilities": 1
+    }
+  },
+  "locales": [
+    {
+      "id": "ca",
+      "label": "Català"
+    },
+    {
+      "id": "es",
+      "label": "Español"
+    },
+    {
+      "id": "en",
+      "label": "English"
+    }
+  ],
+  "defaultLocale": "ca",
+  "languageEnvelope": {
+    "scripts": [
+      "Latn"
+    ],
+    "directions": [
+      "ltr"
+    ],
+    "characters": [
+      "0000-00FF",
+      "013F-0140",
+      "2010-2027",
+      "20AC"
+    ]
+  },
+  "recordTypes": [
+    {
+      "id": "project",
+      "label": "Projects",
+      "singularLabel": "Project",
+      "archetype": "portfolio_entry",
+      "renderer": "project",
+      "routePrefix": "projects",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": true,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 160
+          }
+        },
+        {
+          "id": "slug",
+          "editorialSection": "discovery",
+          "label": "Slug",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 180
+          }
+        },
+        {
+          "id": "year",
+          "label": "Year",
+          "type": "integer",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "minimum": 1900,
+            "maximum": 2200
+          }
+        },
+        {
+          "id": "sortOrder",
+          "label": "Editorial order",
+          "type": "integer",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        {
+          "id": "featured",
+          "label": "Featured",
+          "type": "boolean",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "default": false
+          }
+        },
+        {
+          "id": "publishedOn",
+          "label": "Published on",
+          "type": "date",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {}
+        },
+        {
+          "id": "status",
+          "label": "Project status",
+          "type": "enum",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "options": [
+              {
+                "value": "complete",
+                "label": "Complete"
+              },
+              {
+                "value": "ongoing",
+                "label": "Ongoing"
+              }
+            ],
+            "default": "complete"
+          }
+        },
+        {
+          "id": "body",
+          "label": "Body",
+          "type": "rich_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumNodes": 2000,
+            "blocks": [
+              "paragraph",
+              "heading_2",
+              "heading_3",
+              "bullet_list",
+              "ordered_list"
+            ],
+            "marks": [
+              "bold",
+              "italic",
+              "underline",
+              "smallCaps",
+              "link"
+            ]
+          }
+        },
+        {
+          "id": "gallery",
+          "label": "Gallery",
+          "type": "media_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumItems": 64,
+            "kinds": [
+              "image"
+            ]
+          }
+        },
+        {
+          "id": "trailer",
+          "label": "Trailer",
+          "type": "video_reference",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "posterRequired": true,
+            "maximumBytes": 41943040
+          }
+        },
+        {
+          "id": "lead",
+          "label": "Project lead",
+          "type": "record_reference",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "targetType": "person"
+          }
+        },
+        {
+          "id": "related",
+          "label": "Related projects",
+          "type": "record_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "targetType": "project",
+            "maximumItems": 12
+          }
+        },
+        {
+          "id": "disciplines",
+          "label": "Disciplines",
+          "type": "taxonomy_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "targetType": "discipline",
+            "maximumItems": 8
+          }
+        },
+        {
+          "id": "credits",
+          "label": "Credits",
+          "type": "repeatable_group",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumItems": 32,
+            "itemLabel": "credit",
+            "fields": [
+              {
+                "id": "role",
+                "label": "Role",
+                "type": "short_text",
+                "localized": true,
+                "requiredOnDraft": false,
+                "requiredOnPublish": false,
+                "settings": {
+                  "maximumLength": 100
+                }
+              },
+              {
+                "id": "name",
+                "label": "Name",
+                "type": "short_text",
+                "localized": false,
+                "requiredOnDraft": false,
+                "requiredOnPublish": false,
+                "settings": {
+                  "maximumLength": 160
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "layout",
+          "label": "Layout",
+          "type": "composition",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "formatVersion": 2,
+            "maximumRows": 256,
+            "maximumColumns": 12,
+            "videoEnabled": true,
+            "stackAt": "tablet",
+            "defaultRole": "body",
+            "columnGap": {
+              "unit": "token",
+              "value": "medium"
+            },
+            "rowGap": {
+              "unit": "token",
+              "value": "large"
+            },
+            "targetTypes": [
+              "project",
+              "article"
+            ]
+          }
+        },
+        {
+          "id": "searchSharing",
+          "fieldGroup": "search-sharing",
+          "mapping": {
+            "coverImageField": "layout",
+            "coverFallbackField": "gallery",
+            "titleField": "title",
+            "descriptionField": "body"
+          }
+        }
+      ]
+    },
+    {
+      "id": "article",
+      "label": "Articles",
+      "singularLabel": "Article",
+      "archetype": "article",
+      "renderer": "article",
+      "routePrefix": "articles",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": true,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 160
+          }
+        },
+        {
+          "id": "slug",
+          "editorialSection": "discovery",
+          "label": "Slug",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 180
+          }
+        },
+        {
+          "id": "sortOrder",
+          "label": "Editorial order",
+          "type": "integer",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        {
+          "id": "excerpt",
+          "label": "Excerpt",
+          "type": "multiline_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 500
+          }
+        },
+        {
+          "id": "body",
+          "label": "Body",
+          "type": "rich_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumNodes": 5000,
+            "blocks": [
+              "paragraph",
+              "heading_2",
+              "heading_3",
+              "bullet_list",
+              "ordered_list"
+            ],
+            "marks": [
+              "bold",
+              "italic",
+              "underline",
+              "link"
+            ]
+          }
+        },
+        {
+          "id": "relatedProjects",
+          "label": "Related projects",
+          "type": "record_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "targetType": "project",
+            "maximumItems": 12
+          }
+        },
+        {
+          "id": "sectors",
+          "label": "Sectors",
+          "type": "taxonomy_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "targetType": "sector",
+            "maximumItems": 8
+          }
+        },
+        {
+          "id": "searchSharing",
+          "fieldGroup": "search-sharing",
+          "mapping": {
+            "titleField": "title",
+            "descriptionField": "excerpt"
+          }
+        }
+      ]
+    },
+    {
+      "id": "person",
+      "label": "People",
+      "singularLabel": "Person",
+      "archetype": "person",
+      "renderer": "person",
+      "routePrefix": "people",
+      "fields": [
+        {
+          "id": "name",
+          "label": "Name",
+          "type": "short_text",
+          "localized": false,
+          "requiredOnDraft": true,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 160
+          }
+        },
+        {
+          "id": "slug",
+          "editorialSection": "discovery",
+          "label": "Slug",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 180
+          }
+        },
+        {
+          "id": "sortOrder",
+          "label": "Editorial order",
+          "type": "integer",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        {
+          "id": "role",
+          "label": "Role",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 160
+          }
+        },
+        {
+          "id": "website",
+          "label": "Website",
+          "type": "web_address",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumLength": 2048
+          }
+        },
+        {
+          "id": "portrait",
+          "label": "Portrait",
+          "type": "media_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumItems": 1,
+            "kinds": [
+              "image"
+            ]
+          }
+        },
+        {
+          "id": "searchSharing",
+          "fieldGroup": "search-sharing",
+          "mapping": {
+            "coverImageField": "portrait",
+            "titleField": "name",
+            "descriptionField": "role"
+          }
+        }
+      ]
+    }
+  ],
+  "singletons": [
+    {
+      "id": "home",
+      "label": "Home",
+      "singularLabel": "Home",
+      "archetype": "page",
+      "renderer": "home",
+      "routePath": "/",
+      "fields": [
+        {
+          "id": "introduction",
+          "label": "Introduction",
+          "type": "multiline_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 1000
+          }
+        },
+        {
+          "id": "featuredContent",
+          "label": "Featured projects and articles",
+          "type": "record_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "targetTypes": [
+              "project",
+              "article"
+            ],
+            "maximumItems": 12
+          }
+        },
+        {
+          "id": "searchSharing",
+          "fieldGroup": "search-sharing",
+          "mapping": {
+            "descriptionField": "introduction"
+          }
+        },
+        {
+          "id": "collage",
+          "label": "Home collage",
+          "type": "composition",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "formatVersion": 2,
+            "maximumRows": 256,
+            "maximumColumns": 12,
+            "stackAt": "tablet",
+            "defaultRole": "body",
+            "columnGap": {
+              "unit": "token",
+              "value": "medium"
+            },
+            "rowGap": {
+              "unit": "token",
+              "value": "large"
+            },
+            "targetTypes": [
+              "project",
+              "article"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "label": "About",
+      "singularLabel": "About",
+      "archetype": "page",
+      "renderer": "about",
+      "routePath": "/about/",
+      "fields": [
+        {
+          "id": "body",
+          "label": "Body",
+          "type": "rich_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumNodes": 2000,
+            "blocks": [
+              "paragraph",
+              "heading_2",
+              "bullet_list"
+            ],
+            "marks": [
+              "bold",
+              "italic",
+              "link"
+            ]
+          }
+        },
+        {
+          "id": "contact",
+          "label": "Contact",
+          "type": "group",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "fields": [
+              {
+                "id": "email",
+                "label": "Email",
+                "type": "short_text",
+                "localized": false,
+                "requiredOnDraft": false,
+                "requiredOnPublish": false,
+                "settings": {
+                  "maximumLength": 254
+                }
+              },
+              {
+                "id": "city",
+                "label": "City",
+                "type": "short_text",
+                "localized": true,
+                "requiredOnDraft": false,
+                "requiredOnPublish": false,
+                "settings": {
+                  "maximumLength": 100
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "searchSharing",
+          "fieldGroup": "search-sharing",
+          "mapping": {
+            "descriptionField": "body",
+            "titleFallback": {
+              "en": "Studio",
+              "es": "Estudio",
+              "ca": "Estudi"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "site-settings",
+      "label": "Discovery defaults",
+      "singularLabel": "Discovery defaults",
+      "archetype": "site_settings",
+      "renderer": "site-settings",
+      "routePath": "/settings/",
+      "fields": [
+        {
+          "id": "searchTitleFormat",
+          "label": "Default search title order",
+          "type": "enum",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "editorialSection": "discovery",
+          "settings": {
+            "options": [
+              {
+                "value": "title-site",
+                "label": "Page title | Website name"
+              },
+              {
+                "value": "site-title",
+                "label": "Website name | Page title"
+              },
+              {
+                "value": "title-only",
+                "label": "Page title only"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organizationName",
+          "label": "Organization name (blank uses website name; shown in footer)",
+          "type": "short_text",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "editorialSection": "discovery",
+          "settings": {
+            "maximumLength": 160
+          }
+        },
+        {
+          "id": "defaultSharingImage",
+          "label": "Default sharing image (optional)",
+          "type": "media_references",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumItems": 1,
+            "kinds": [
+              "image"
+            ]
+          },
+          "editorialSection": "discovery"
+        },
+        {
+          "id": "defaultSearchDescription",
+          "label": "Default search description (used when a page has no summary)",
+          "type": "multiline_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "editorialSection": "discovery",
+          "settings": {
+            "maximumLength": 500
+          }
+        },
+        {
+          "id": "projectsMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "Work index",
+          "mapping": {
+            "pagePath": "/projects/",
+            "titleFallback": {
+              "ca": "Projectes",
+              "es": "Proyectos",
+              "en": "Work"
+            }
+          }
+        },
+        {
+          "id": "articlesMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "Journal index",
+          "mapping": {
+            "pagePath": "/articles/",
+            "titleFallback": {
+              "ca": "Quadern",
+              "es": "Cuaderno",
+              "en": "Journal"
+            }
+          }
+        },
+        {
+          "id": "peopleMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "People index",
+          "mapping": {
+            "pagePath": "/people/",
+            "titleFallback": {
+              "ca": "Persones",
+              "es": "Personas",
+              "en": "People"
+            }
+          }
+        },
+        {
+          "id": "disciplinesMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "Disciplines index",
+          "mapping": {
+            "pagePath": "/disciplines/",
+            "titleFallback": {
+              "ca": "Disciplines",
+              "es": "Disciplinas",
+              "en": "Disciplines"
+            }
+          }
+        },
+        {
+          "id": "sectorsMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "Sectors index",
+          "mapping": {
+            "pagePath": "/sectors/",
+            "titleFallback": {
+              "ca": "Àmbits",
+              "es": "Ámbitos",
+              "en": "Sectors"
+            }
+          }
+        },
+        {
+          "id": "searchMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "Search page",
+          "mapping": {
+            "pagePath": "/search/",
+            "titleFallback": {
+              "ca": "Cerca",
+              "es": "Buscar",
+              "en": "Search"
+            }
+          }
+        },
+        {
+          "id": "settingsMetadata",
+          "fieldGroup": "search-sharing",
+          "label": "Settings page",
+          "mapping": {
+            "pagePath": "/settings/",
+            "titleFallback": {
+              "ca": "Configuració",
+              "es": "Configuración",
+              "en": "Settings"
+            },
+            "indexing": "excluded"
+          }
+        }
+      ]
+    },
+    {
+      "id": "landing",
+      "label": "Landing pages",
+      "singularLabel": "Landing page",
+      "archetype": "page",
+      "renderer": "about",
+      "routePath": "/landing/",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": true,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 200
+          }
+        },
+        {
+          "id": "blocks",
+          "label": "Page blocks",
+          "type": "blocks",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "minimumItems": 0,
+            "maximumItems": 32,
+            "blockTypes": [
+              {
+                "id": "hero",
+                "label": "Hero",
+                "itemLabel": "Hero",
+                "fields": [
+                  {
+                    "id": "heading",
+                    "label": "Heading",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                      "maximumLength": 200
+                    }
+                  },
+                  {
+                    "id": "intro",
+                    "label": "Introduction",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                      "maximumLength": 500
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "quote",
+                "label": "Quote",
+                "fields": [
+                  {
+                    "id": "quote",
+                    "label": "Quote",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                      "maximumLength": 500
+                    }
+                  },
+                  {
+                    "id": "attribution",
+                    "label": "Attribution",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                      "maximumLength": 200
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "call-to-action",
+                "label": "Call to action",
+                "fields": [
+                  {
+                    "id": "label",
+                    "label": "Link label",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                      "maximumLength": 200
+                    }
+                  },
+                  {
+                    "id": "target",
+                    "label": "Project",
+                    "type": "record_reference",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                      "targetType": "project"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "taxonomyNamespaces": [
+    {
+      "id": "discipline",
+      "label": "Disciplines",
+      "singularLabel": "Discipline",
+      "archetype": "taxonomy_term",
+      "renderer": "discipline",
+      "fields": [
+        {
+          "id": "label",
+          "label": "Label",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": true,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 100
+          }
+        },
+        {
+          "id": "aliases",
+          "label": "Search aliases (one per line)",
+          "type": "multiline_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumLength": 1000
+          }
+        },
+        {
+          "id": "deprecated",
+          "label": "Deprecated (retain existing uses, prevent new selections)",
+          "type": "boolean",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "default": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "sector",
+      "label": "Sectors",
+      "singularLabel": "Sector",
+      "archetype": "taxonomy_term",
+      "renderer": "sector",
+      "fields": [
+        {
+          "id": "label",
+          "label": "Label",
+          "type": "short_text",
+          "localized": true,
+          "requiredOnDraft": true,
+          "requiredOnPublish": true,
+          "settings": {
+            "maximumLength": 100
+          }
+        },
+        {
+          "id": "aliases",
+          "label": "Search aliases (one per line)",
+          "type": "multiline_text",
+          "localized": true,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "maximumLength": 1000
+          }
+        },
+        {
+          "id": "deprecated",
+          "label": "Deprecated (retain existing uses, prevent new selections)",
+          "type": "boolean",
+          "localized": false,
+          "requiredOnDraft": false,
+          "requiredOnPublish": false,
+          "settings": {
+            "default": false
+          }
+        }
+      ]
+    }
+  ],
+  "navigation": [
+    {
+      "id": "projects",
+      "label": "Projects",
+      "targetKind": "collection",
+      "targetId": "project",
+      "position": 10
+    },
+    {
+      "id": "articles",
+      "label": "Articles",
+      "targetKind": "collection",
+      "targetId": "article",
+      "position": 20
+    },
+    {
+      "id": "people",
+      "label": "People",
+      "targetKind": "collection",
+      "targetId": "person",
+      "position": 30
+    },
+    {
+      "id": "home",
+      "label": "Home",
+      "targetKind": "singleton",
+      "targetId": "home",
+      "position": 40
+    },
+    {
+      "id": "about",
+      "label": "About",
+      "targetKind": "singleton",
+      "targetId": "about",
+      "position": 50
+    },
+    {
+      "id": "disciplines",
+      "label": "Disciplines",
+      "targetKind": "taxonomy",
+      "targetId": "discipline",
+      "position": 60
+    },
+    {
+      "id": "sectors",
+      "label": "Sectors",
+      "targetKind": "taxonomy",
+      "targetId": "sector",
+      "position": 70
+    },
+    {
+      "id": "site-settings",
+      "label": "Discovery defaults",
+      "targetKind": "singleton",
+      "targetId": "site-settings",
+      "position": 80
+    },
+    {
+      "id": "previews",
+      "label": "Previews",
+      "targetKind": "system",
+      "targetId": "previews",
+      "position": 90
+    }
+  ],
+  "renderers": [
+    {
+      "id": "project",
+      "kind": "record",
+      "entrypoint": "renderers/project.php"
+    },
+    {
+      "id": "article",
+      "kind": "record",
+      "entrypoint": "renderers/article.php"
+    },
+    {
+      "id": "person",
+      "kind": "record",
+      "entrypoint": "renderers/person.php"
+    },
+    {
+      "id": "home",
+      "kind": "singleton",
+      "entrypoint": "renderers/home.php"
+    },
+    {
+      "id": "about",
+      "kind": "singleton",
+      "entrypoint": "renderers/about.php"
+    },
+    {
+      "id": "site-settings",
+      "kind": "singleton",
+      "entrypoint": "renderers/site-settings.php"
+    },
+    {
+      "id": "discipline",
+      "kind": "taxonomy",
+      "entrypoint": "renderers/discipline.php"
+    },
+    {
+      "id": "sector",
+      "kind": "taxonomy",
+      "entrypoint": "renderers/sector.php"
+    },
+    {
+      "id": "search",
+      "kind": "search",
+      "entrypoint": "renderers/search.php"
+    }
+  ],
+  "assets": [
+    {
+      "path": "navigation-rules.json",
+      "role": "speculation-rules",
+      "mime": "application/speculationrules+json",
+      "byteSize": 133,
+      "sha256": "2f048a9cb898303f7e86b706e8aac4afb13762c793acf78220a678d03de3d2c7"
+    },
+    {
+      "path": "assets/icon.svg",
+      "role": "icon",
+      "mime": "image/svg+xml",
+      "byteSize": 231,
+      "sha256": "f717165c6fe41c1cdee895a4a327d33dcc8ce7f65da8cd270cfe82eddc46b92e"
+    },
+    {
+      "path": "assets/site.css",
+      "role": "style",
+      "mime": "text/css",
+      "byteSize": 6718,
+      "sha256": "e9e9fa46d025a0b462520727286721def365a55f682028e42e8b963c46bec6f1"
+    },
+    {
+      "path": "assets/search.js",
+      "role": "script",
+      "mime": "text/javascript",
+      "byteSize": 3063,
+      "sha256": "950537ac391b6cd1e6f978d4dc931c9f11f931cc3a87b64df3f74e8541f05e0d"
+    },
+    {
+      "path": "assets/studio-sans-latin.woff2",
+      "role": "font",
+      "mime": "font/woff2",
+      "byteSize": 46352,
+      "sha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f"
+    },
+    {
+      "path": "assets/studio-serif-latin.woff2",
+      "role": "font",
+      "mime": "font/woff2",
+      "byteSize": 45972,
+      "sha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618"
+    },
+    {
+      "path": "assets/studio-serif-italic-latin.woff2",
+      "role": "font",
+      "mime": "font/woff2",
+      "byteSize": 36076,
+      "sha256": "b72cc296b5f6eb2c36e1dc875e10f9254548c957a4684bedba524628c0602f9a"
+    }
+  ],
+  "capabilities": {
+    "required": [
+      "raster_images",
+      "scheduled_jobs"
+    ],
+    "optional": [
+      "preencoded_video",
+      "outbound_https",
+      "ai_drafts"
+    ]
+  },
+  "privacy": {
+    "publicInteractions": false,
+    "analytics": "none",
+    "personalData": "editorial_accounts"
+  },
+  "wording": [
+    {
+      "key": "interface.skipToContent",
+      "label": "Skip link",
+      "purpose": "The first link of every page, which lets keyboard users skip the navigation.",
+      "kind": "text",
+      "maximumLength": 60,
+      "defaults": {
+        "ca": "Ves al contingut",
+        "es": "Ir al contenido",
+        "en": "Skip to content"
+      }
+    },
+    {
+      "key": "interface.primaryNavigation",
+      "label": "Navigation name",
+      "purpose": "The name screen readers give the main navigation.",
+      "kind": "text",
+      "maximumLength": 60,
+      "defaults": {
+        "ca": "Navegació principal",
+        "es": "Navegación principal",
+        "en": "Primary navigation"
+      }
+    },
+    {
+      "key": "interface.searchLabel",
+      "label": "Search field label",
+      "purpose": "The label of the search field on the home and search pages.",
+      "kind": "text",
+      "maximumLength": 80,
+      "defaults": {
+        "ca": "Cerca a l’arxiu",
+        "es": "Buscar en el archivo",
+        "en": "Search the archive"
+      }
+    },
+    {
+      "key": "interface.searchPlaceholder",
+      "label": "Search field example",
+      "purpose": "The example shown in the empty search field.",
+      "kind": "text",
+      "maximumLength": 80,
+      "defaults": {
+        "ca": "Material, lloc, persona o idea",
+        "es": "Material, lugar, persona o idea",
+        "en": "Material, place, person, or idea"
+      }
+    },
+    {
+      "key": "interface.resultSingular",
+      "label": "One result",
+      "purpose": "The word after the number of search results when there is one.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "resultat",
+        "es": "resultado",
+        "en": "result"
+      }
+    },
+    {
+      "key": "interface.resultPlural",
+      "label": "Several results",
+      "purpose": "The word after the number of search results when there are several.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "resultats",
+        "es": "resultados",
+        "en": "results"
+      }
+    },
+    {
+      "key": "interface.compositionLabel",
+      "label": "Image layout name",
+      "purpose": "The name screen readers give the image layout of a page.",
+      "kind": "text",
+      "maximumLength": 60,
+      "defaults": {
+        "ca": "Project composition",
+        "es": "Project composition",
+        "en": "Project composition"
+      }
+    },
+    {
+      "key": "page.home",
+      "label": "Home link",
+      "purpose": "The navigation link to the home page.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Inici",
+        "es": "Inicio",
+        "en": "Home"
+      }
+    },
+    {
+      "key": "page.projects",
+      "label": "Projects title",
+      "purpose": "The title of the projects page and its navigation link.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Projectes",
+        "es": "Proyectos",
+        "en": "Work"
+      }
+    },
+    {
+      "key": "page.articles",
+      "label": "Journal title",
+      "purpose": "The title of the journal page and its navigation link.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Quadern",
+        "es": "Cuaderno",
+        "en": "Journal"
+      }
+    },
+    {
+      "key": "page.people",
+      "label": "People title",
+      "purpose": "The title of the people page and its navigation link.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Persones",
+        "es": "Personas",
+        "en": "People"
+      }
+    },
+    {
+      "key": "page.about",
+      "label": "Studio title",
+      "purpose": "The title of the studio page and its navigation link.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Estudi",
+        "es": "Estudio",
+        "en": "Studio"
+      }
+    },
+    {
+      "key": "page.search",
+      "label": "Search title",
+      "purpose": "The title of the search page and its navigation link.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Cerca",
+        "es": "Buscar",
+        "en": "Search"
+      }
+    },
+    {
+      "key": "page.disciplines",
+      "label": "Disciplines title",
+      "purpose": "The title of the page that lists the disciplines.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Disciplines",
+        "es": "Disciplinas",
+        "en": "Disciplines"
+      }
+    },
+    {
+      "key": "page.sectors",
+      "label": "Sectors title",
+      "purpose": "The title of the page that lists the sectors.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Àmbits",
+        "es": "Ámbitos",
+        "en": "Sectors"
+      }
+    },
+    {
+      "key": "page.settings",
+      "label": "Settings title",
+      "purpose": "The title of the page that shows the website settings.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Configuració",
+        "es": "Configuración",
+        "en": "Settings"
+      }
+    },
+    {
+      "key": "metadata.year",
+      "label": "Year label",
+      "purpose": "The label of a project’s year.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Any",
+        "es": "Año",
+        "en": "Year"
+      }
+    },
+    {
+      "key": "metadata.status",
+      "label": "Status label",
+      "purpose": "The label of a project’s status.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Estat",
+        "es": "Estado",
+        "en": "Status"
+      }
+    },
+    {
+      "key": "status.complete",
+      "label": "Complete status",
+      "purpose": "A project’s status once it is complete.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Complete",
+        "es": "Complete",
+        "en": "Complete"
+      }
+    },
+    {
+      "key": "status.ongoing",
+      "label": "Ongoing status",
+      "purpose": "A project’s status while it continues.",
+      "kind": "text",
+      "maximumLength": 40,
+      "defaults": {
+        "ca": "Ongoing",
+        "es": "Ongoing",
+        "en": "Ongoing"
+      }
+    },
+    {
+      "key": "address.projects",
+      "label": "Projects address",
+      "purpose": "The part of the address of the projects pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "projects",
+        "es": "projects",
+        "en": "projects"
+      }
+    },
+    {
+      "key": "address.articles",
+      "label": "Journal address",
+      "purpose": "The part of the address of the journal pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "articles",
+        "es": "articles",
+        "en": "articles"
+      }
+    },
+    {
+      "key": "address.people",
+      "label": "People address",
+      "purpose": "The part of the address of the people pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "people",
+        "es": "people",
+        "en": "people"
+      }
+    },
+    {
+      "key": "address.about",
+      "label": "Studio address",
+      "purpose": "The part of the address of the studio pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "about",
+        "es": "about",
+        "en": "about"
+      }
+    },
+    {
+      "key": "address.search",
+      "label": "Search address",
+      "purpose": "The part of the address of the search pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "search",
+        "es": "search",
+        "en": "search"
+      }
+    },
+    {
+      "key": "address.disciplines",
+      "label": "Disciplines address",
+      "purpose": "The part of the address of the disciplines pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "disciplines",
+        "es": "disciplines",
+        "en": "disciplines"
+      }
+    },
+    {
+      "key": "address.sectors",
+      "label": "Sectors address",
+      "purpose": "The part of the address of the sectors pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "sectors",
+        "es": "sectors",
+        "en": "sectors"
+      }
+    },
+    {
+      "key": "address.settings",
+      "label": "Settings address",
+      "purpose": "The part of the address of the settings pages after the language.",
+      "kind": "address_segment",
+      "maximumLength": 60,
+      "uniqueIn": "pages",
+      "defaults": {
+        "ca": "settings",
+        "es": "settings",
+        "en": "settings"
+      }
+    }
+  ],
+  "designRegistries": {
+    "formatVersion": 2,
+    "profileId": "reference-studio",
+    "revision": 0,
+    "fonts": [
+      {
+        "id": "sans",
+        "label": "Studio Sans",
+        "faces": [
+          {
+            "id": "roman",
+            "label": "Roman variable",
+            "style": "normal",
+            "weightMin": 200,
+            "weightMax": 900,
+            "origin": "package",
+            "sha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f",
+            "byteSize": 46352,
+            "sourceSha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f",
+            "provenance": "Studio Sans; renamed Latin subset of Adobe Source Sans 3, 3.052R; reserved name Source removed from font identity.",
+            "license": "SIL Open Font License 1.1; retained in the verified profile package."
+          }
+        ]
+      },
+      {
+        "id": "serif",
+        "label": "Studio Serif",
+        "faces": [
+          {
+            "id": "roman",
+            "label": "Roman",
+            "style": "normal",
+            "weightMin": 400,
+            "weightMax": 400,
+            "origin": "package",
+            "sha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+            "byteSize": 45972,
+            "sourceSha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+            "provenance": "Studio Serif; renamed Latin subset of Adobe Source Serif 4, 4.005R; reserved name Source removed from font identity.",
+            "license": "SIL Open Font License 1.1; retained in the verified profile package."
+          },
+          {
+            "id": "italic",
+            "label": "Italic",
+            "style": "italic",
+            "weightMin": 400,
+            "weightMax": 400,
+            "origin": "package",
+            "sha256": "b72cc296b5f6eb2c36e1dc875e10f9254548c957a4684bedba524628c0602f9a",
+            "byteSize": 36076,
+            "sourceSha256": "f8062257f4693e438a8e317c9fe2b4393f0d4eed84d897edcbfd733c30a1c1a1",
+            "provenance": "Studio Serif Italic; renamed Latin subset of Adobe Source Serif 4, 4.005R, SourceSerif4-It.otf; reserved name Source removed from font identity.",
+            "license": "SIL Open Font License 1.1; retained in the verified profile package."
+          }
+        ]
+      }
+    ],
+    "responsive": [
+      {
+        "id": "tablet",
+        "label": "Tablet and above",
+        "minWidth": 768
+      },
+      {
+        "id": "wide",
+        "label": "Wide screens",
+        "minWidth": 1280
+      }
+    ],
+    "typography": [
+      {
+        "id": "body",
+        "label": "Body text",
+        "fontId": "sans",
+        "fallback": "sans-serif",
+        "weight": 400,
+        "lineHeight": 1.55,
+        "size": {
+          "min": 16,
+          "max": 18,
+          "from": 360,
+          "to": 1280
+        },
+        "overrides": []
+      },
+      {
+        "id": "title",
+        "label": "Page title",
+        "fontId": "serif",
+        "fallback": "serif",
+        "weight": 400,
+        "lineHeight": 1.1,
+        "size": {
+          "min": 32,
+          "max": 64,
+          "from": 360,
+          "to": 1280
+        },
+        "overrides": []
+      }
+    ],
+    "spacing": [
+      {
+        "id": "small",
+        "label": "Small gap",
+        "size": {
+          "min": 8,
+          "max": 12,
+          "from": 360,
+          "to": 1280
+        }
+      },
+      {
+        "id": "medium",
+        "label": "Medium gap",
+        "size": {
+          "min": 16,
+          "max": 24,
+          "from": 360,
+          "to": 1280
+        }
+      },
+      {
+        "id": "large",
+        "label": "Large gap",
+        "size": {
+          "min": 32,
+          "max": 48,
+          "from": 360,
+          "to": 1280
+        }
+      }
+    ]
+  },
+  "fieldGroups": {
+    "search-sharing": {
+      "label": "Search & sharing (optional overrides)",
+      "type": "group",
+      "localized": true,
+      "requiredOnDraft": false,
+      "requiredOnPublish": false,
+      "editorialSection": "discovery",
+      "settings": {
+        "fields": [
+          {
+            "id": "searchTitle",
+            "label": "Search title (blank uses the content title)",
+            "type": "short_text",
+            "localized": false,
+            "requiredOnDraft": false,
+            "requiredOnPublish": false,
+            "settings": {
+              "maximumLength": 240
+            }
+          },
+          {
+            "id": "description",
+            "label": "Search description (blank uses the page summary)",
+            "type": "multiline_text",
+            "localized": false,
+            "requiredOnDraft": false,
+            "requiredOnPublish": false,
+            "settings": {
+              "maximumLength": 500
+            }
+          },
+          {
+            "id": "sharingTitle",
+            "label": "Sharing title (blank uses the search title)",
+            "type": "short_text",
+            "localized": false,
+            "requiredOnDraft": false,
+            "requiredOnPublish": false,
+            "settings": {
+              "maximumLength": 240
+            }
+          },
+          {
+            "id": "sharingDescription",
+            "label": "Sharing description (blank uses the search description)",
+            "type": "multiline_text",
+            "localized": false,
+            "requiredOnDraft": false,
+            "requiredOnPublish": false,
+            "settings": {
+              "maximumLength": 500
+            }
+          },
+          {
+            "id": "sharingImage",
+            "label": "Sharing image (blank uses page cover or website default)",
+            "type": "media_references",
+            "localized": false,
+            "requiredOnDraft": false,
+            "requiredOnPublish": false,
+            "settings": {
+              "maximumItems": 1,
+              "kinds": [
+                "image"
+              ]
+            }
+          },
+          {
+            "id": "excludeFromSearch",
+            "label": "Exclude this language from search engines (not private or hidden)",
+            "type": "boolean",
+            "localized": false,
+            "requiredOnDraft": false,
+            "requiredOnPublish": false,
+            "settings": {
+              "default": false
+            }
+          }
+        ],
+        "searchSharing": {
+          "settingsType": "site-settings",
+          "titleFormatField": "searchTitleFormat",
+          "defaultImageField": "defaultSharingImage",
+          "defaultDescriptionField": "defaultSearchDescription",
+          "siteNameSource": "website-settings"
+        }
+      }
+    }
+  }
+}

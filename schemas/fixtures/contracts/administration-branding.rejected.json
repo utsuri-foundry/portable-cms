@@ -1,0 +1,13 @@
+{
+  "formatVersion": 1,
+  "profileId": "reference-studio",
+  "revision": 2,
+  "mode": "coming_soon",
+  "websiteName": "Reference Studio",
+  "iconMediaId": null,
+  "administrationBranding": {
+    "logoMediaId": "https://external.example/logo.svg",
+    "darkLogoMediaId": null
+  },
+  "translations": [{"locale": "en", "message": "Coming soon.", "contact": ""}]
+}

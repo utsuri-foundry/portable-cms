@@ -1,0 +1,13 @@
+.preview-cleanup-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-3); margin-block: var(--admin-space-3); }
+.preview-cleanup-row { position: relative; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) auto; align-items: start; gap: var(--admin-space-3); }
+.preview-cleanup-row .admin-table__title::after { position: absolute; inset: 0; content: ""; }
+.preview-cleanup-row .admin-table__title:hover, .preview-cleanup-row .admin-table__title:focus-visible { text-decoration: underline; }
+.preview-cleanup-row .admin-table__title:focus-visible::after { outline: 0.125rem solid var(--admin-accent); outline-offset: -0.125rem; }
+.preview-cleanup-check { position: relative; z-index: 1; display: grid; place-items: center; width: 2.75rem; min-height: 2.75rem; margin: 0; cursor: pointer; }
+.preview-cleanup-details { min-width: 0; overflow-wrap: anywhere; }
+.preview-cleanup-details p { margin-block: var(--admin-space-1); }
+.preview-cleanup-row > .admin-status { max-width: 8rem; white-space: normal; }
+@media (max-width: 30rem) {
+  .preview-cleanup-row { grid-template-columns: 2.75rem minmax(0, 1fr); }
+  .preview-cleanup-row > :last-child { grid-column: 2; }
+}

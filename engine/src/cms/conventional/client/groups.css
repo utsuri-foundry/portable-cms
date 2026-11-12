@@ -1,0 +1,80 @@
+/* Group fields of the record editor: cards, and rows for short repeatable groups. */
+.admin-group-card { display: grid; min-width: 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); align-items: end; gap: var(--admin-space-2) var(--admin-space-3); margin: 0; padding: var(--admin-space-3); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-small); background: var(--admin-panel); }
+.admin-group-card > legend { padding: 0 var(--admin-space-1); color: var(--admin-subtle); font-size: var(--admin-text-xs); }
+.admin-group-card > :is(.admin-group-actions, fieldset, .admin-picker) { grid-column: 1 / -1; }
+.admin-group-card .admin-field > label { font-weight: 500; }
+.admin-group-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-1); }
+.admin-group-actions button { min-height: var(--admin-control-small); padding: 0 0.5rem; font-size: var(--admin-text-xs); }
+.admin-group-add { justify-self: start; border-style: dashed; background: transparent; color: var(--admin-muted); }
+.admin-group-card > legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.admin-group-card { position: relative; padding: var(--admin-space-2) var(--admin-space-3); }
+.admin-group-card:has(> .admin-group-card__details) { display: block; }
+.admin-group-card__details > summary { overflow: hidden; color: var(--admin-text); font-size: var(--admin-text-sm); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.admin-group-card__body { display: flex; flex-wrap: wrap; align-items: end; gap: var(--admin-space-2) var(--admin-space-3); margin-top: var(--admin-space-2); }
+.admin-group-card__body > .admin-field { flex: 1 1 10rem; min-width: 0; }
+.admin-group-card__body > :is(fieldset, .admin-picker) { flex-basis: 100%; }
+.admin-group-card__body > .admin-group-actions { flex: 0 0 auto; }
+.admin-group-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2) var(--admin-space-3); }
+.admin-group-count { color: var(--admin-subtle); font-size: var(--admin-text-xs); font-variant-numeric: tabular-nums; }
+/* Rows: every row shares the grip, field and menu tracks, so inputs start at the same point. */
+.admin-group-rows { --admin-group-grip: 0rem; --admin-group-menu: 2rem; --admin-group-cells: 1; display: grid; gap: var(--admin-space-2); min-width: 0; container-type: inline-size; }
+.admin-group-rows[data-group-drag] { --admin-group-grip: 1rem; }
+.admin-group-rows--cells-2 { --admin-group-cells: 2; }
+.admin-group-rows--cells-3 { --admin-group-cells: 3; }
+.admin-group-rows--cells-4 { --admin-group-cells: 4; }
+.admin-group-rows__head, .admin-group-row { display: grid; grid-template-columns: var(--admin-group-grip) repeat(var(--admin-group-cells), minmax(0, 1fr)) var(--admin-group-menu); align-items: start; gap: 0 var(--admin-space-2); }
+.admin-group-rows__head { color: var(--admin-subtle); font-size: var(--admin-text-xs); font-weight: 600; }
+.admin-group-rows__head > span { display: inline-flex; padding-inline: 0.5rem; align-items: center; gap: 0.375rem; min-width: 0; }
+.admin-group-rows__head > span:has(.admin-field__hint) { flex-direction: column; align-items: start; gap: 0.125rem; }
+.admin-group-rows__list { margin: 0; padding: 0; border-block: 1px solid var(--admin-border); list-style: none; }
+.admin-group-row { position: relative; padding-block: 0.25rem; }
+.admin-group-row + .admin-group-row { border-top: 1px solid var(--admin-border); }
+.admin-group-row[data-group-dragging] { z-index: 1; border-radius: var(--admin-radius-small); background: var(--admin-panel-muted); box-shadow: var(--admin-shadow); }
+.admin-group-row__grip { display: grid; grid-column: 1; height: var(--admin-control-small); place-items: center; color: var(--admin-subtle); cursor: grab; touch-action: none; user-select: none; }
+.admin-group-row__grip::before { content: "⋮⋮"; font-size: var(--admin-text-xs); letter-spacing: -0.2em; }
+.admin-group-row[data-group-dragging] .admin-group-row__grip { cursor: grabbing; }
+.admin-group-cell { display: grid; min-width: 0; }
+.admin-group-row > .admin-group-cell:first-of-type { grid-column-start: 2; }
+.admin-group-cell__label { display: flex; flex-wrap: wrap; gap: 0.375rem; color: var(--admin-muted); font-size: var(--admin-text-xs); font-weight: 500; }
+.admin-group-cell__name, [data-record-locale] .admin-group-cell__language { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.admin-group-cell__language { padding-inline: 0.5rem; }
+.admin-group-cell :is(textarea, input[type="text"], input[type="number"], input[type="url"], select) {
+  min-height: var(--admin-control-small); padding: 0.1875rem 0.5rem; border-color: transparent; background: transparent; font-size: var(--admin-text-sm);
+}
+.admin-group-cell textarea { overflow: hidden; field-sizing: content; line-height: 1.4; overflow-wrap: anywhere; resize: none; }
+.admin-group-cell :is(textarea, input, select):is(:hover, :focus-visible) { border-color: var(--admin-border-strong); background: var(--admin-panel); }
+.admin-group-cell :is(textarea, input, select):focus-visible { border-color: var(--admin-accent); }
+.admin-group-cell input[type="checkbox"] { justify-self: start; margin: 0.375rem 0.5rem; }
+.admin-group-row__menu { grid-column: -2; position: relative; justify-self: end; }
+.admin-group-row__menu > summary { display: grid; width: 2rem; height: var(--admin-control-small); place-items: center; border-radius: var(--admin-radius-small); color: var(--admin-muted); cursor: pointer; list-style: none; }
+.admin-group-row__menu > summary::-webkit-details-marker { display: none; }
+.admin-group-row__menu > summary:hover, .admin-group-row__menu[open] > summary { background: var(--admin-panel-muted); color: var(--admin-text); }
+.admin-group-row__actions { position: absolute; z-index: 5; top: calc(100% + 0.25rem); right: 0; display: grid; min-width: 11rem; padding: 0.25rem; border: 1px solid var(--admin-border); border-radius: var(--admin-radius-small); background: var(--admin-panel); box-shadow: var(--admin-shadow); }
+.admin-group-row__actions > button { justify-self: stretch; justify-content: start; min-height: var(--admin-control-small); border-color: transparent; background: transparent; font-size: var(--admin-text-sm); text-align: start; }
+.admin-group-row__actions > button:not(:disabled):hover { background: var(--admin-panel-muted); }
+.admin-group-row__actions > .admin-group-row__remove { color: var(--admin-danger); }
+
+/* Below the form's narrow width each row stacks its fields under small names. */
+@container (max-width: 30rem) {
+  .admin-group-rows__head { display: none; }
+  .admin-group-rows__head:has(.admin-field__hint) { display: flex; flex-direction: column; gap: var(--admin-space-2); }
+  .admin-group-rows__head:has(.admin-field__hint) > span:not(:has(.admin-field__hint)) { display: none; }
+  .admin-group-row { grid-template-columns: var(--admin-group-grip) minmax(0, 1fr) var(--admin-group-menu); gap: var(--admin-space-1) var(--admin-space-2); padding-block: var(--admin-space-2); }
+  .admin-group-row > .admin-group-cell { grid-column: 2; }
+  .admin-group-row__grip, .admin-group-row__menu { grid-row: 1; }
+  .admin-group-row__menu { grid-column: 3; }
+  .admin-group-cell__name { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; }
+  .admin-group-cell__label { padding-inline: 0.5rem; }
+  .admin-group-cell__language { padding-inline: 0; }
+}
+
+/* Blocks keep their own native fields inside ordered, collapsible cards. */
+.admin-block-list { display: grid; gap: var(--admin-space-2); margin: 0 0 var(--admin-space-2); padding: 0; list-style: none; }
+.admin-block-card { display: flex; align-items: start; min-width: 0; gap: var(--admin-space-1); }
+.admin-block-card > fieldset { flex: 1; min-width: 0; }
+.admin-block-card > .admin-group-row__grip { flex: 0 0 1rem; }
+.admin-block-card[data-group-dragging] { border-radius: var(--admin-radius-small); background: var(--admin-panel-muted); box-shadow: var(--admin-shadow); }
+.admin-block-card .admin-group-card__body > .admin-field { flex-basis: 100%; }
+.admin-block-add { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-1); width: 100%; }
+.admin-block-add label { color: var(--admin-muted); font-size: var(--admin-text-xs); }
+.admin-block-add select { flex: 1 1 10rem; min-width: 0; }

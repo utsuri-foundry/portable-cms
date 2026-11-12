@@ -1,0 +1,27 @@
+{
+  "formatVersion": 1,
+  "id": "11111111111111111111111111111111",
+  "typeId": "project",
+  "cardinality": "collection",
+  "workflowState": "published",
+  "currentRevision": {
+    "id": "22222222222222222222222222222222",
+    "number": 3,
+    "profileId": "reference-studio",
+    "profileVersion": "1.0.0",
+    "body": { "title": { "ca": "Casa pati", "es": "Casa patio", "en": "Courtyard house" }, "year": 2026 },
+    "createdBy": "33333333333333333333333333333333",
+    "createdAt": "2026-10-02T12:00:00Z"
+  },
+  "slugs": [
+    { "locale": "ca", "value": "casa-pati", "state": "current" },
+    { "locale": "es", "value": "casa-patio", "state": "current" },
+    { "locale": "en", "value": "courtyard-house", "state": "current" }
+  ],
+  "relationships": [
+    { "fieldId": "lead", "kind": "record", "targetTypeId": "person", "targetRecordId": "44444444444444444444444444444444", "position": 0 },
+    { "fieldId": "disciplines", "kind": "taxonomy", "targetTypeId": "discipline", "targetRecordId": "55555555555555555555555555555555", "position": 0 }
+  ],
+  "createdAt": "2026-09-01T09:00:00Z",
+  "updatedAt": "2026-10-02T12:00:00Z"
+}

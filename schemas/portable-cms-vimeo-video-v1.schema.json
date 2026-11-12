@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/vimeo-video-v1.schema.json",
+  "title": "Portable CMS Vimeo video v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "videoId",
+    "privacyHash",
+    "poster",
+    "title"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "videoId": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,19}$"
+    },
+    "privacyHash": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9]{10}$"
+        }
+      ]
+    },
+    "poster": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^(?=.*\\S)[^\\x00-\\x1f\\x7f]+$"
+    }
+  }
+}

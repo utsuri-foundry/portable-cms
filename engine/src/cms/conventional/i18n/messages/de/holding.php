@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'holding.status.queued' => 'In Warteschlange',
+    'holding.status.building' => 'Wird erstellt',
+    'holding.status.ready' => 'Bereit',
+    'holding.status.needs_attention' => 'Prüfung erforderlich',
+    'holding.settings' => 'Website-Einstellungen',
+    'holding.settings_help' => 'Wählen Sie den Inhalt der nächsten freigegebenen Veröffentlichung. Speichern ändert die öffentliche Website nicht. Exakte Vorschauen zeigen immer die eigentliche Website.',
+    'holding.conflict' => 'Die Einstellungen wurden geändert',
+    'holding.invalid' => 'Website-Einstellungen prüfen',
+    'holding.preserved' => 'Ihre Eingabe bleibt unten erhalten.',
+    'holding.current_values' => 'Aktuell gespeicherter Modus: {mode}. Website-Name: {name}.',
+    'holding.name' => 'Website-Name',
+    'holding.mode' => 'Veröffentlichungsmodus',
+    'holding.mode.coming_soon' => 'Demnächst',
+    'holding.mode.live' => 'Vollständige Website',
+    'holding.standard' => 'Die Standardveröffentlichung kann während der Anwendung oder Wiederherstellung kurz freigegebene Versionen mischen. Atomare Veröffentlichung ist nicht aktiviert.',
+    'holding.icon' => 'Website-Symbol (optional)',
+    'holding.icon_help' => 'Wählen Sie ein fertiges quadratisches Bild mit mindestens 512 Pixeln. Das System erstellt sichere Symboldateien.',
+    'holding.icon_id' => 'Medien-ID des Symbols',
+    'holding.message' => 'Kurze Nachricht',
+    'holding.contact' => 'Kontaktdaten (optional, Klartext)',
+    'holding.confirm' => 'Ich verstehe, dass Demnächst die öffentliche Website ersetzt und ihre bisherigen Seiten entfernt.',
+    'holding.confirm_help' => 'Erforderlich beim Wechsel von Vollständige Website zu Demnächst. Das Speichern veröffentlicht nichts.',
+    'holding.save' => 'Einstellungen speichern',
+    'holding.releases' => 'Website-Veröffentlichungen',
+    'holding.build' => 'Demnächst erstellen',
+    'holding.build_help' => 'Diese Einstellungen werden als privater Build eingefroren. Website-Inhalte sind nicht erforderlich; Cron verarbeitet den Build.',
+    'holding.inspect_help' => 'Prüfen Sie vor der Freigabe die gespeicherten Einstellungen. Dieser Build ist von exakten Website-Vorschauen getrennt.',
+    'holding.publish_confirm' => 'Ich genehmige das Ersetzen aller öffentlichen Seiten durch Demnächst. Die Standardveröffentlichung kann vorübergehend freigegebene Versionen mischen.',
+    'holding.builds' => 'Demnächst-Builds',
+    'holding.delete' => 'Ungenutzten Build löschen',
+];

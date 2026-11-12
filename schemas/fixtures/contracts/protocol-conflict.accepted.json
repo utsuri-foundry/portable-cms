@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "kind": "revision_conflict",
+  "requestId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "payload": {
+    "recordId": "11111111111111111111111111111111",
+    "submittedRevision": 2,
+    "currentRevision": 3,
+    "submittedValues": { "title": "Editor version" },
+    "currentValues": { "title": "Current version" }
+  }
+}

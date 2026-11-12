@@ -1,0 +1,572 @@
+{
+  "formatVersion": 1,
+  "websiteIdentity": {"name":"Reference Studio","iconMediaId":null},
+  "publicUrlContext": {"formatVersion": 1, "baseUrl": "https://reference-studio.example"},
+  "snapshotId": "f0000000000000000000000000000001",
+  "createdAt": "2026-10-03T09:00:00Z",
+  "profile": {
+    "id": "reference-studio",
+    "version": "1.1.1",
+    "packageSha256": "b2aa36967c69deacd3e82967b9cce1a89d65dc5f772d2b32d07fe17568665df7",
+    "defaultLocale": "ca",
+    "locales": ["ca", "es", "en"]
+  },
+  "records": [
+    {
+      "id": "10000000000000000000000000000001",
+      "typeId": "project",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000001",
+      "revisionNumber": 4,
+      "body": {
+        "title": {"ca": "Arxiu de la boira", "es": "Archivo de la niebla", "en": "Archive of Mist"},
+        "slug": {"ca": "arxiu-de-la-boira", "es": "archivo-de-la-niebla", "en": "archive-of-mist"},
+        "year": 2025,
+        "sortOrder": 10,
+        "featured": true,
+        "publishedOn": "2026-03-14",
+        "status": "complete",
+        "body": {
+          "ca": {"formatVersion": 1, "nodes": [{"type": "paragraph", "children": [{"text": "Un pavelló per observar com canvia l'aire sobre una antiga salina.", "marks": []}]}]},
+          "es": {"formatVersion": 1, "nodes": [{"type": "paragraph", "children": [{"text": "Un pabellón para observar cómo cambia el aire sobre una antigua salina.", "marks": []}]}]},
+          "en": {"formatVersion": 2, "nodes": [{"type": "paragraph", "children": [{"text": "RIBA ", "marks": ["smallCaps"]}, {"text": "A pavilion for observing changing air above a former salt marsh.", "marks": []}]}]}
+        },
+        "gallery": ["d0000000000000000000000000000001", "d0000000000000000000000000000002"],
+        "trailer": null,
+        "lead": "40000000000000000000000000000001",
+        "related": ["10000000000000000000000000000002"],
+        "disciplines": ["80000000000000000000000000000001"],
+        "credits": {
+          "ca": [{"role": "Fotografia", "name": "Iris Soler"}],
+          "es": [{"role": "Fotografía", "name": "Iris Soler"}],
+          "en": [{"role": "Photography", "name": "Iris Soler"}]
+        },
+        "layout": {
+          "formatVersion": 1,
+          "rows": [
+            {"id": "intro", "columns": [{"share": 7, "content": {"kind": "media", "id": "d0000000000000000000000000000001"}}, {"share": 5, "content": {"kind": "rich_text", "field": "body"}}]},
+            {"id": "detail", "columns": [{"share": 3, "content": null}, {"share": 9, "content": {"kind": "media", "id": "d0000000000000000000000000000002"}}]}
+          ]
+        }
+      },
+      "relationships": [
+        {"fieldId": "lead", "kind": "record", "targetRecordId": "40000000000000000000000000000001", "position": 0},
+        {"fieldId": "related", "kind": "record", "targetRecordId": "10000000000000000000000000000002", "position": 0},
+        {"fieldId": "disciplines", "kind": "taxonomy", "targetRecordId": "80000000000000000000000000000001", "position": 0}
+      ]
+    },
+    {
+      "id": "10000000000000000000000000000002",
+      "typeId": "project",
+      "workflowState": "draft",
+      "revisionId": "20000000000000000000000000000002",
+      "revisionNumber": 2,
+      "body": {
+        "title": {"ca": "Taller de llum", "es": "Taller de luz", "en": ""},
+        "slug": {"ca": "taller-de-llum", "es": "taller-de-luz", "en": ""},
+        "year": 2026,
+        "sortOrder": 20,
+        "featured": false,
+        "publishedOn": "",
+        "status": "ongoing",
+        "body": {"ca": null, "es": null, "en": null},
+        "gallery": ["d0000000000000000000000000000003"],
+        "trailer": null,
+        "lead": "40000000000000000000000000000001",
+        "related": ["10000000000000000000000000000001"],
+        "disciplines": ["80000000000000000000000000000002"],
+        "credits": {"ca": [], "es": [], "en": []},
+        "layout": {"formatVersion": 1, "rows": []}
+      },
+      "relationships": [
+        {"fieldId": "lead", "kind": "record", "targetRecordId": "40000000000000000000000000000001", "position": 0},
+        {"fieldId": "related", "kind": "record", "targetRecordId": "10000000000000000000000000000001", "position": 0},
+        {"fieldId": "disciplines", "kind": "taxonomy", "targetRecordId": "80000000000000000000000000000002", "position": 0}
+      ]
+    },
+    {
+      "id": "30000000000000000000000000000001",
+      "typeId": "article",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000003",
+      "revisionNumber": 3,
+      "body": {
+        "title": {"ca": "Mesurar l'ombra", "es": "Medir la sombra", "en": "Measuring Shade"},
+        "slug": {"ca": "mesurar-lombra", "es": "medir-la-sombra", "en": "measuring-shade"},
+        "sortOrder": 10,
+        "excerpt": {"ca": "Notes sobre clima, temps i matèria.", "es": "Notas sobre clima, tiempo y materia.", "en": "Notes on climate, time, and matter."},
+        "body": {
+          "ca": {"formatVersion": 1, "nodes": [{"type": "heading_2", "children": [{"text": "L'ombra com a material", "marks": []}]}, {"type": "paragraph", "children": [{"text": "Mesurar també és una manera d'escoltar.", "marks": ["italic"]}]}]},
+          "es": {"formatVersion": 1, "nodes": [{"type": "heading_2", "children": [{"text": "La sombra como material", "marks": []}]}, {"type": "paragraph", "children": [{"text": "Medir también es una forma de escuchar.", "marks": ["italic"]}]}]},
+          "en": {"formatVersion": 1, "nodes": [{"type": "heading_2", "children": [{"text": "Shade as material", "marks": []}]}, {"type": "paragraph", "children": [{"text": "Measuring is also a way of listening.", "marks": ["italic"]}]}]}
+        },
+        "relatedProjects": ["10000000000000000000000000000001"],
+        "sectors": ["90000000000000000000000000000001"]
+      },
+      "relationships": [
+        {"fieldId": "relatedProjects", "kind": "record", "targetRecordId": "10000000000000000000000000000001", "position": 0},
+        {"fieldId": "sectors", "kind": "taxonomy", "targetRecordId": "90000000000000000000000000000001", "position": 0}
+      ]
+    },
+    {
+      "id": "40000000000000000000000000000001",
+      "typeId": "person",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000004",
+      "revisionNumber": 1,
+      "body": {
+        "name": "Nora Vidal",
+        "slug": {"ca": "nora-vidal", "es": "nora-vidal", "en": "nora-vidal"},
+        "sortOrder": 10,
+        "role": {"ca": "Arquitecta i editora", "es": "Arquitecta y editora", "en": "Architect and editor"},
+        "website": {
+          "ca": {"formatVersion": 1, "url": "https://example.test/nora?language=ca&section=work", "linkText": "Web de la Nora"},
+          "es": {"formatVersion": 1, "url": "https://example.test/nora?language=es&section=work", "linkText": "Web de Nora"},
+          "en": {"formatVersion": 1, "url": "http://example.test/nora?language=en&section=work", "linkText": "Nora’s website"}
+        },
+        "portrait": []
+      },
+      "relationships": []
+    },
+    {
+      "id": "50000000000000000000000000000001",
+      "typeId": "home",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000005",
+      "revisionNumber": 2,
+      "body": {
+        "collage": {
+          "formatVersion": 2,
+          "rows": [
+            {
+              "id": "collage-top",
+              "columns": [
+                {
+                  "id": "collage-top-c0",
+                  "share": 7,
+                  "width": 100,
+                  "anchor": "top-left",
+                  "content": {
+                    "kind": "media",
+                    "id": "d0000000000000000000000000000001",
+                    "link": {
+                      "typeId": "project",
+                      "recordId": "10000000000000000000000000000001"
+                    },
+                    "captions": {
+                      "ca": "Arxiu de boira · espais compartits",
+                      "es": "Archivo de niebla · espacios compartidos",
+                      "en": "Archive of Mist · shared spaces"
+                    }
+                  }
+                },
+                {
+                  "id": "collage-top-c1",
+                  "share": 5,
+                  "width": 80,
+                  "anchor": "bottom-right",
+                  "content": {
+                    "kind": "media",
+                    "id": "d0000000000000000000000000000003",
+                    "link": {
+                      "typeId": "article",
+                      "recordId": "30000000000000000000000000000001"
+                    },
+                    "captions": {
+                      "ca": "Notes sobre materials i llum",
+                      "es": "Notas sobre materiales y luz",
+                      "en": "Notes on materials and light"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "collage-bottom",
+              "columns": [
+                {
+                  "id": "collage-bottom-blank",
+                  "share": 3,
+                  "content": null
+                },
+                {
+                  "id": "collage-bottom-image",
+                  "share": 9,
+                  "width": 70,
+                  "anchor": "top-center",
+                  "content": {
+                    "kind": "media",
+                    "id": "d0000000000000000000000000000002",
+                    "link": {
+                      "typeId": "project",
+                      "recordId": "10000000000000000000000000000001"
+                    },
+                    "captions": {
+                      "ca": "Arxiu de boira · estudi dels materials",
+                      "es": "Archivo de niebla · estudio de materiales",
+                      "en": "Archive of Mist · material study"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "featuredContent": [{"typeId":"article","recordId":"30000000000000000000000000000001"},{"typeId":"project","recordId":"10000000000000000000000000000001"}],
+        "introduction": {
+          "ca": "Reference Studio investiga espais per aprendre, observar i reunir-se.",
+          "es": "Reference Studio investiga espacios para aprender, observar y reunirse.",
+          "en": "Reference Studio investigates spaces for learning, observing, and gathering."
+        }
+      },
+      "relationships": [{"fieldId":"featuredContent","kind":"record","targetTypeId":"article","targetRecordId":"30000000000000000000000000000001","position":0},{"fieldId":"featuredContent","kind":"record","targetTypeId":"project","targetRecordId":"10000000000000000000000000000001","position":1}]
+    },
+    {
+      "id": "60000000000000000000000000000001",
+      "typeId": "about",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000006",
+      "revisionNumber": 1,
+      "body": {
+        "body": {
+          "ca": {"formatVersion": 1, "nodes": [{"type": "paragraph", "children": [{"text": "Som un estudi fictici creat per verificar un producte editorial real.", "marks": []}]}]},
+          "es": {"formatVersion": 1, "nodes": [{"type": "paragraph", "children": [{"text": "Somos un estudio ficticio creado para verificar un producto editorial real.", "marks": []}]}]},
+          "en": {"formatVersion": 1, "nodes": [{"type": "paragraph", "children": [{"text": "We are a fictional studio created to verify a real editorial product.", "marks": []}]}]}
+        },
+        "contact": {"email": "studio@example.invalid", "city": {"ca": "Girona", "es": "Girona", "en": "Girona"}}
+      },
+      "relationships": []
+    },
+    {
+      "id": "70000000000000000000000000000001",
+      "typeId": "site-settings",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000007",
+      "revisionNumber": 1,
+      "body": {"defaultSharingImage":["d0000000000000000000000000000002"],"defaultSearchDescription":{"ca":"Reference Studio és un estudi fictici d’arquitectura, espais públics i recerca. Descobreix els projectes, el quadern i les persones.","es":"Reference Studio es un estudio ficticio de arquitectura, espacios públicos e investigación. Descubre sus proyectos, cuaderno y personas.","en":"Reference Studio is a fictional practice for architecture, public spaces and research. Explore its projects, journal and people."}},
+      "relationships": []
+    },
+    {
+      "id": "80000000000000000000000000000001",
+      "typeId": "discipline",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000008",
+      "revisionNumber": 1,
+      "body": {"label": {"ca": "Arquitectura", "es": "Arquitectura", "en": "Architecture"}},
+      "relationships": []
+    },
+    {
+      "id": "80000000000000000000000000000002",
+      "typeId": "discipline",
+      "workflowState": "published",
+      "revisionId": "20000000000000000000000000000009",
+      "revisionNumber": 1,
+      "body": {"label": {"ca": "Recerca", "es": "Investigación", "en": "Research"}},
+      "relationships": []
+    },
+    {
+      "id": "90000000000000000000000000000001",
+      "typeId": "sector",
+      "workflowState": "published",
+      "revisionId": "2000000000000000000000000000000a",
+      "revisionNumber": 1,
+      "body": {"label": {"ca": "Cultura", "es": "Cultura", "en": "Culture"}},
+      "relationships": []
+    },
+    {
+      "id": "90000000000000000000000000000002",
+      "typeId": "sector",
+      "workflowState": "published",
+      "revisionId": "2000000000000000000000000000000b",
+      "revisionNumber": 1,
+      "body": {"label": {"ca": "Habitatge", "es": "Vivienda", "en": "Housing"}},
+      "relationships": []
+    },
+    {
+      "id": "c9000000000000000000000000000001",
+      "typeId": "landing",
+      "workflowState": "published",
+      "revisionId": "c9100000000000000000000000000001",
+      "revisionNumber": 1,
+      "body": {
+        "title": {
+          "ca": "Espais per compartir",
+          "es": "Espacios para compartir",
+          "en": "Spaces to share"
+        },
+        "blocks": {
+          "ca": [
+            {
+              "_itemId": "81000000000000000000000000000001",
+              "typeId": "hero",
+              "values": {
+                "heading": "Espais per compartir",
+                "intro": "Una selecció oberta de treballs i idees del nostre estudi."
+              }
+            },
+            {
+              "_itemId": "81000000000000000000000000000002",
+              "typeId": "quote",
+              "values": {
+                "quote": "Els espais prenen sentit quan els compartim.",
+                "attribution": "Reference Studio"
+              }
+            },
+            {
+              "_itemId": "81000000000000000000000000000003",
+              "typeId": "call-to-action",
+              "values": {
+                "label": "Descobreix el projecte",
+                "target": "10000000000000000000000000000001"
+              }
+            }
+          ],
+          "es": [
+            {
+              "_itemId": "81000000000000000000000000000001",
+              "typeId": "hero",
+              "values": {
+                "heading": "Espacios para compartir",
+                "intro": "Una selección abierta de trabajos e ideas de nuestro estudio."
+              }
+            },
+            {
+              "_itemId": "81000000000000000000000000000002",
+              "typeId": "quote",
+              "values": {
+                "quote": "Los espacios cobran sentido cuando los compartimos.",
+                "attribution": "Reference Studio"
+              }
+            },
+            {
+              "_itemId": "81000000000000000000000000000003",
+              "typeId": "call-to-action",
+              "values": {
+                "label": "Descubre el proyecto",
+                "target": "10000000000000000000000000000001"
+              }
+            }
+          ],
+          "en": [
+            {
+              "_itemId": "81000000000000000000000000000001",
+              "typeId": "hero",
+              "values": {
+                "heading": "Spaces to share",
+                "intro": "An open selection of work and ideas from our studio."
+              }
+            },
+            {
+              "_itemId": "81000000000000000000000000000002",
+              "typeId": "quote",
+              "values": {
+                "quote": "Spaces find meaning when we share them.",
+                "attribution": "Reference Studio"
+              }
+            },
+            {
+              "_itemId": "81000000000000000000000000000003",
+              "typeId": "call-to-action",
+              "values": {
+                "label": "Discover the project",
+                "target": "10000000000000000000000000000001"
+              }
+            }
+          ]
+        }
+      },
+      "relationships": [
+        {
+          "fieldId": "group-20b96af827c49dd54df113e805189d203bccfaa2",
+          "kind": "record",
+          "targetRecordId": "10000000000000000000000000000001",
+          "position": 0
+        },
+        {
+          "fieldId": "group-3fdcc2e278ab3aa3edb29756a5848b26eebd9e56",
+          "kind": "record",
+          "targetRecordId": "10000000000000000000000000000001",
+          "position": 0
+        },
+        {
+          "fieldId": "group-d7ee3cbe948e5dd246ac8065c01fbfd31b23b9a7",
+          "kind": "record",
+          "targetRecordId": "10000000000000000000000000000001",
+          "position": 0
+        }
+      ]
+    }
+  ],
+  "media": [
+    {
+      "id": "d0000000000000000000000000000001",
+      "ownerRecordId": "10000000000000000000000000000001",
+      "variant": "display_1600_webp",
+      "mime": "image/webp",
+      "byteSize": 1284,
+      "sha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30",
+      "width": 1067,
+      "height": 1600,
+      "widths": [{"variant":"display_480_webp","mime":"image/webp","width":480,"height":720,"byteSize":1086,"sha256":"bb99e096320d844a46a48899e5fef19e1e0aff09ef05fb5962aac227243eb4b9"},{"variant":"display_960_webp","mime":"image/webp","width":960,"height":1440,"byteSize":3140,"sha256":"de67499ff4d4cd93bb36b8d3ded9bf54b6ee8994aef4529044559b2197b8377e"}],
+      "text": {"formatVersion":1,"decorative":false,"translations":[{"locale":"ca","alternativeText":"Estudi abstracte amb una gradació del blau gris al crema.","caption":"Estudi fictici del color","credit":"Reference Studio"},{"locale":"es","alternativeText":"Estudio abstracto con una gradación del azul gris al crema.","caption":"Estudio ficticio del color","credit":"Reference Studio"},{"locale":"en","alternativeText":"Abstract study with a gradient from blue grey to cream.","caption":"Fictional colour study","credit":"Reference Studio"}]}
+    },
+    {
+      "id": "d0000000000000000000000000000002",
+      "ownerRecordId": "10000000000000000000000000000001",
+      "variant": "display_1600_webp",
+      "mime": "image/webp",
+      "byteSize": 1378,
+      "sha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a",
+      "width": 1200,
+      "height": 1600,
+      "widths": [{"variant":"display_480_webp","mime":"image/webp","width":480,"height":640,"byteSize":876,"sha256":"735df4f779fe1aa7edd5834355c05ceaad2abaec7d632ffb994978c3eaa3581c"},{"variant":"display_960_webp","mime":"image/webp","width":960,"height":1280,"byteSize":3168,"sha256":"7ac75eb60bc1687378e084c20accaa0fb7852a91e5e954ba61556315b2e7993b"}],
+      "text": {"formatVersion":1,"decorative":false,"translations":[{"locale":"ca","alternativeText":"Estudi abstracte amb una gradació del marró càlid al crema.","caption":"Estudi fictici del color","credit":"Reference Studio"},{"locale":"es","alternativeText":"Estudio abstracto con una gradación del marrón cálido al crema.","caption":"Estudio ficticio del color","credit":"Reference Studio"},{"locale":"en","alternativeText":"Abstract study with a gradient from warm brown to cream.","caption":"Fictional colour study","credit":"Reference Studio"}]}
+    },
+    {
+      "id": "d0000000000000000000000000000003",
+      "ownerRecordId": "10000000000000000000000000000002",
+      "variant": "display_1600_webp",
+      "mime": "image/webp",
+      "byteSize": 1600,
+      "sha256": "46ee7b6ad246d69197412b7c7cd1b3fff2e5e81e04cd4d84bb9c7c968100acb6",
+      "width": 1200,
+      "height": 1600,
+      "widths": [{"variant":"display_480_webp","mime":"image/webp","width":480,"height":640,"byteSize":1048,"sha256":"a2b25921e3f874c2b8044d646c9b08471e1e8e20a8c10e560e242918c7397128"},{"variant":"display_960_webp","mime":"image/webp","width":960,"height":1280,"byteSize":3344,"sha256":"730fa86fd149797b27ff37989bc2b276cc5a347f36ac49fc8fcd91758f2b795b"}],
+      "text": {"formatVersion":1,"decorative":false,"translations":[{"locale":"ca","alternativeText":"Estudi abstracte amb una gradació vertical del gris clar al blau pissarra.","caption":"Estudi fictici del color","credit":"Reference Studio"},{"locale":"es","alternativeText":"Estudio abstracto con una gradación vertical del gris claro al azul pizarra.","caption":"Estudio ficticio del color","credit":"Reference Studio"},{"locale":"en","alternativeText":"Abstract study with a vertical gradient from light grey to slate blue.","caption":"Fictional colour study","credit":"Reference Studio"}]}
+    }
+  ],
+  "designRegistries": {
+    "fonts": [
+      {
+        "faces": [
+          {
+            "byteSize": 46352,
+            "id": "roman",
+            "label": "Roman variable",
+            "license": "SIL Open Font License 1.1; retained in the verified profile package.",
+            "origin": "package",
+            "provenance": "Studio Sans; renamed Latin subset of Adobe Source Sans 3, 3.052R; reserved name Source removed from font identity.",
+            "sha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f",
+            "sourceSha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f",
+            "style": "normal",
+            "weightMax": 900,
+            "weightMin": 200
+          }
+        ],
+        "id": "sans",
+        "label": "Studio Sans"
+      },
+      {
+        "faces": [
+          {
+            "byteSize": 45972,
+            "id": "roman",
+            "label": "Roman",
+            "license": "SIL Open Font License 1.1; retained in the verified profile package.",
+            "origin": "package",
+            "provenance": "Studio Serif; renamed Latin subset of Adobe Source Serif 4, 4.005R; reserved name Source removed from font identity.",
+            "sha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+            "sourceSha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+            "style": "normal",
+            "weightMax": 400,
+            "weightMin": 400
+          },
+          {
+            "byteSize": 36076,
+            "id": "italic",
+            "label": "Italic",
+            "license": "SIL Open Font License 1.1; retained in the verified profile package.",
+            "origin": "package",
+            "provenance": "Studio Serif Italic; renamed Latin subset of Adobe Source Serif 4, 4.005R, SourceSerif4-It.otf; reserved name Source removed from font identity.",
+            "sha256": "b72cc296b5f6eb2c36e1dc875e10f9254548c957a4684bedba524628c0602f9a",
+            "sourceSha256": "f8062257f4693e438a8e317c9fe2b4393f0d4eed84d897edcbfd733c30a1c1a1",
+            "style": "italic",
+            "weightMax": 400,
+            "weightMin": 400
+          }
+        ],
+        "id": "serif",
+        "label": "Studio Serif"
+      }
+    ],
+    "formatVersion": 2,
+    "profileId": "reference-studio",
+    "responsive": [
+      {
+        "id": "tablet",
+        "label": "Tablet and above",
+        "minWidth": 768
+      },
+      {
+        "id": "wide",
+        "label": "Wide screens",
+        "minWidth": 1280
+      }
+    ],
+    "revision": 0,
+    "spacing": [
+      {
+        "id": "small",
+        "label": "Small gap",
+        "size": {
+          "from": 360,
+          "max": 12,
+          "min": 8,
+          "to": 1280
+        }
+      },
+      {
+        "id": "medium",
+        "label": "Medium gap",
+        "size": {
+          "from": 360,
+          "max": 24,
+          "min": 16,
+          "to": 1280
+        }
+      },
+      {
+        "id": "large",
+        "label": "Large gap",
+        "size": {
+          "from": 360,
+          "max": 48,
+          "min": 32,
+          "to": 1280
+        }
+      }
+    ],
+    "typography": [
+      {
+        "fallback": "sans-serif",
+        "fontId": "sans",
+        "id": "body",
+        "label": "Body text",
+        "lineHeight": 1.55,
+        "overrides": [],
+        "size": {
+          "from": 360,
+          "max": 18,
+          "min": 16,
+          "to": 1280
+        },
+        "weight": 400
+      },
+      {
+        "fallback": "serif",
+        "fontId": "serif",
+        "id": "title",
+        "label": "Page title",
+        "lineHeight": 1.1,
+        "overrides": [],
+        "size": {
+          "from": 360,
+          "max": 64,
+          "min": 32,
+          "to": 1280
+        },
+        "weight": 400
+      }
+    ]
+  }
+}

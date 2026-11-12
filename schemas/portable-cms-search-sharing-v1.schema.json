@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/search-sharing-v1.schema.json",
+  "title": "Portable CMS plain-text search and sharing overrides v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "overrides"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "overrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "searchTitle": { "$ref": "#/$defs/title" },
+        "description": { "$ref": "#/$defs/description" },
+        "sharingTitle": { "$ref": "#/$defs/title" },
+        "sharingDescription": { "$ref": "#/$defs/description" }
+      }
+    }
+  },
+  "$defs": {
+    "title": { "type": "string", "maxLength": 240, "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]*$" },
+    "description": { "type": "string", "maxLength": 500, "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]*$" }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "formatVersion": 2,
+  "rows": [
+    {
+      "id": "collage",
+      "columns": [
+        {
+          "share": 1,
+          "content": {
+            "kind": "media",
+            "id": "d0000000000000000000000000000001",
+            "link": {
+              "typeId": "project",
+              "recordId": "10000000000000000000000000000001"
+            },
+            "captions": {
+              "ca": "Arxiu de boira",
+              "en": "Archive of Mist"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

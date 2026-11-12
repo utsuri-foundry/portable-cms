@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/administration-labels-v1.schema.json",
+  "title": "Profile administration labels per interface language v1",
+  "description": "Optional, administration-only names for profile types, fields, enum options, wording and navigation. Never public content, never part of compiler input.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "profileId", "languages"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "profileId": { "$ref": "#/$defs/id" },
+    "languages": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "ca": { "$ref": "#/$defs/language" },
+        "es": { "$ref": "#/$defs/language" },
+        "en": { "$ref": "#/$defs/language" },
+        "fr": { "$ref": "#/$defs/language" },
+        "de": { "$ref": "#/$defs/language" }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "maxLength": 160, "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$" },
+    "label": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^(?=.*\\S)[^\\x00-\\x1f\\x7f]+$" },
+    "path": { "type": "string", "maxLength": 400, "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*(?:\\.[A-Za-z0-9][A-Za-z0-9_-]*){1,4}$" },
+    "labels": {
+      "type": "object",
+      "maxProperties": 2000,
+      "propertyNames": { "$ref": "#/$defs/path" },
+      "additionalProperties": { "$ref": "#/$defs/label" }
+    },
+    "language": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "types": {
+          "type": "object",
+          "maxProperties": 96,
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "singularLabel"],
+            "properties": {
+              "label": { "$ref": "#/$defs/label" },
+              "singularLabel": { "$ref": "#/$defs/label" }
+            }
+          }
+        },
+        "fields": { "$ref": "#/$defs/labels" },
+        "hints": { "type": "object", "maxProperties": 2000, "propertyNames": { "$ref": "#/$defs/path" }, "additionalProperties": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^(?=.*\\S)[^\\x00-\\x1f\\x7f]+$" } },
+        "options": { "$ref": "#/$defs/labels" },
+        "items": { "$ref": "#/$defs/labels" },
+        "blocks": { "$ref": "#/$defs/labels" },
+        "wording": {
+          "type": "object",
+          "maxProperties": 200,
+          "propertyNames": { "type": "string", "maxLength": 100, "pattern": "^[a-z][A-Za-z0-9]*(?:\\.[a-z][A-Za-z0-9]*)*$" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "purpose"],
+            "properties": {
+              "label": { "$ref": "#/$defs/label" },
+              "purpose": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "^(?=.*\\S)[^\\x00-\\x1f\\x7f]+$" }
+            }
+          }
+        },
+        "navigation": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": { "$ref": "#/$defs/id" },
+          "additionalProperties": { "$ref": "#/$defs/label" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/record-v1.schema.json",
+  "title": "Portable CMS current record projection v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "id",
+    "typeId",
+    "cardinality",
+    "workflowState",
+    "currentRevision",
+    "slugs",
+    "relationships",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "id": { "$ref": "#/$defs/id" },
+    "typeId": { "$ref": "#/$defs/canonicalId" },
+    "cardinality": { "enum": ["collection", "singleton", "taxonomy"] },
+    "workflowState": { "enum": ["draft", "published", "archived"] },
+    "publishedRevisionId": {"anyOf":[{"type":"null"},{"$ref":"#/$defs/id"}]},
+    "currentRevision": { "$ref": "#/$defs/revision" },
+    "slugs": {
+      "type": "array",
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/slug" }
+    },
+    "relationships": {
+      "type": "array",
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/relationship" }
+    },
+    "createdAt": { "$ref": "#/$defs/timestamp" },
+    "updatedAt": { "$ref": "#/$defs/timestamp" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "canonicalId": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$"
+    },
+    "fieldId": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^[a-z][A-Za-z0-9]*(?:[-_][a-z0-9]+)*$"
+    },
+    "locale": { "type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "semanticVersion": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][A-Za-z0-9.-]+)?$"
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "number", "profileId", "profileVersion", "body", "createdBy", "createdAt"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "number": { "type": "integer", "minimum": 1 },
+        "profileId": { "$ref": "#/$defs/canonicalId" },
+        "profileVersion": { "$ref": "#/$defs/semanticVersion" },
+        "body": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": { "$ref": "#/$defs/fieldId" }
+        },
+        "createdBy": { "$ref": "#/$defs/id" },
+        "createdAt": { "$ref": "#/$defs/timestamp" }
+      }
+    },
+    "slug": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["locale", "value", "state"],
+      "properties": {
+        "locale": { "$ref": "#/$defs/locale" },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "state": { "enum": ["current", "reserved", "redirect"] }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fieldId", "kind", "targetTypeId", "targetRecordId", "position"],
+      "properties": {
+        "fieldId": { "$ref": "#/$defs/fieldId" },
+        "kind": { "enum": ["record", "taxonomy"] },
+        "targetTypeId": { "$ref": "#/$defs/canonicalId" },
+        "targetRecordId": { "$ref": "#/$defs/id" },
+        "position": { "type": "integer", "minimum": 0, "maximum": 65535 }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "formatVersion": 1,
+  "profileId": "reference-studio",
+  "revision": 0,
+  "mode": "automatic",
+  "websiteName": "Reference Studio",
+  "iconMediaId": null,
+  "translations": [
+    {
+      "locale": "en",
+      "message": "Coming soon.",
+      "contact": "hello@example.test"
+    }
+  ]
+}

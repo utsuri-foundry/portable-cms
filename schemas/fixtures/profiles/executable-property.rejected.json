@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "id": "unsafe-profile",
+  "version": "1.0.0",
+  "compatibility": { "engine": { "minimum": "0.1.0", "maximumExclusive": "1.0.0" }, "contracts": { "record": 1, "protocol": 1, "snapshot": 1, "artifact": 1, "search": 1, "export": 1, "capabilities": 1 } },
+  "locales": [{ "id": "en", "label": "English" }],
+  "defaultLocale": "en",
+  "recordTypes": [{ "id": "article", "label": "Articles", "singularLabel": "Article", "archetype": "article", "renderer": "article", "routePrefix": "articles", "fields": [{ "id": "title", "label": "Title", "type": "short_text", "localized": false, "requiredOnDraft": true, "requiredOnPublish": true, "settings": { "maximumLength": 160 }, "callback": "system" }] }],
+  "singletons": [],
+  "taxonomyNamespaces": [],
+  "navigation": [],
+  "renderers": [{ "id": "article", "kind": "record", "entrypoint": "renderers/article.php" }],
+  "assets": [],
+  "capabilities": { "required": [], "optional": [] },
+  "privacy": { "publicInteractions": false, "analytics": "none", "personalData": "editorial_accounts" }
+}

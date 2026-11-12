@@ -1,0 +1,26 @@
+{
+  "origin": "https://cms.example.test",
+  "database": {
+    "dsn": "mysql:host=database.example.test;port=3306;dbname=replace_me;charset=utf8mb4",
+    "username": "replace_me",
+    "password": "replace_me",
+    "upgradeMode": "table_set",
+    "maximumBytes": 1073741824
+  },
+  "storage": {
+    "mediaRoot": "/absolute/private/path/media"
+  },
+  "throttleSecretBase64": "replace-with-base64-of-at-least-32-random-bytes",
+  "mediaWakeStrategy": "post_response",
+  "videoUploads": null,
+  "profileRoot": "/absolute/private/path/profile",
+  "publicUrlContext": {
+    "formatVersion": 1,
+    "baseUrl": "https://www.example.test"
+  },
+  "publicationRoot": "/absolute/public/website",
+  "errorLog": "/absolute/private/path/cms-errors.log",
+  "aiAssistance": {
+    "enabled": false
+  }
+}

@@ -1,0 +1,166 @@
+[
+  {
+    "id": "foundation",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tools/check-foundation.sh"
+        ],
+        "env": {}
+      }
+    ]
+  },
+  {
+    "id": "database",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/php/run-mariadb-integration.sh"
+        ],
+        "env": {}
+      },
+      {
+        "argv": [
+          "php",
+          "tests/php/public-delivery-integration.php"
+        ],
+        "env": {}
+      }
+    ]
+  },
+  {
+    "id": "public-site",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/public-site/run-public-site-audit.sh"
+        ],
+        "env": {}
+      }
+    ]
+  },
+  {
+    "id": "editorial",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_EDITOR_START_ONLY": "1"
+        }
+      },
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {}
+      }
+    ]
+  },
+  {
+    "id": "exact-preview",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_EDITOR_EXACT_ONLY": "1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "media-browser",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_VIDEO_LIMITS_ONLY": "1"
+        }
+      },
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_VIMEO_ONLY": "1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "record-browser",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_PUBLISHED_ONLY": "1"
+        }
+      },
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_RECORD_KEEPING_ONLY": "1"
+        }
+      },
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-editorial-journey.sh"
+        ],
+        "env": {
+          "CMS_TEST_SINGLE_LINE_RICH_ONLY": "1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "workflow",
+    "commands": [
+      {
+        "argv": [
+          "sh",
+          "tests/browser/run-record-workflow-journey.sh"
+        ],
+        "env": {}
+      }
+    ]
+  },
+  {
+    "id": "final",
+    "commands": [
+      {
+        "argv": [
+          "tools/check-extraction-boundary.sh"
+        ],
+        "env": {}
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "env": {}
+      }
+    ]
+  }
+]

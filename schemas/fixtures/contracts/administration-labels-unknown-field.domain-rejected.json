@@ -1,0 +1,7 @@
+{
+  "formatVersion": 1,
+  "profileId": "reference-studio",
+  "languages": {
+    "de": { "fields": { "project.secret": "Geheim" } }
+  }
+}

@@ -1,0 +1,7 @@
+.cms-vimeo { position:relative; max-width:100%; }
+.cms-vimeo > img { display:block; width:100%; height:auto; }
+.cms-vimeo__play, .cms-vimeo__link { position:absolute; inset:0; display:grid; place-items:center; max-width:100%; margin:0; padding:1rem; border:0; background:rgb(0 0 0 / 35%); color:white; text-align:center; font:inherit; cursor:pointer; }
+.cms-vimeo__link[hidden], .cms-vimeo__play[hidden] { display:none; }
+.cms-vimeo__play:focus-visible, .cms-vimeo__link:focus-visible { outline:3px solid currentColor; outline-offset:-5px; }
+.cms-vimeo iframe { position:absolute; inset:0; display:block; width:100%; height:100%; border:0; }
+.cms-vimeo[data-vimeo-playing] > img { visibility:hidden; }

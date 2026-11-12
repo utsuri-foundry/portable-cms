@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/capabilities-v1.schema.json",
+  "title": "Portable CMS installation capability document v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "generatedAt", "installationMode", "capabilities"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "installationMode": { "enum": ["standalone", "managed_service_required", "unsupported"] },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/capability" }
+    }
+  },
+  "$defs": {
+    "canonicalId": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$"
+    },
+    "limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "value", "unit"],
+      "properties": {
+        "id": { "$ref": "#/$defs/canonicalId" },
+        "value": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
+        "unit": { "enum": ["bytes", "seconds", "count"] }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement", "status", "limits", "remediation"],
+      "properties": {
+        "id": { "$ref": "#/$defs/canonicalId" },
+        "requirement": { "enum": ["baseline", "profile_required", "optional"] },
+        "status": { "enum": ["available", "degraded", "unavailable"] },
+        "limits": { "type": "array", "maxItems": 16, "items": { "$ref": "#/$defs/limit" } },
+        "remediation": { "anyOf": [{ "$ref": "#/$defs/canonicalId" }, { "type": "null" }] }
+      }
+    }
+  }
+}

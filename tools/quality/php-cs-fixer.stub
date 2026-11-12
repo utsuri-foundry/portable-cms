@@ -1,0 +1,32 @@
+<?php
+
+namespace PhpCsFixer;
+
+class Finder
+{
+    public static function create(): self;
+
+    /** @param list<string> $directories */
+    public function in(array $directories): self;
+
+    /** @param list<string> $directories */
+    public function exclude(array $directories): self;
+
+    public function name(string $pattern): self;
+
+    public function ignoreDotFiles(bool $ignore): self;
+
+    public function ignoreVCS(bool $ignore): self;
+}
+
+class Config
+{
+    public function setRiskyAllowed(bool $allowed): self;
+
+    /** @param array<string, bool|array<string, mixed>> $rules */
+    public function setRules(array $rules): self;
+
+    public function setFinder(Finder $finder): self;
+
+    public function setCacheFile(string $path): self;
+}

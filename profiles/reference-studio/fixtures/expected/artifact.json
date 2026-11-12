@@ -1,0 +1,1142 @@
+{
+    "formatVersion": 1,
+    "releaseId": "f1000000000000000000000000000001",
+    "snapshotId": "f0000000000000000000000000000001",
+    "createdAt": "2026-10-03T09:01:00Z",
+    "profile": {
+        "id": "reference-studio",
+        "version": "1.1.1",
+        "sha256": "b2aa36967c69deacd3e82967b9cce1a89d65dc5f772d2b32d07fe17568665df7"
+    },
+    "compiler": {
+        "id": "portable-cms-compiler",
+        "version": "0.1.0",
+        "sha256": "958bc7e6ab986d68e6fb696ab954e78060b46ec679369bc562ffafd171f6eb9f"
+    },
+    "searchFormatVersion": 1,
+    "files": [
+        {
+            "path": "assets/composition.css",
+            "mime": "text/css; charset=utf-8",
+            "byteSize": 4698,
+            "sha256": "e666373f75469a0765768e871c70b8b359dfbc6cf28741caee947205f7fab611",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/design.css",
+            "mime": "text/css; charset=utf-8",
+            "byteSize": 1071,
+            "sha256": "f3980203c25f164bfe6a5138ab6e79682913cd26dcaf884f436ef447115d4407",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/icon.svg",
+            "mime": "image/svg+xml",
+            "byteSize": 231,
+            "sha256": "f717165c6fe41c1cdee895a4a327d33dcc8ce7f65da8cd270cfe82eddc46b92e",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/media-focal.css",
+            "mime": "text/css; charset=utf-8",
+            "byteSize": 42,
+            "sha256": "fdb874a567f58929b3face7b9b6bf503e7fc89702d0f3a06545422bf4fd4fba3",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/search.js",
+            "mime": "text/javascript; charset=utf-8",
+            "byteSize": 3063,
+            "sha256": "950537ac391b6cd1e6f978d4dc931c9f11f931cc3a87b64df3f74e8541f05e0d",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/site.css",
+            "mime": "text/css; charset=utf-8",
+            "byteSize": 6718,
+            "sha256": "e9e9fa46d025a0b462520727286721def365a55f682028e42e8b963c46bec6f1",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/studio-sans-latin.woff2",
+            "mime": "font/woff2",
+            "byteSize": 46352,
+            "sha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/studio-serif-italic-latin.woff2",
+            "mime": "font/woff2",
+            "byteSize": 36076,
+            "sha256": "b72cc296b5f6eb2c36e1dc875e10f9254548c957a4684bedba524628c0602f9a",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "assets/studio-serif-latin.woff2",
+            "mime": "font/woff2",
+            "byteSize": 45972,
+            "sha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "ca/about/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4173,
+            "sha256": "50606105eaec2ba312ec2558988b93e86ee2ab7d48d0e6613d29863583647273",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/articles/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4539,
+            "sha256": "f689dfe52a4cf62c2691cd56d7c639bcb7fe56d547ae00359852881e8e2dd4e7",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/articles/mesurar-lombra/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5598,
+            "sha256": "0658cc789f226ef18528209431912570ecba799d85c3ba1d461c49f81612c1fb",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/disciplines/arquitectura/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5416,
+            "sha256": "08f2313f6fe724f2b1f31e2b0f513aa1d892a4a15814f09147de01fa0c033536",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/disciplines/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4623,
+            "sha256": "3f3ba55fa5a07ac1d903883d2607cba9ba482cd007e28d3505c0e2a533858883",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/disciplines/recerca/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4249,
+            "sha256": "0dd5ae0e545656f8e70afa0715d85b4b0b9b3707cb911e4e8f9b12c5d1878d32",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 7808,
+            "sha256": "abc3fc4a64732b7dbf6bcb45d3091f00672be1401c8472b976637fce716f751a",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/landing/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4680,
+            "sha256": "9cdb8f733ec8bb448b7d9ff87d10f4a21ae54bf164caa8a48e3d9a1a6eb0b168",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/people/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4473,
+            "sha256": "664b3563274f7c83057037e816e5623f71103010a1cb3393490592e9d2d3b17b",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/people/nora-vidal/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4186,
+            "sha256": "b228961bad97e0ed642c4e527f4ff4ba5d4e312f8fdb5f089a6e39b021c5ab2c",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/projects/arxiu-de-la-boira/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 6071,
+            "sha256": "fd452fd3fb7f84fad56062452ae866f30419bec767a9666ecb7c658b87002271",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/projects/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5265,
+            "sha256": "48f5aba01af5b022679c4c4a0063205cb811432a4537a72864941859613170b5",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/search/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 6848,
+            "sha256": "5af8d5b204ba6dbd266e1a8cb8d620353129d8ac79ce8f4dce16a7d662ce431a",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/sectors/cultura/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4605,
+            "sha256": "f7ef12fda780feff2b007de6b484caf8393390d7ac2d22159cedfe93924c9cbf",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/sectors/habitatge/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4233,
+            "sha256": "c7819463b1bb80d7ce42c5bfc35267d95235af65fce8047f81fb104d8e51e3ee",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/sectors/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4558,
+            "sha256": "1cee22098e9ba33455f2db91b4724c36fd0dc97f208baec3fdded0dcdf01f28d",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "ca/settings/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 3257,
+            "sha256": "ef9351fe4cc71c0cc8ad8ec34324124e22a62183611803c9242ab0036308d0cb",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "delivery/apache24.conf",
+            "mime": "text/plain; charset=utf-8",
+            "byteSize": 1126,
+            "sha256": "a4fb505144e1a57fe7b1ff22bff0c4fb2822c9d5748f10091ae71b79c09d0327",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/about/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4150,
+            "sha256": "10b3a0e185a3af33a0b28d9eab6b0dfdc8248d56a3966d63ef8bdd243c854463",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/articles/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4481,
+            "sha256": "e9a76032bbcb332b49ef4cdbabb0eb4465be69e254948d9febdea85e65d016bb",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/articles/measuring-shade/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5509,
+            "sha256": "b4e7895c771bffd44822cbfd9f17c663c1f91f1328a8ea65ac842741b9b8c0d4",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/disciplines/architecture/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5352,
+            "sha256": "dc51b2929a3e2209682d63994b7e03afdf564b6d206ccc00d080bfd0c0104d05",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/disciplines/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4579,
+            "sha256": "139786774fe532fafc881a129a62cf13a3d0da43c3054da53aee35e1f4ad27be",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/disciplines/research/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4210,
+            "sha256": "b6e88f23a1994204e20571d8869fa9bbb43ce14268d7a5645e6bebce3c9df5d0",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 7759,
+            "sha256": "51076d29f94eff2da7ffe54567730c5a7388fcb4c2111cc821b320e9a61c964b",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/landing/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4587,
+            "sha256": "aa4ba40ccc16f64467c76547f301d49e3c646444a14d8b96da2729d60e7b7efa",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/people/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4416,
+            "sha256": "b63a53f932df5db796deae343d1de6f392550c930eec5513723cbd9d2e54da54",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/people/nora-vidal/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4162,
+            "sha256": "d526020e7ec94cf89bdc8dc78f1f542900aa67050593bd6b6f59ade519cc91e0",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/projects/archive-of-mist/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 6047,
+            "sha256": "bb2d3b3cc3b57ae84f12a677987ea00a8441fe718521eba74ad949c9e1794d84",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/projects/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5176,
+            "sha256": "df742f3cb54603ea80b55cb06e2dd44191087fbf0ce50afdb575106775749216",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/search/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 6729,
+            "sha256": "a9a447ce310845b1dedbc03f07e6f621d4961b5acea373f87c9d20a383863748",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/sectors/culture/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4547,
+            "sha256": "693bfce4dd3a839235e94671d20a74a91f676f98c1ace984569f3c8ff3023ef1",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/sectors/housing/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4170,
+            "sha256": "98da67478f4a056ed4aea225922bba7dde3cfceef42b02b8c5ef8dd205f9aa05",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/sectors/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4505,
+            "sha256": "dc19a4671215ae0c96d37c922dca3f50c2978ccff937dd11d9adfdbbf6848ba5",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "en/settings/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 3191,
+            "sha256": "285dde9ae012c8d2cb73851b16bfa350e8d70217422fd0af024a46be47dc5049",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/about/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4215,
+            "sha256": "c32b427135b76000151e5ba7ba87623df828aceb7aaef7c578c5a42625628b58",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/articles/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4554,
+            "sha256": "1cbdaad84d857ac6dd295384c7d232385e81ecc3df3b642d167136a029b28eee",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/articles/medir-la-sombra/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5591,
+            "sha256": "ede9ed3417abcf5452831013a7782ea0af4f73e180005d6ef0881b71cbbf411f",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/disciplines/arquitectura/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5450,
+            "sha256": "4e994a6171914372e3a04c7fbebe22bd53e87d85af78898619169db5fb9d9b75",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/disciplines/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4662,
+            "sha256": "337afc119afdd59c645cb776b75818b018dfdf9ae8ad540f1f94f853f0e791c6",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/disciplines/investigacion/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4321,
+            "sha256": "793bb444862cda792b28aad6cba870bdc5559a0e44c99763af1de660285839dd",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 7864,
+            "sha256": "1eae900a7d401391c13a6f143499e554b982a3d27a13b793c769e512f1128ab1",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/landing/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4728,
+            "sha256": "a1dbbae3bf1bfaf84f4e54d6bfac0768600bf4254b39a941860db394bc601468",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/people/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4492,
+            "sha256": "53386df7da8f57df35ec41faeca5bb76366c57b7304cd35ece3c7fb05289c1ca",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/people/nora-vidal/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4196,
+            "sha256": "f7915db7d7342dae90bd11ad850cb79b41d601435cb7384ea50ba97d5d32dab9",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/projects/archivo-de-la-niebla/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 6121,
+            "sha256": "7e62880400e8ed40141d462447c35712b436b049e6ea5fe74cf68471ffb5b62e",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/projects/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 5299,
+            "sha256": "2a3cb13d103d95fa67fecb064f1ab05d8833f9e2f80f62f93d879d00b8904ea1",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/search/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 6912,
+            "sha256": "2f2325cce566dfd862eb014f6510d5784ed54498423b49b0511284a01e434f68",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/sectors/cultura/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4615,
+            "sha256": "433094b0d348d5f7fa1555f43d30fcf530c891f3867105d8efbbe6ecba3c1575",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/sectors/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4579,
+            "sha256": "ebf2ef7b0ad27e7ae777ad5eb72080d022be32db94ee9127929fc6d7daf3302c",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/sectors/vivienda/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 4244,
+            "sha256": "77afcfa901cceb0003d14942a64d0ac7c96790d05a25199578a12bf93e4700a7",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "es/settings/index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 3279,
+            "sha256": "c41810f5407e23019011b67c0a116c767c55e0596e0126ee10c891330bdab2e2",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "feed/v1/media/090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30.webp",
+            "mime": "image/webp",
+            "byteSize": 1284,
+            "sha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/media/3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a.webp",
+            "mime": "image/webp",
+            "byteSize": 1378,
+            "sha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/article/ca/1.json",
+            "mime": "application/json",
+            "byteSize": 237,
+            "sha256": "27da148855aedc05dfc4fb767e81e6021e350d09917ae570d611291185062103",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/article/en/1.json",
+            "mime": "application/json",
+            "byteSize": 236,
+            "sha256": "1c7fa3133fe55bbf27aee42eecb4004df5db845980f05f083f6dce146b7ac0d0",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/article/es/1.json",
+            "mime": "application/json",
+            "byteSize": 237,
+            "sha256": "85c586b534f1319e73d050508a43e3d81f55c8f3c25f9b8c6c27ca461b035355",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/manifest.json",
+            "mime": "application/json",
+            "byteSize": 2716,
+            "sha256": "f28443ad51aa20361f813626179ec8cb1fdfe91b05dc909b896b3f8e0bbbfeb4",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/project/ca/1.json",
+            "mime": "application/json",
+            "byteSize": 711,
+            "sha256": "ae835e88f3f7b3cf3d2c27f1df739fd57eb31e03f458db535e0cbad88ea76243",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/project/en/1.json",
+            "mime": "application/json",
+            "byteSize": 745,
+            "sha256": "f034a64967ac8e63a5f57182c0dbfcc6e48f0112cab0c5194ebd0c92c5191aeb",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "feed/v1/snapshots/38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923/project/es/1.json",
+            "mime": "application/json",
+            "byteSize": 720,
+            "sha256": "b9356d15f3b52111664a3a09e366bcf4869540b36ae24d79d2adc1d76fe36815",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "index.html",
+            "mime": "text/html; charset=utf-8",
+            "byteSize": 7781,
+            "sha256": "04144afc4924bc2850705c9ff4b17976eed3494fcc3e762bc9c122f64ddac89f",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "media/d0000000000000000000000000000001-display_1600_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 1284,
+            "sha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000001-display_480_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 1086,
+            "sha256": "bb99e096320d844a46a48899e5fef19e1e0aff09ef05fb5962aac227243eb4b9",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000001-display_960_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 3140,
+            "sha256": "de67499ff4d4cd93bb36b8d3ded9bf54b6ee8994aef4529044559b2197b8377e",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000002-display_1600_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 1378,
+            "sha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000002-display_480_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 876,
+            "sha256": "735df4f779fe1aa7edd5834355c05ceaad2abaec7d632ffb994978c3eaa3581c",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000002-display_960_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 3168,
+            "sha256": "7ac75eb60bc1687378e084c20accaa0fb7852a91e5e954ba61556315b2e7993b",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000003-display_1600_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 1600,
+            "sha256": "46ee7b6ad246d69197412b7c7cd1b3fff2e5e81e04cd4d84bb9c7c968100acb6",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000003-display_480_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 1048,
+            "sha256": "a2b25921e3f874c2b8044d646c9b08471e1e8e20a8c10e560e242918c7397128",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "media/d0000000000000000000000000000003-display_960_webp.webp",
+            "mime": "image/webp",
+            "byteSize": 3344,
+            "sha256": "730fa86fd149797b27ff37989bc2b276cc5a347f36ac49fc8fcd91758f2b795b",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "navigation-rules.json",
+            "mime": "application/speculationrules+json",
+            "byteSize": 151,
+            "sha256": "d3ba97a3fe1b60494b2a0d2ed91a5d390a2a9a0b9db9389cf893f0615ff3424b",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "robots.txt",
+            "mime": "text/plain; charset=utf-8",
+            "byteSize": 77,
+            "sha256": "64d53c24e781bc4b843fe28ff3ef84d5dea3778c218eb5a55cb5dbd6ee853859",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "search/ca.json",
+            "mime": "application/json",
+            "byteSize": 13780,
+            "sha256": "c4475c52c48c2ccc016283ef1ec10064727697074f1d50b145ba1c89112b322e",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "search/en.json",
+            "mime": "application/json",
+            "byteSize": 13197,
+            "sha256": "1a02e6ca3deae40a89f1ce3b8ea771431617394c38432753b0ae58d9230531dd",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "search/es.json",
+            "mime": "application/json",
+            "byteSize": 13579,
+            "sha256": "18c532b7df9384360996ba5076bf71015b8f84b4ad373616521454e0730001aa",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "sharing/25ea550d475c86c0616306c9efda07b2fd14dbf66fa37c5c3752b12b30df0b33.jpg",
+            "mime": "image/jpeg",
+            "byteSize": 9882,
+            "sha256": "25ea550d475c86c0616306c9efda07b2fd14dbf66fa37c5c3752b12b30df0b33",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "sharing/3f3726f4b0e23b8cd21a4c5edf614e69d8b899651c6bac3a2d8b8a6cedbff01e.jpg",
+            "mime": "image/jpeg",
+            "byteSize": 10522,
+            "sha256": "3f3726f4b0e23b8cd21a4c5edf614e69d8b899651c6bac3a2d8b8a6cedbff01e",
+            "cachePolicy": "immutable"
+        },
+        {
+            "path": "sitemap.xml",
+            "mime": "application/xml; charset=utf-8",
+            "byteSize": 3542,
+            "sha256": "cd388bc16f18b8f1f4a4015686aa779dcc4b233e0ecccaa6b99a9feec20ba1dc",
+            "cachePolicy": "route"
+        }
+    ],
+    "redirects": [],
+    "publicMedia": [
+        {
+            "mediaId": "d0000000000000000000000000000001",
+            "variant": "display_1600_webp",
+            "path": "media/d0000000000000000000000000000001-display_1600_webp.webp",
+            "sha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000001",
+            "variant": "display_480_webp",
+            "path": "media/d0000000000000000000000000000001-display_480_webp.webp",
+            "sha256": "bb99e096320d844a46a48899e5fef19e1e0aff09ef05fb5962aac227243eb4b9"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000001",
+            "variant": "display_960_webp",
+            "path": "media/d0000000000000000000000000000001-display_960_webp.webp",
+            "sha256": "de67499ff4d4cd93bb36b8d3ded9bf54b6ee8994aef4529044559b2197b8377e"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000002",
+            "variant": "display_1600_webp",
+            "path": "media/d0000000000000000000000000000002-display_1600_webp.webp",
+            "sha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000002",
+            "variant": "display_480_webp",
+            "path": "media/d0000000000000000000000000000002-display_480_webp.webp",
+            "sha256": "735df4f779fe1aa7edd5834355c05ceaad2abaec7d632ffb994978c3eaa3581c"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000002",
+            "variant": "display_960_webp",
+            "path": "media/d0000000000000000000000000000002-display_960_webp.webp",
+            "sha256": "7ac75eb60bc1687378e084c20accaa0fb7852a91e5e954ba61556315b2e7993b"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000003",
+            "variant": "display_1600_webp",
+            "path": "media/d0000000000000000000000000000003-display_1600_webp.webp",
+            "sha256": "46ee7b6ad246d69197412b7c7cd1b3fff2e5e81e04cd4d84bb9c7c968100acb6"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000003",
+            "variant": "display_480_webp",
+            "path": "media/d0000000000000000000000000000003-display_480_webp.webp",
+            "sha256": "a2b25921e3f874c2b8044d646c9b08471e1e8e20a8c10e560e242918c7397128"
+        },
+        {
+            "mediaId": "d0000000000000000000000000000003",
+            "variant": "display_960_webp",
+            "path": "media/d0000000000000000000000000000003-display_960_webp.webp",
+            "sha256": "730fa86fd149797b27ff37989bc2b276cc5a347f36ac49fc8fcd91758f2b795b"
+        }
+    ],
+    "contentFeed": {
+        "snapshotId": "38baa064a35988a981c6207f8e53daf19b10708c2b259be162653b4a3162f923",
+        "formatVersion": 1,
+        "profileId": "reference-studio",
+        "locales": [
+            "ca",
+            "es",
+            "en"
+        ],
+        "collections": [
+            {
+                "typeId": "article",
+                "locale": "ca",
+                "recordCount": 1,
+                "pages": [
+                    {
+                        "path": "article/ca/1.json",
+                        "byteSize": 237,
+                        "sha256": "27da148855aedc05dfc4fb767e81e6021e350d09917ae570d611291185062103"
+                    }
+                ]
+            },
+            {
+                "typeId": "article",
+                "locale": "es",
+                "recordCount": 1,
+                "pages": [
+                    {
+                        "path": "article/es/1.json",
+                        "byteSize": 237,
+                        "sha256": "85c586b534f1319e73d050508a43e3d81f55c8f3c25f9b8c6c27ca461b035355"
+                    }
+                ]
+            },
+            {
+                "typeId": "article",
+                "locale": "en",
+                "recordCount": 1,
+                "pages": [
+                    {
+                        "path": "article/en/1.json",
+                        "byteSize": 236,
+                        "sha256": "1c7fa3133fe55bbf27aee42eecb4004df5db845980f05f083f6dce146b7ac0d0"
+                    }
+                ]
+            },
+            {
+                "typeId": "project",
+                "locale": "ca",
+                "recordCount": 1,
+                "pages": [
+                    {
+                        "path": "project/ca/1.json",
+                        "byteSize": 711,
+                        "sha256": "ae835e88f3f7b3cf3d2c27f1df739fd57eb31e03f458db535e0cbad88ea76243"
+                    }
+                ]
+            },
+            {
+                "typeId": "project",
+                "locale": "es",
+                "recordCount": 1,
+                "pages": [
+                    {
+                        "path": "project/es/1.json",
+                        "byteSize": 720,
+                        "sha256": "b9356d15f3b52111664a3a09e366bcf4869540b36ae24d79d2adc1d76fe36815"
+                    }
+                ]
+            },
+            {
+                "typeId": "project",
+                "locale": "en",
+                "recordCount": 1,
+                "pages": [
+                    {
+                        "path": "project/en/1.json",
+                        "byteSize": 745,
+                        "sha256": "f034a64967ac8e63a5f57182c0dbfcc6e48f0112cab0c5194ebd0c92c5191aeb"
+                    }
+                ]
+            }
+        ],
+        "records": [
+            {
+                "typeId": "article",
+                "locale": "ca",
+                "id": "30000000000000000000000000000001",
+                "revisionNumber": 3,
+                "sha256": "93b530f141164fdc27683a350411b10b66781b1fa8b5152d23e824faba5af6af"
+            },
+            {
+                "typeId": "article",
+                "locale": "es",
+                "id": "30000000000000000000000000000001",
+                "revisionNumber": 3,
+                "sha256": "dfbd17b4ec06c00d9528332ee59a5e9289038d2bd82d8fe4ba5c152950889c25"
+            },
+            {
+                "typeId": "article",
+                "locale": "en",
+                "id": "30000000000000000000000000000001",
+                "revisionNumber": 3,
+                "sha256": "ce850e2ca1a075bf931d53c20451acca4fb2f1c180a74a8949d5220d02f2e5c9"
+            },
+            {
+                "typeId": "project",
+                "locale": "ca",
+                "id": "10000000000000000000000000000001",
+                "revisionNumber": 4,
+                "sha256": "f97a11447a48203d69c102db213287e993445bfc0594cce736448dde1af65e38"
+            },
+            {
+                "typeId": "project",
+                "locale": "es",
+                "id": "10000000000000000000000000000001",
+                "revisionNumber": 4,
+                "sha256": "5de41900c31f3953a55a00b90790f1777db488a0e5d9578f48b923252fd9f636"
+            },
+            {
+                "typeId": "project",
+                "locale": "en",
+                "id": "10000000000000000000000000000001",
+                "revisionNumber": 4,
+                "sha256": "dd8fedae70477fcfa3e6d526a2ba3b749d8b75ba3c3e2c3f4a6e0a5ae45a897f"
+            }
+        ],
+        "media": [
+            {
+                "path": "feed/v1/media/090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30.webp",
+                "mime": "image/webp",
+                "byteSize": 1284,
+                "sha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30"
+            },
+            {
+                "path": "feed/v1/media/3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a.webp",
+                "mime": "image/webp",
+                "byteSize": 1378,
+                "sha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a"
+            }
+        ]
+    },
+    "designRegistries": {
+        "revision": 0,
+        "sha256": "0127ab6ee9062f3c278277fdc2f8f96d66ee13fd1c999e6084f63b218e4311b6"
+    },
+    "publicUrlContext": {
+        "formatVersion": 1,
+        "baseUrl": "https://reference-studio.example",
+        "sha256": "e7fcf93d84a8c6c87962387d7a893c5994649a4a673887e6d7e2541bb1f184bf"
+    },
+    "sharingImages": [
+        {
+            "mediaId": "d0000000000000000000000000000001",
+            "sourceSha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30",
+            "path": "sharing/25ea550d475c86c0616306c9efda07b2fd14dbf66fa37c5c3752b12b30df0b33.jpg",
+            "sha256": "25ea550d475c86c0616306c9efda07b2fd14dbf66fa37c5c3752b12b30df0b33",
+            "byteSize": 9882,
+            "width": 1200,
+            "height": 630,
+            "recipe": {
+                "id": "imagick-sharing-jpeg",
+                "version": 1,
+                "processorVersion": "ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org",
+                "quality": 82,
+                "fit": "contain-no-upscale",
+                "background": "white"
+            }
+        },
+        {
+            "mediaId": "d0000000000000000000000000000002",
+            "sourceSha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a",
+            "path": "sharing/3f3726f4b0e23b8cd21a4c5edf614e69d8b899651c6bac3a2d8b8a6cedbff01e.jpg",
+            "sha256": "3f3726f4b0e23b8cd21a4c5edf614e69d8b899651c6bac3a2d8b8a6cedbff01e",
+            "byteSize": 10522,
+            "width": 1200,
+            "height": 630,
+            "recipe": {
+                "id": "imagick-sharing-jpeg",
+                "version": 1,
+                "processorVersion": "ImageMagick 7.1.2-31 Q16-HDRI x86_64 8309dc92a:20260903 https://imagemagick.org",
+                "quality": 82,
+                "fit": "contain-no-upscale",
+                "background": "white"
+            }
+        }
+    ],
+    "routeIdentities": [
+        {
+            "path": "/ca/",
+            "locale": "ca",
+            "translationGroup": "page:home"
+        },
+        {
+            "path": "/ca/about/",
+            "locale": "ca",
+            "translationGroup": "page:about"
+        },
+        {
+            "path": "/ca/articles/",
+            "locale": "ca",
+            "translationGroup": "page:articles"
+        },
+        {
+            "path": "/ca/articles/mesurar-lombra/",
+            "locale": "ca",
+            "translationGroup": "record:30000000000000000000000000000001"
+        },
+        {
+            "path": "/ca/disciplines/",
+            "locale": "ca",
+            "translationGroup": "page:disciplines"
+        },
+        {
+            "path": "/ca/disciplines/arquitectura/",
+            "locale": "ca",
+            "translationGroup": "record:80000000000000000000000000000001"
+        },
+        {
+            "path": "/ca/disciplines/recerca/",
+            "locale": "ca",
+            "translationGroup": "record:80000000000000000000000000000002"
+        },
+        {
+            "path": "/ca/landing/",
+            "locale": "ca",
+            "translationGroup": "page:landing"
+        },
+        {
+            "path": "/ca/people/",
+            "locale": "ca",
+            "translationGroup": "page:people"
+        },
+        {
+            "path": "/ca/people/nora-vidal/",
+            "locale": "ca",
+            "translationGroup": "record:40000000000000000000000000000001"
+        },
+        {
+            "path": "/ca/projects/",
+            "locale": "ca",
+            "translationGroup": "page:projects"
+        },
+        {
+            "path": "/ca/projects/arxiu-de-la-boira/",
+            "locale": "ca",
+            "translationGroup": "record:10000000000000000000000000000001"
+        },
+        {
+            "path": "/ca/search/",
+            "locale": "ca",
+            "translationGroup": "page:search"
+        },
+        {
+            "path": "/ca/sectors/",
+            "locale": "ca",
+            "translationGroup": "page:sectors"
+        },
+        {
+            "path": "/ca/sectors/cultura/",
+            "locale": "ca",
+            "translationGroup": "record:90000000000000000000000000000001"
+        },
+        {
+            "path": "/ca/sectors/habitatge/",
+            "locale": "ca",
+            "translationGroup": "record:90000000000000000000000000000002"
+        },
+        {
+            "path": "/ca/settings/",
+            "locale": "ca",
+            "translationGroup": "page:settings"
+        },
+        {
+            "path": "/en/",
+            "locale": "en",
+            "translationGroup": "page:home"
+        },
+        {
+            "path": "/en/about/",
+            "locale": "en",
+            "translationGroup": "page:about"
+        },
+        {
+            "path": "/en/articles/",
+            "locale": "en",
+            "translationGroup": "page:articles"
+        },
+        {
+            "path": "/en/articles/measuring-shade/",
+            "locale": "en",
+            "translationGroup": "record:30000000000000000000000000000001"
+        },
+        {
+            "path": "/en/disciplines/",
+            "locale": "en",
+            "translationGroup": "page:disciplines"
+        },
+        {
+            "path": "/en/disciplines/architecture/",
+            "locale": "en",
+            "translationGroup": "record:80000000000000000000000000000001"
+        },
+        {
+            "path": "/en/disciplines/research/",
+            "locale": "en",
+            "translationGroup": "record:80000000000000000000000000000002"
+        },
+        {
+            "path": "/en/landing/",
+            "locale": "en",
+            "translationGroup": "page:landing"
+        },
+        {
+            "path": "/en/people/",
+            "locale": "en",
+            "translationGroup": "page:people"
+        },
+        {
+            "path": "/en/people/nora-vidal/",
+            "locale": "en",
+            "translationGroup": "record:40000000000000000000000000000001"
+        },
+        {
+            "path": "/en/projects/",
+            "locale": "en",
+            "translationGroup": "page:projects"
+        },
+        {
+            "path": "/en/projects/archive-of-mist/",
+            "locale": "en",
+            "translationGroup": "record:10000000000000000000000000000001"
+        },
+        {
+            "path": "/en/search/",
+            "locale": "en",
+            "translationGroup": "page:search"
+        },
+        {
+            "path": "/en/sectors/",
+            "locale": "en",
+            "translationGroup": "page:sectors"
+        },
+        {
+            "path": "/en/sectors/culture/",
+            "locale": "en",
+            "translationGroup": "record:90000000000000000000000000000001"
+        },
+        {
+            "path": "/en/sectors/housing/",
+            "locale": "en",
+            "translationGroup": "record:90000000000000000000000000000002"
+        },
+        {
+            "path": "/en/settings/",
+            "locale": "en",
+            "translationGroup": "page:settings"
+        },
+        {
+            "path": "/es/",
+            "locale": "es",
+            "translationGroup": "page:home"
+        },
+        {
+            "path": "/es/about/",
+            "locale": "es",
+            "translationGroup": "page:about"
+        },
+        {
+            "path": "/es/articles/",
+            "locale": "es",
+            "translationGroup": "page:articles"
+        },
+        {
+            "path": "/es/articles/medir-la-sombra/",
+            "locale": "es",
+            "translationGroup": "record:30000000000000000000000000000001"
+        },
+        {
+            "path": "/es/disciplines/",
+            "locale": "es",
+            "translationGroup": "page:disciplines"
+        },
+        {
+            "path": "/es/disciplines/arquitectura/",
+            "locale": "es",
+            "translationGroup": "record:80000000000000000000000000000001"
+        },
+        {
+            "path": "/es/disciplines/investigacion/",
+            "locale": "es",
+            "translationGroup": "record:80000000000000000000000000000002"
+        },
+        {
+            "path": "/es/landing/",
+            "locale": "es",
+            "translationGroup": "page:landing"
+        },
+        {
+            "path": "/es/people/",
+            "locale": "es",
+            "translationGroup": "page:people"
+        },
+        {
+            "path": "/es/people/nora-vidal/",
+            "locale": "es",
+            "translationGroup": "record:40000000000000000000000000000001"
+        },
+        {
+            "path": "/es/projects/",
+            "locale": "es",
+            "translationGroup": "page:projects"
+        },
+        {
+            "path": "/es/projects/archivo-de-la-niebla/",
+            "locale": "es",
+            "translationGroup": "record:10000000000000000000000000000001"
+        },
+        {
+            "path": "/es/search/",
+            "locale": "es",
+            "translationGroup": "page:search"
+        },
+        {
+            "path": "/es/sectors/",
+            "locale": "es",
+            "translationGroup": "page:sectors"
+        },
+        {
+            "path": "/es/sectors/cultura/",
+            "locale": "es",
+            "translationGroup": "record:90000000000000000000000000000001"
+        },
+        {
+            "path": "/es/sectors/vivienda/",
+            "locale": "es",
+            "translationGroup": "record:90000000000000000000000000000002"
+        },
+        {
+            "path": "/es/settings/",
+            "locale": "es",
+            "translationGroup": "page:settings"
+        }
+    ],
+    "delivery": {
+        "formatVersion": 1,
+        "target": "apache24",
+        "path": "delivery/apache24.conf",
+        "sha256": "a4fb505144e1a57fe7b1ff22bff0c4fb2822c9d5748f10091ae71b79c09d0327"
+    }
+}

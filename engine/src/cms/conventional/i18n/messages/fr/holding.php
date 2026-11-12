@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'holding.status.queued' => 'En attente',
+    'holding.status.building' => 'En cours',
+    'holding.status.ready' => 'Prêt',
+    'holding.status.needs_attention' => 'À vérifier',
+    'holding.settings' => 'Réglages du site',
+    'holding.settings_help' => 'Choisissez le contenu de la prochaine publication approuvée. Enregistrer ne modifie pas le site public. Les aperçus exacts montrent toujours le véritable site.',
+    'holding.conflict' => 'Les réglages ont changé',
+    'holding.invalid' => 'Vérifiez les réglages',
+    'holding.preserved' => 'Votre saisie est conservée ci-dessous.',
+    'holding.current_values' => 'Mode enregistré : {mode}. Nom du site : {name}.',
+    'holding.name' => 'Nom du site',
+    'holding.mode' => 'Mode de publication',
+    'holding.mode.coming_soon' => 'Bientôt',
+    'holding.mode.live' => 'Site complet',
+    'holding.standard' => 'La publication standard peut brièvement mélanger des versions approuvées pendant son application ou sa restauration. La publication atomique est désactivée.',
+    'holding.icon' => 'Icône du site (facultative)',
+    'holding.icon_help' => 'Choisissez une image carrée prête d’au moins 512 pixels. Le système prépare des icônes sûres.',
+    'holding.icon_id' => 'Identifiant du média de l’icône',
+    'holding.message' => 'Message court',
+    'holding.contact' => 'Coordonnées (facultatives, texte brut)',
+    'holding.confirm' => 'Je comprends que publier Bientôt remplacera le site public et supprimera ses pages actuelles.',
+    'holding.confirm_help' => 'Obligatoire pour revenir de Site complet à Bientôt. Enregistrer les réglages ne publie rien.',
+    'holding.save' => 'Enregistrer les réglages',
+    'holding.releases' => 'Publications du site',
+    'holding.build' => 'Générer Bientôt',
+    'holding.build_help' => 'Figez ces réglages dans une compilation privée. Aucun contenu du site n’est nécessaire ; Cron traite la compilation.',
+    'holding.inspect_help' => 'Vérifiez les réglages enregistrés avant d’approuver. Cette compilation est distincte des aperçus exacts du site.',
+    'holding.publish_confirm' => 'J’approuve le remplacement de toutes les pages publiques par Bientôt. La publication standard peut temporairement mélanger des versions approuvées.',
+    'holding.builds' => 'Compilations Bientôt',
+    'holding.delete' => 'Supprimer une compilation inutilisée',
+];

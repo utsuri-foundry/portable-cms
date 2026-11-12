@@ -1,0 +1,108 @@
+{
+  "formatVersion": 1,
+  "source": {
+    "origin": "In-house conventional-hosting prototype; detailed source identity and commits retained in the private archive."
+  },
+  "mappings": [
+    {
+      "source": "src/cms/conventional",
+      "target": "engine/src/cms/conventional",
+      "kind": "tree"
+    },
+    {
+      "source": "migrations/conventional",
+      "target": "engine/migrations",
+      "kind": "tree"
+    },
+    {
+      "source": "schemas/portable-cms-profile-v1.schema.json",
+      "target": "schemas/portable-cms-profile-v1.schema.json",
+      "kind": "file"
+    },
+    {
+      "source": "schemas/portable-cms-export-v1.schema.json",
+      "target": "schemas/portable-cms-export-v1.schema.json",
+      "kind": "file"
+    },
+    {
+      "source": "src/scripts/shared/normalize.js",
+      "target": "engine/src/browser/normalize.js",
+      "kind": "file"
+    },
+    {
+      "source": "src/cms/client/slug.js",
+      "target": "engine/src/browser/slug.js",
+      "kind": "file"
+    },
+    {
+      "source": "tests/php",
+      "target": "tests/php",
+      "kind": "tree"
+    },
+    {
+      "source": "tests/fixtures/text-normalization-v1.json",
+      "target": "tests/fixtures/text-normalization-v1.json",
+      "kind": "file"
+    },
+    {
+      "source": "tests/unit/conventional-upload-batch.test.js",
+      "target": "tests/unit/conventional-upload-batch.test.js",
+      "kind": "file"
+    },
+    {
+      "source": "tests/unit/text-normalization-fixtures.test.js",
+      "target": "tests/unit/text-normalization-fixtures.test.js",
+      "kind": "file"
+    },
+    {
+      "source": "config/conventional-cms.example.json",
+      "target": "config/conventional-cms.example.json",
+      "kind": "file"
+    },
+    {
+      "source": "config/conventional-probe.example.json",
+      "target": "config/conventional-probe.example.json",
+      "kind": "file"
+    },
+    {
+      "source": "composer.json",
+      "target": "composer.json",
+      "kind": "file"
+    },
+    {
+      "source": "composer.lock",
+      "target": "composer.lock",
+      "kind": "file"
+    },
+    {
+      "source": "tools/{build-conventional-cms-bundle.php,check-php-templates.php,conventional-*.php}",
+      "target": "tools/",
+      "kind": "selected-files"
+    },
+    {
+      "source": "docs/development/{conventional-cms-*.md,conventional-host-probe.md}",
+      "target": "docs/development/",
+      "kind": "selected-files"
+    },
+    {
+      "source": "docs/development/decisions/2026-10-01-php-json-schema-validator.md",
+      "target": "docs/architecture/decisions/0002-php-json-schema-validator.md",
+      "kind": "file"
+    }
+  ],
+  "transformations": [
+    "Move reusable source and migrations beneath engine/ without changing namespaces or contracts.",
+    "Update repository-relative paths and preserve the same engine/ layout inside the installed runtime bundle.",
+    "Replace the client repository toolchain with a product-only Nix shell, package scripts, and repository gate.",
+    "Renumber and relink the schema-validator decision inside the product architecture history."
+  ],
+  "excluded": [
+    ".local and every ignored machine-local artifact",
+    "client content, media, styles, fonts, routes, configuration, and profile behavior",
+    "Cloudflare Worker, D1, R2, Access, Container, and deployment configuration",
+    "Node and Nix media-runner images belonging to the transitional Cloudflare architecture",
+    "live hostnames, database settings, credentials, tokens, and provider identifiers",
+    "the local SQLite CMS and client browser administration application",
+    "generated public artifacts and vendored dependencies"
+  ]
+}

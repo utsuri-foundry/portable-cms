@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'language_text.title' => 'Text auf {language} löschen',
+    'language_text.title_any' => 'Text einer Sprache löschen',
+    'language_text.back' => 'Zurück zu Sprachen',
+    'language_text.not_deleted' => 'Text nicht gelöscht',
+    'language_text.done' => 'Der Text auf {language} wurde aus {records, plural, one {# Eintrag} other {# Einträgen}} und {media, plural, one {# Medium} other {# Medien}} gelöscht.',
+    'language_text.history' => 'Frühere Revisionen behalten ihren Text. Er bleibt im Verlauf der Einträge und in Exporten, und das Wiederherstellen einer früheren Revision bringt ihn zurück.',
+    'language_text.running' => 'Text auf {language} wird gelöscht',
+    'language_text.progress' => '{done} von {records, plural, one {# Eintrag} other {# Einträgen}} neu gespeichert, {media, plural, one {# Medium} other {# Medien}} geleert.',
+    'language_text.continue_help' => 'Das Löschen läuft in Schritten. Fahren Sie fort, bis es abgeschlossen ist. Wurde es unterbrochen, setzt Fortfahren dort an, wo es aufgehört hat.',
+    'language_text.continue' => 'Weiter löschen',
+    'language_text.unknown' => 'Die Website hat diese Sprache nicht.',
+    'language_text.turn_off' => '{language} ist öffentlich oder in Vorbereitung. Schalten Sie die Sprache unter Sprachen aus, bevor Sie ihren Text löschen.',
+    'language_text.not_allowed' => 'Nur der Eigentümer kann den Text einer Sprache löschen.',
+    'language_text.consequences' => 'Was gelöscht wird',
+    'language_text.records' => 'Der aktuelle Text auf {language} von {records, plural, one {# Eintrag} other {# Einträgen}}. Jeder wird als neue Revision ohne diesen Text gespeichert.',
+    'language_text.media' => 'Alternativtexte, Bildunterschriften und Nachweise in dieser Sprache von {media, plural, one {# Medium} other {# Medien}}.',
+    'language_text.settings' => 'Ihre Website-Texte sowie Nachricht und Kontakt auf der Seite „Demnächst“.',
+    'language_text.backup' => 'Das lässt sich im CMS nicht rückgängig machen. Erstellen Sie zuerst einen Export.',
+    'language_text.export' => 'Zum Export',
+    'language_text.confirm_label' => 'Den Text auf {language} von {records, plural, one {# Eintrag} other {# Einträgen}} endgültig löschen',
+    'language_text.delete' => 'Text auf {language} löschen',
+    'language_text.confirm' => 'Das Löschen des Texts einer Sprache muss bestätigt werden. Setzen Sie die Bestätigung und versuchen Sie es erneut.',
+    'language_text.changed' => 'Die Zahl der Einträge mit Text in dieser Sprache hat sich geändert. Prüfen Sie die neue Zahl und bestätigen Sie erneut.',
+    'language_text.busy' => 'Ein anderes Löschen läuft noch. Schließen Sie es zuerst ab.',
+    'language_text.none' => 'Es läuft kein Löschen.',
+    'language_text.not_off' => '{language} ist nicht mehr ausgeschaltet. Schalten Sie die Sprache wieder aus, um ihren Text zu löschen.',
+    'language_text.record_invalid' => 'Ein Eintrag vom Typ {type} ({id}) besteht die Prüfungen des Profils nicht mehr, daher konnte sein Text nicht gelöscht werden. Korrigieren Sie ihn und fahren Sie fort.',
+    'languages.delete_text' => 'Text auf {language} löschen',
+    'languages.deletion_running' => 'Der Text auf {language} wird gelöscht.',
+    'languages.deletion_continue' => 'Löschen fortsetzen',
+];

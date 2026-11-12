@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'language_text.title' => 'Suprimiu el text en {language}',
+    'language_text.title_any' => 'Suprimiu el text d’una llengua',
+    'language_text.back' => 'Torna a Llengües',
+    'language_text.not_deleted' => 'No s’ha suprimit el text',
+    'language_text.done' => 'S’ha suprimit el text en {language} de {records, plural, one {# registre} other {# registres}} i {media, plural, one {# element multimèdia} other {# elements multimèdia}}.',
+    'language_text.history' => 'Les revisions anteriors conserven el text. Continua a l’historial dels registres i a les exportacions, i restaurar una revisió anterior el recupera.',
+    'language_text.running' => 'S’està suprimint el text en {language}',
+    'language_text.progress' => 'S’han reescrit {done} de {records, plural, one {# registre} other {# registres}} i s’han buidat {media, plural, one {# element multimèdia} other {# elements multimèdia}}.',
+    'language_text.continue_help' => 'La supressió es fa per lots. Continueu fins que s’acabi. Si s’ha interromput, continuar la reprèn on s’havia aturat.',
+    'language_text.continue' => 'Continua suprimint',
+    'language_text.unknown' => 'El web no té aquesta llengua.',
+    'language_text.turn_off' => '{language} és pública o està en preparació. Desactiveu-la a Llengües abans de suprimir-ne el text.',
+    'language_text.not_allowed' => 'Només el propietari pot suprimir el text d’una llengua.',
+    'language_text.consequences' => 'Què se suprimeix',
+    'language_text.records' => 'El text actual en {language} de {records, plural, one {# registre} other {# registres}}. Cadascun es desa com una revisió nova sense aquest text.',
+    'language_text.media' => 'Els textos alternatius, peus i crèdits en aquesta llengua de {media, plural, one {# element multimèdia} other {# elements multimèdia}}.',
+    'language_text.settings' => 'Els seus textos del web, i el missatge i el contacte de la pàgina Properament.',
+    'language_text.backup' => 'Això no es pot desfer al CMS. Feu primer una exportació.',
+    'language_text.export' => 'Ves a Exportació',
+    'language_text.confirm_label' => 'Suprimeix definitivament el text en {language} de {records, plural, one {# registre} other {# registres}}',
+    'language_text.delete' => 'Suprimeix el text en {language}',
+    'language_text.confirm' => 'Suprimir el text d’una llengua necessita confirmació. Marqueu la confirmació i torneu-ho a provar.',
+    'language_text.changed' => 'Ha canviat el nombre de registres amb text en aquesta llengua. Reviseu el recompte nou i torneu a confirmar.',
+    'language_text.busy' => 'Encara s’està fent una altra supressió. Acabeu-la primer.',
+    'language_text.none' => 'No s’està fent cap supressió.',
+    'language_text.not_off' => '{language} ja no està desactivada. Torneu-la a desactivar per suprimir-ne el text.',
+    'language_text.record_invalid' => 'Un {type} ({id}) ja no supera les comprovacions del perfil i no se n’ha pogut suprimir el text. Corregiu-lo i continueu.',
+    'languages.delete_text' => 'Suprimeix el text en {language}',
+    'languages.deletion_running' => 'S’està suprimint el text en {language}.',
+    'languages.deletion_continue' => 'Continua la supressió',
+];

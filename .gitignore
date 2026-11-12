@@ -1,0 +1,11 @@
+.direnv/
+.env
+.env.*
+!.env.example
+.local/
+build/
+coverage/
+dist/
+result
+vendor/
+

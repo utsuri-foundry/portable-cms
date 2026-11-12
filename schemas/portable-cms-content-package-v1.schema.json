@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://utsuri.io/schemas/portable-cms-content-package-v1.schema.json",
+  "title": "Portable CMS completed content package v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "kind", "restoreContractVersion", "engineVersion", "profile", "export", "inventory"],
+  "properties": {
+    "formatVersion": {"const": 1},
+    "kind": {"const": "portable-cms-content-package"},
+    "restoreContractVersion": {"const": 1},
+    "engineVersion": {"$ref": "#/$defs/version"},
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "version", "packageSha256"],
+      "properties": {
+        "id": {"type": "string", "maxLength": 160, "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$"},
+        "version": {"$ref": "#/$defs/version"},
+        "packageSha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "export": {
+      "type": "object", "additionalProperties": false,
+      "required": ["formatVersion", "sha256", "byteSize"],
+      "properties": {
+        "formatVersion": {"enum": [1, 2]},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "byteSize": {"type": "integer", "minimum": 2, "maximum": 33554432}
+      }
+    },
+    "inventory": {
+      "type": "object", "additionalProperties": false,
+      "required": ["files", "byteSize", "sha256"],
+      "properties": {
+        "files": {"type": "integer", "minimum": 0, "maximum": 25032},
+        "byteSize": {"type": "integer", "minimum": 0, "maximum": 8589934592},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "version": {"type": "string", "minLength": 5, "maxLength": 32, "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}
+  }
+}

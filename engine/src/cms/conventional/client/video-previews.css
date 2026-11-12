@@ -1,0 +1,33 @@
+.admin-video-player {
+	display: block;
+	max-width: 100%;
+	width: 32rem;
+	height: auto;
+	background: #111;
+}
+.admin-video-field .admin-video-player {
+	width: 24rem;
+}
+.admin-video-field [data-video-poster-preview] {
+	margin-block: 1rem;
+}
+.admin-video-thumbnail {
+	display: inline-grid;
+	place-items: center;
+	flex-shrink: 0;
+	overflow: hidden;
+	background: var(--admin-surface, #efefeb);
+}
+.admin-video-thumbnail > * {
+	grid-area: 1 / 1;
+}
+.admin-video-thumbnail img {
+	object-fit: cover;
+}
+.admin-video-thumbnail [hidden],
+.admin-video-player[hidden] {
+	display: none;
+}
+.admin-video-field .admin-picker__results small {
+	display: block;
+}

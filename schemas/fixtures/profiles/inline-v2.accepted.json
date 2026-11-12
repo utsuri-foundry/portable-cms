@@ -1,0 +1,253 @@
+{
+    "formatVersion": 2,
+    "id": "portable-gate-zero",
+    "version": "1.2.0",
+    "compatibility": {
+        "engine": {
+            "minimum": "0.1.0",
+            "maximumExclusive": "1.0.0"
+        },
+        "contracts": {
+            "record": 1,
+            "protocol": 1,
+            "snapshot": 1,
+            "artifact": 1,
+            "search": 1,
+            "export": 1,
+            "capabilities": 1
+        }
+    },
+    "locales": [
+        {
+            "id": "ca",
+            "label": "Català"
+        },
+        {
+            "id": "es",
+            "label": "Español"
+        },
+        {
+            "id": "en",
+            "label": "English"
+        }
+    ],
+    "defaultLocale": "ca",
+    "recordTypes": [
+        {
+            "id": "portfolio-entry",
+            "label": "Portfolio entries",
+            "singularLabel": "Portfolio entry",
+            "archetype": "portfolio_entry",
+            "renderer": "portfolio-entry",
+            "routePrefix": "portfolio",
+            "fields": [
+                {
+                    "id": "title",
+                    "label": "Title",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                        "maximumLength": 160
+                    }
+                },
+                {
+                    "id": "summary",
+                    "label": "Summary",
+                    "type": "multiline_text",
+                    "localized": false,
+                    "requiredOnDraft": false,
+                    "requiredOnPublish": false,
+                    "settings": {
+                        "maximumLength": 2000
+                    }
+                },
+                {
+                    "id": "topics",
+                    "label": "Topics",
+                    "type": "taxonomy_references",
+                    "localized": false,
+                    "requiredOnDraft": false,
+                    "requiredOnPublish": false,
+                    "settings": {
+                        "targetType": "topic",
+                        "maximumItems": 8
+                    }
+                }
+            ]
+        },
+        {
+            "id": "article",
+            "label": "Articles",
+            "singularLabel": "Article",
+            "archetype": "article",
+            "renderer": "article",
+            "routePrefix": "articles",
+            "fields": [
+                {
+                    "id": "title",
+                    "label": "Title",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                        "maximumLength": 160
+                    }
+                },
+                {
+                    "id": "body",
+                    "label": "Body",
+                    "type": "multiline_text",
+                    "localized": false,
+                    "requiredOnDraft": false,
+                    "requiredOnPublish": false,
+                    "settings": {
+                        "maximumLength": 20000
+                    }
+                },
+                {
+                    "id": "featuredEntry",
+                    "label": "Featured portfolio entry",
+                    "type": "record_reference",
+                    "localized": false,
+                    "requiredOnDraft": false,
+                    "requiredOnPublish": false,
+                    "settings": {
+                        "targetType": "portfolio-entry"
+                    }
+                },
+                {
+                    "id": "topics",
+                    "label": "Topics",
+                    "type": "taxonomy_references",
+                    "localized": false,
+                    "requiredOnDraft": false,
+                    "requiredOnPublish": false,
+                    "settings": {
+                        "targetType": "topic",
+                        "maximumItems": 8
+                    }
+                }
+            ]
+        }
+    ],
+    "singletons": [
+        {
+            "id": "group-page",
+            "label": "Group page",
+            "singularLabel": "Group page",
+            "archetype": "page",
+            "renderer": "group-page",
+            "routePath": "/groups/",
+            "fields": [
+                {
+                    "id": "title",
+                    "label": "Title",
+                    "type": "short_text",
+                    "localized": false,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                        "maximumLength": 160
+                    }
+                }
+            ]
+        }
+    ],
+    "taxonomyNamespaces": [
+        {
+            "id": "topic",
+            "label": "Topics",
+            "singularLabel": "Topic",
+            "archetype": "taxonomy_term",
+            "renderer": "topic",
+            "fields": [
+                {
+                    "id": "label",
+                    "label": "Label",
+                    "type": "short_text",
+                    "localized": true,
+                    "requiredOnDraft": true,
+                    "requiredOnPublish": true,
+                    "settings": {
+                        "maximumLength": 100
+                    }
+                }
+            ]
+        }
+    ],
+    "navigation": [
+        {
+            "id": "portfolio",
+            "label": "Portfolio entries",
+            "targetKind": "collection",
+            "targetId": "portfolio-entry",
+            "position": 10
+        },
+        {
+            "id": "articles",
+            "label": "Articles",
+            "targetKind": "collection",
+            "targetId": "article",
+            "position": 20
+        },
+        {
+            "id": "topics",
+            "label": "Topics",
+            "targetKind": "taxonomy",
+            "targetId": "topic",
+            "position": 30
+        },
+        {
+            "id": "previews",
+            "label": "Previews",
+            "targetKind": "system",
+            "targetId": "previews",
+            "position": 40
+        },
+        {
+            "id": "exports",
+            "label": "Exports",
+            "targetKind": "system",
+            "targetId": "exports",
+            "position": 50
+        }
+    ],
+    "renderers": [
+        {
+            "id": "portfolio-entry",
+            "kind": "record",
+            "entrypoint": "renderers/portfolio-entry.php"
+        },
+        {
+            "id": "article",
+            "kind": "record",
+            "entrypoint": "renderers/article.php"
+        },
+        {
+            "id": "topic",
+            "kind": "taxonomy",
+            "entrypoint": "renderers/topic.php"
+        },
+        {
+            "id": "group-page",
+            "kind": "singleton",
+            "entrypoint": "renderers/group-page.php"
+        }
+    ],
+    "assets": [],
+    "capabilities": {
+        "required": [
+            "raster_images",
+            "scheduled_jobs"
+        ],
+        "optional": []
+    },
+    "privacy": {
+        "publicInteractions": false,
+        "analytics": "none",
+        "personalData": "editorial_accounts"
+    }
+}

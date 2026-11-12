@@ -1,0 +1,17 @@
+{
+  "expiresAt": "replace-with-an-RFC3339-time-within-the-next-24-hours",
+  "tokenHash": "$2y$12$replace-with-password-hash-of-a-random-short-lived-token",
+  "videoUploads": null,
+  "outboundHttpsUrl": "https://replace-with-operator-controlled-health-endpoint.example/",
+  "paths": {
+    "privateStorage": "/absolute/private/cms",
+    "publication": "/absolute/public_html",
+    "scratch": "/absolute/private/cms/scratch",
+    "cronHeartbeat": "/absolute/private/cms/cron-heartbeat"
+  },
+  "database": {
+    "dsn": "mysql:host=localhost;port=3306;dbname=replace;charset=utf8mb4",
+    "username": "replace",
+    "password": "replace"
+  }
+}

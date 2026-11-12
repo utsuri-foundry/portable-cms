@@ -1,0 +1,26 @@
+{
+  "formatVersion": 1,
+  "lighthouse": {
+    "formFactor": "mobile",
+    "runs": 3,
+    "categories": {
+      "accessibility": 1,
+      "best-practices": 1,
+      "seo": 1,
+      "performance": 0.95
+    },
+    "metrics": {
+      "first-contentful-paint": 1800,
+      "largest-contentful-paint": 2500,
+      "cumulative-layout-shift": 0.05,
+      "total-blocking-time": 200,
+      "total-byte-weight": 1600000
+    }
+  },
+  "html": {
+    "maximumValidatorErrors": 0
+  },
+  "noScript": {
+    "minimumTextRatio": 0.9
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "releaseId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "snapshotId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "createdAt": "2026-10-02T12:01:00Z",
+  "profile": { "id": "reference-studio", "version": "1.0.0", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+  "compiler": { "id": "portable-cms-compiler", "version": "0.1.0", "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
+  "searchFormatVersion": 1,
+  "files": [{ "path": "../cms.json", "mime": "application/json", "byteSize": 64, "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "cachePolicy": "no_store" }],
+  "redirects": [],
+  "publicMedia": []
+}

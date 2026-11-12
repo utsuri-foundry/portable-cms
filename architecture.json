@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "sourceRoots": ["engine", "profiles", "tools", "tests"],
+  "sourceExtensions": ["php", "js", "mjs", "sh"],
+  "ignoredDirectories": [
+    ".git",
+    ".direnv",
+    ".local",
+    "build",
+    "coverage",
+    "dist",
+    "result",
+    "target",
+    "vendor"
+  ],
+  "layers": [
+    {
+      "name": "runtime",
+      "paths": ["engine/src/cms/conventional"],
+      "mayDependOn": [],
+      "namespacePrefixes": ["Utsuri\\PortableCms\\Conventional\\"]
+    },
+    {
+      "name": "browser",
+      "paths": [
+        "engine/src/browser",
+        "engine/src/cms/conventional/client"
+      ],
+      "mayDependOn": [],
+      "namespacePrefixes": []
+    },
+    {
+      "name": "profiles",
+      "paths": ["profiles"],
+      "mayDependOn": ["runtime", "browser"],
+      "namespacePrefixes": ["Utsuri\\PortableCms\\Profile\\"]
+    },
+    {
+      "name": "operator-tools",
+      "paths": ["tools"],
+      "mayDependOn": ["runtime"],
+      "namespacePrefixes": [
+        "Utsuri\\PortableCms\\ArchitectureGate\\",
+        "Utsuri\\PortableCms\\QualityGate\\",
+        "Utsuri\\PortableCms\\ReleaseGate\\"
+      ]
+    },
+    {
+      "name": "tests",
+      "paths": ["tests"],
+      "mayDependOn": ["runtime", "browser", "profiles", "operator-tools"],
+      "namespacePrefixes": []
+    }
+  ],
+  "sourceBudgets": {
+    "production": {
+      "warning": 750,
+      "maximum": 1200
+    },
+    "facade": {
+      "warning": 250,
+      "maximum": 400
+    },
+    "test": {
+      "warning": 1000,
+      "maximum": 1800
+    }
+  },
+  "classification": {
+    "testPathPrefixes": ["tests"],
+    "facadeFiles": [
+      "engine/src/cms/conventional/bootstrap.php",
+      "tools/check-repository.sh"
+    ],
+    "facadeDirectories": ["tools"]
+  },
+  "forbiddenModuleNames": [
+    "common",
+    "helper",
+    "helpers",
+    "misc",
+    "utilities",
+    "utility",
+    "utils"
+  ],
+  "requiredDocuments": [
+    "AGENTS.md",
+    "README.md",
+    "PROVENANCE.md",
+    "quality-exceptions.json",
+    "docs/README.md",
+    "docs/architecture/README.md",
+    "docs/architecture/decisions/0001-product-first-reference-profile.md",
+    "docs/architecture/decisions/0002-php-json-schema-validator.md",
+    "docs/architecture/decisions/0003-repository-architecture-gate.md",
+    "docs/architecture/decisions/0004-development-quality-toolchain.md",
+    "docs/architecture/product-contracts.md",
+    "docs/development/dependencies.md",
+    "docs/development/implementation-quality-policy.md",
+    "docs/development/javascript-standard.md",
+    "docs/development/php-standard.md",
+    "docs/development/review-checklist.md",
+    "docs/development/repository-architecture-policy.md",
+    "docs/development/repository-layout.md",
+    "docs/development/security-and-privacy.md",
+    "docs/development/testing.md",
+    "engine/README.md",
+    "profiles/reference-studio/README.md",
+    "profiles/reference-studio/PROVENANCE.md",
+    "profiles/reference-studio/design-benchmark.md",
+    "schemas/README.md",
+    "tasks/README.md",
+    "tests/README.md",
+    "tools/README.md"
+  ]
+}

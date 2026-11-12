@@ -1,0 +1,237 @@
+{
+  "reload-readiness": {
+    "files": [
+      "reload-readiness-journey.mjs"
+    ],
+    "env": {}
+  },
+  "editor-start": {
+    "files": [
+      "editor-start-journey.mjs"
+    ],
+    "env": {}
+  },
+  "record-keeping": {
+    "files": [
+      "record-keeping-journey.mjs"
+    ],
+    "env": {}
+  },
+  "editor-exact-preview": {
+    "files": [
+      "editor-exact-preview-journey.mjs"
+    ],
+    "env": {}
+  },
+  "published-record": {
+    "files": [
+      "published-record-journey.mjs"
+    ],
+    "env": {}
+  },
+  "vimeo": {
+    "files": [
+      "vimeo-journey.mjs"
+    ],
+    "env": {
+      "CMS_TEST_VIMEO_ONLY": "1"
+    }
+  },
+  "single-line-rich-text": {
+    "files": [
+      "single-line-rich-text-journey.mjs"
+    ],
+    "env": {
+      "CMS_TEST_SINGLE_LINE_RICH_ONLY": "1"
+    }
+  },
+  "video-field-limits": {
+    "files": [
+      "video-field-limits-journey.mjs"
+    ],
+    "env": {
+      "CMS_TEST_VIDEO_LIMITS_ONLY": "1"
+    }
+  },
+  "blocks-editor": {
+    "files": [
+      "blocks-editor-journey.mjs"
+    ],
+    "env": {}
+  },
+  "installation-brand": {
+    "files": [
+      "installation-brand-journey.mjs"
+    ],
+    "env": {}
+  },
+  "administration-logo": {
+    "files": [
+      "administration-logo-journey.mjs"
+    ],
+    "env": {}
+  },
+  "holding-page": {
+    "files": [
+      "holding-page-journey.mjs"
+    ],
+    "env": {}
+  },
+  "media-descriptions": {
+    "files": [
+      "media-descriptions-journey.mjs"
+    ],
+    "env": {}
+  },
+  "release-schedule": {
+    "files": [
+      "release-schedule-journey.mjs"
+    ],
+    "env": {}
+  },
+  "focal-point": {
+    "files": [
+      "focal-point-journey.mjs"
+    ],
+    "env": {}
+  },
+  "edited-field-upload": {
+    "files": [
+      "edited-field-upload-journey.mjs"
+    ],
+    "env": {}
+  },
+  "composition": {
+    "files": [
+      "composition-journey.mjs"
+    ],
+    "env": {}
+  },
+  "live-preview": {
+    "files": [
+      "live-preview-journey.mjs"
+    ],
+    "env": {}
+  },
+  "design-registry": {
+    "files": [
+      "design-registry-journey.mjs"
+    ],
+    "env": {}
+  },
+  "video": {
+    "files": [
+      "video-journey.mjs"
+    ],
+    "env": {}
+  },
+  "search-sharing": {
+    "files": [
+      "search-sharing-journey.mjs"
+    ],
+    "env": {}
+  },
+  "preview": {
+    "files": [
+      "preview-journey.mjs"
+    ],
+    "env": {}
+  },
+  "preview-cleanup": {
+    "files": [
+      "preview-cleanup-journey.mjs"
+    ],
+    "env": {}
+  },
+  "structured-data": {
+    "files": [
+      "structured-data-journey.mjs"
+    ],
+    "env": {}
+  },
+  "editorial": {
+    "files": [
+      "editorial-journey.mjs"
+    ],
+    "env": {}
+  },
+  "editorial-controls": {
+    "files": [
+      "editorial-controls-journey.mjs"
+    ],
+    "env": {}
+  },
+  "media-text": {
+    "files": [
+      "media-text-journey.mjs"
+    ],
+    "env": {}
+  },
+  "web-address": {
+    "files": [
+      "web-address-journey.mjs"
+    ],
+    "env": {}
+  },
+  "site-languages": {
+    "files": [
+      "site-languages-journey.mjs"
+    ],
+    "env": {}
+  },
+  "site-wording": {
+    "files": [
+      "site-wording-journey.mjs"
+    ],
+    "env": {}
+  },
+  "added-languages": {
+    "files": [
+      "added-languages-journey.mjs"
+    ],
+    "env": {}
+  },
+  "mixed-reference": {
+    "files": [
+      "mixed-reference-journey.mjs"
+    ],
+    "env": {}
+  },
+  "interface-language": {
+    "files": [
+      "interface-language-journey.mjs"
+    ],
+    "env": {}
+  },
+  "ai-assistance": {
+    "files": [
+      "ai-assistance-journey.mjs"
+    ],
+    "env": {}
+  },
+  "editorial-smoke": {
+    "files": [
+      "reload-readiness-journey.mjs",
+      "editorial-journey.mjs",
+      "editorial-controls-journey.mjs",
+      "edited-field-upload-journey.mjs"
+    ],
+    "env": {}
+  },
+  "record-workflow": {
+    "files": [
+      "record-workflow-journey.mjs"
+    ],
+    "harness": "tests/browser/run-record-workflow-journey.sh",
+    "env": {}
+  },
+  "account": {
+    "files": [
+      "account-journey.mjs"
+    ],
+    "harness": "tests/browser/run-record-workflow-journey.sh",
+    "env": {
+      "CMS_TEST_ACCOUNTS_ONLY": "1"
+    }
+  }
+}

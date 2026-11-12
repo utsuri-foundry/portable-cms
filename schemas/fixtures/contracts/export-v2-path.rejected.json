@@ -1,0 +1,13 @@
+{
+  "formatVersion": 2,
+  "metadata": {
+    "formatVersion": 1,
+    "exportId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "createdAt": "2026-10-19T12:00:00Z",
+    "profile": {"id": "example", "version": "1.0.0", "locales": ["en"]}
+  },
+  "collections": {
+    "records": [{"sha256": "../../private", "byteSize": 3, "rowCount": 1}],
+    "revisions": [], "relationships": [], "media": []
+  }
+}

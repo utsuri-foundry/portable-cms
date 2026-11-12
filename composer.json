@@ -1,0 +1,24 @@
+{
+  "name": "utsuri-foundry/portable-cms",
+  "description": "Portable CMS conventional-host runtime",
+  "type": "project",
+  "license": "Apache-2.0",
+  "require": {
+    "php": "^8.2",
+    "ext-iconv": "*",
+    "ext-intl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "opis/json-schema": "^2.6"
+  },
+  "config": {
+    "allow-plugins": false,
+    "classmap-authoritative": true,
+    "discard-changes": true,
+    "optimize-autoloader": true,
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true
+  }
+}

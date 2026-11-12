@@ -1,0 +1,15 @@
+{
+  "formatVersion": 1,
+  "profileId": "reference-studio",
+  "languages": {
+    "de": {
+      "types": { "project": { "label": "Projekte", "singularLabel": "Projekt" } },
+      "fields": { "project.title": "Titel", "project.credits.role": "Rolle" },
+      "options": { "project.status.complete": "Abgeschlossen" },
+      "navigation": { "projects": "Projekte" }
+    },
+    "ca": {
+      "fields": { "project.title": "Títol" }
+    }
+  }
+}

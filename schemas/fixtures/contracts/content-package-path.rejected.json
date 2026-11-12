@@ -1,0 +1,9 @@
+{
+  "formatVersion": 1,
+  "kind": "portable-cms-content-package",
+  "restoreContractVersion": 1,
+  "engineVersion": "0.1.0",
+  "profile": {"id": "reference-studio", "version": "1.0.0", "packageSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "phpPath": "../../outside/build.php"},
+  "export": {"formatVersion": 2, "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "byteSize": 1000},
+  "inventory": {"files": 0, "byteSize": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+}

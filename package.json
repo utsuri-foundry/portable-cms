@@ -1,0 +1,20 @@
+{
+  "name": "portable-cms",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tools/check-repository.sh",
+    "check:fast": "tools/check-fast.sh",
+    "check:architecture": "php tools/check-architecture.php && php tests/php/architecture-gate-test.php",
+    "check:javascript": "biome check engine/src/browser engine/src/cms/conventional/client tests/unit",
+    "check:php": "php tools/check-quality-policy.php && php tests/php/quality-policy-test.php && php-cs-fixer check --config=tools/quality/php-cs-fixer.php --diff && phpstan analyse --configuration=phpstan.neon.dist --no-progress --memory-limit=1G",
+    "format": "biome check --write engine/src/browser engine/src/cms/conventional/client tests/unit && php-cs-fixer fix --config=tools/quality/php-cs-fixer.php",
+    "test": "node --test tests/unit/*.test.js && php tests/php/run.php",
+    "test:browser": "node --test tests/unit/*.test.js",
+    "test:php": "php tests/php/run.php",
+    "test:php:mariadb": "sh tests/php/run-mariadb-integration.sh"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "formatVersion": 1,
+  "releaseId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "snapshotId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "createdAt": "2026-10-02T12:01:00Z",
+  "profile": {
+    "id": "reference-studio",
+    "version": "1.0.0",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "compiler": {
+    "id": "portable-cms-compiler",
+    "version": "0.1.0",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "searchFormatVersion": 1,
+  "files": [
+    {
+      "path": "ca/index.html",
+      "mime": "text/html; charset=utf-8",
+      "byteSize": 4096,
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "cachePolicy": "route"
+    },
+    {
+      "path": "assets/site.abc123.css",
+      "mime": "text/css; charset=utf-8",
+      "byteSize": 1024,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "cachePolicy": "immutable"
+    }
+  ],
+  "redirects": [
+    {
+      "from": "/ca/old-project/",
+      "to": "/ca/projects/casa-pati/",
+      "status": 308
+    }
+  ],
+  "publicMedia": [
+    {
+      "mediaId": "77777777777777777777777777777777",
+      "variant": "display_1600_webp",
+      "path": "media/77777777777777777777777777777777-display.webp",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+  ],
+  "includeDrafts": "true"
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/search-sharing-v3.schema.json",
+  "title": "Portable CMS search and sharing overrides v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "overrides"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 3
+    },
+    "overrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "searchTitle": {
+          "$ref": "#/$defs/title"
+        },
+        "description": {
+          "$ref": "#/$defs/description"
+        },
+        "sharingTitle": {
+          "$ref": "#/$defs/title"
+        },
+        "sharingDescription": {
+          "$ref": "#/$defs/description"
+        },
+        "excludeFromSearch": {
+          "type": "boolean"
+        },
+        "sharingImage": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "title": {
+      "type": "string",
+      "maxLength": 240,
+      "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]*$"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500,
+      "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]*$"
+    }
+  }
+}

@@ -1,0 +1,179 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://schemas.utsuri.io/portable-cms/feed-activation-v1.schema.json",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "formatVersion",
+        "releaseId",
+        "sequence",
+        "activatedAt",
+        "snapshotId",
+        "replacedSnapshotId",
+        "rollback",
+        "changes"
+    ],
+    "properties": {
+        "formatVersion": {
+            "const": 1
+        },
+        "releaseId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+        },
+        "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+        },
+        "activatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 40
+        },
+        "snapshotId": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "replacedSnapshotId": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "rollback": {
+            "type": "boolean"
+        },
+        "changes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "added",
+                "changed",
+                "removed"
+            ],
+            "properties": {
+                "added": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 51200,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "typeId",
+                            "locale",
+                            "id",
+                            "revisionNumber"
+                        ],
+                        "properties": {
+                            "typeId": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$",
+                                "maxLength": 160
+                            },
+                            "locale": {
+                                "type": "string",
+                                "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$",
+                                "maxLength": 7
+                            },
+                            "id": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{32}$"
+                            },
+                            "revisionNumber": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 4294967294
+                            }
+                        }
+                    }
+                },
+                "changed": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 51200,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "typeId",
+                            "locale",
+                            "id",
+                            "revisionNumber"
+                        ],
+                        "properties": {
+                            "typeId": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$",
+                                "maxLength": 160
+                            },
+                            "locale": {
+                                "type": "string",
+                                "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$",
+                                "maxLength": 7
+                            },
+                            "id": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{32}$"
+                            },
+                            "revisionNumber": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 4294967294
+                            }
+                        }
+                    }
+                },
+                "removed": {
+                    "type": "array",
+                    "minItems": 0,
+                    "maxItems": 51200,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "typeId",
+                            "locale",
+                            "id",
+                            "revisionNumber"
+                        ],
+                        "properties": {
+                            "typeId": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$",
+                                "maxLength": 160
+                            },
+                            "locale": {
+                                "type": "string",
+                                "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$",
+                                "maxLength": 7
+                            },
+                            "id": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{32}$"
+                            },
+                            "revisionNumber": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 4294967294
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

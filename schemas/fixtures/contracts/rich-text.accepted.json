@@ -1,0 +1,9 @@
+{
+  "formatVersion": 1,
+  "nodes": [
+    {"type": "heading_2", "children": [{"text": "Café 👋", "marks": ["bold", "italic"]}]},
+    {"type": "paragraph", "children": [{"text": "Escaped <text>", "marks": ["underline", {"type": "link", "href": "https://example.invalid/?a=1&b=2"}]}]},
+    {"type": "bullet_list", "children": [{"type": "list_item", "children": [{"text": "One", "marks": []}]}, {"type": "list_item", "children": [{"text": "Two", "marks": []}]}]},
+    {"type": "ordered_list", "children": [{"type": "list_item", "children": [{"text": "Three", "marks": []}]}]}
+  ]
+}

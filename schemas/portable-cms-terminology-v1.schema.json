@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/terminology-v1.schema.json",
+  "title": "Installation CMS terminology v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "profileId", "revision", "labels"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "profileId": { "$ref": "#/$defs/id" },
+    "revision": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "labels": {
+      "type": "array", "maxItems": 96,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["typeId", "singular", "plural"],
+        "properties": {
+          "typeId": { "$ref": "#/$defs/id" },
+          "singular": { "$ref": "#/$defs/label" },
+          "plural": { "$ref": "#/$defs/label" },
+          "languages": { "$ref": "#/$defs/languages" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "maxLength": 160, "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$" },
+    "label": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^(?=.*\\S)[^\\x00-\\x1f\\x7f]+$" },
+    "names": {
+      "type": "object", "additionalProperties": false,
+      "required": ["singular", "plural"],
+      "properties": { "singular": { "$ref": "#/$defs/label" }, "plural": { "$ref": "#/$defs/label" } }
+    },
+    "languages": {
+      "type": "object", "additionalProperties": false, "minProperties": 1,
+      "properties": {
+        "ca": { "$ref": "#/$defs/names" }, "es": { "$ref": "#/$defs/names" }, "en": { "$ref": "#/$defs/names" },
+        "fr": { "$ref": "#/$defs/names" }, "de": { "$ref": "#/$defs/names" }
+      }
+    }
+  }
+}

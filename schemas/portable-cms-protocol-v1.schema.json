@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/protocol-v1.schema.json",
+  "title": "Portable CMS bounded JSON protocol v1",
+  "oneOf": [
+    { "$ref": "#/$defs/error" },
+    { "$ref": "#/$defs/validation" },
+    { "$ref": "#/$defs/conflict" },
+    { "$ref": "#/$defs/page" },
+    { "$ref": "#/$defs/mutationReceipt" },
+    { "$ref": "#/$defs/jobStatus" }
+  ],
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "canonicalId": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$"
+    },
+    "fieldPath": {
+      "type": "string",
+      "maxLength": 240,
+      "pattern": "^/(?:[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*)?$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "code", "message"],
+      "properties": {
+        "path": { "$ref": "#/$defs/fieldPath" },
+        "code": { "$ref": "#/$defs/canonicalId" },
+        "message": { "type": "string", "minLength": 1, "maxLength": 240 }
+      }
+    },
+    "envelope": {
+      "type": "object",
+      "required": ["formatVersion", "kind", "requestId", "payload"],
+      "properties": {
+        "formatVersion": { "const": 1 },
+        "kind": { "type": "string" },
+        "requestId": { "$ref": "#/$defs/id" },
+        "payload": { "type": "object" }
+      }
+    },
+    "error": {
+      "allOf": [
+        { "$ref": "#/$defs/envelope" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formatVersion": { "const": 1 },
+            "kind": { "const": "error" },
+            "requestId": { "$ref": "#/$defs/id" },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "message", "retryable", "correlationId"],
+              "properties": {
+                "code": { "$ref": "#/$defs/canonicalId" },
+                "message": { "type": "string", "minLength": 1, "maxLength": 240 },
+                "retryable": { "type": "boolean" },
+                "correlationId": { "$ref": "#/$defs/id" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "validation": {
+      "allOf": [
+        { "$ref": "#/$defs/envelope" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formatVersion": { "const": 1 },
+            "kind": { "const": "validation_error" },
+            "requestId": { "$ref": "#/$defs/id" },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["recordId", "submittedRevision", "values", "issues"],
+              "properties": {
+                "recordId": { "anyOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] },
+                "submittedRevision": { "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }] },
+                "values": { "type": "object", "maxProperties": 64 },
+                "issues": { "type": "array", "minItems": 1, "maxItems": 64, "items": { "$ref": "#/$defs/issue" } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "conflict": {
+      "allOf": [
+        { "$ref": "#/$defs/envelope" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formatVersion": { "const": 1 },
+            "kind": { "const": "revision_conflict" },
+            "requestId": { "$ref": "#/$defs/id" },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["recordId", "submittedRevision", "currentRevision", "submittedValues", "currentValues"],
+              "properties": {
+                "recordId": { "$ref": "#/$defs/id" },
+                "submittedRevision": { "type": "integer", "minimum": 1 },
+                "currentRevision": { "type": "integer", "minimum": 1 },
+                "submittedValues": { "type": "object", "maxProperties": 64 },
+                "currentValues": { "type": "object", "maxProperties": 64 }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "page": {
+      "allOf": [
+        { "$ref": "#/$defs/envelope" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formatVersion": { "const": 1 },
+            "kind": { "const": "page" },
+            "requestId": { "$ref": "#/$defs/id" },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["items", "limit", "nextCursor"],
+              "properties": {
+                "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/$defs/id" } },
+                "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+                "nextCursor": {
+                  "anyOf": [
+                    { "type": "string", "minLength": 16, "maxLength": 256, "pattern": "^[A-Za-z0-9_-]+$" },
+                    { "type": "null" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "mutationReceipt": {
+      "allOf": [
+        { "$ref": "#/$defs/envelope" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formatVersion": { "const": 1 },
+            "kind": { "const": "mutation_receipt" },
+            "requestId": { "$ref": "#/$defs/id" },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["idempotencyKey", "resourceId", "revision", "status"],
+              "properties": {
+                "idempotencyKey": { "type": "string", "minLength": 16, "maxLength": 160, "pattern": "^[A-Za-z0-9_-]+$" },
+                "resourceId": { "$ref": "#/$defs/id" },
+                "revision": { "type": "integer", "minimum": 1 },
+                "status": { "enum": ["created", "updated", "replayed"] }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "jobStatus": {
+      "allOf": [
+        { "$ref": "#/$defs/envelope" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "formatVersion": { "const": 1 },
+            "kind": { "const": "job_status" },
+            "requestId": { "$ref": "#/$defs/id" },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["jobId", "status", "updatedAt", "errorCode"],
+              "properties": {
+                "jobId": { "$ref": "#/$defs/id" },
+                "status": { "enum": ["queued", "running", "completed", "needs_attention", "cancelled"] },
+                "updatedAt": { "$ref": "#/$defs/timestamp" },
+                "errorCode": { "anyOf": [{ "$ref": "#/$defs/canonicalId" }, { "type": "null" }] }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

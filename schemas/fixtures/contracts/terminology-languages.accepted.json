@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "profileId": "reference-studio",
+  "revision": 3,
+  "labels": [
+    {
+      "typeId": "project",
+      "singular": "Work",
+      "plural": "Works",
+      "languages": {
+        "ca": { "singular": "Obra", "plural": "Obres" },
+        "de": { "singular": "Werk", "plural": "Werke" }
+      }
+    }
+  ]
+}

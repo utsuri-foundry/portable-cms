@@ -1,0 +1,41 @@
+{
+  "formatVersion": 2,
+  "profileId": "reference-studio",
+  "revision": 0,
+  "fonts": [{
+    "id": "reading",
+    "label": "Reading family",
+    "faces": [{
+      "id": "regular",
+      "label": "Regular",
+      "style": "normal",
+      "weightMin": 400,
+      "weightMax": 400,
+      "origin": "package",
+      "sha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+      "sourceSha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+      "byteSize": 45972,
+      "provenance": "Studio Serif; renamed Latin subset of Adobe Source Serif 4, 4.005R.",
+      "license": "SIL Open Font License 1.1; retained in the verified profile package."
+    }, {
+      "id": "italic",
+      "label": "Italic",
+      "style": "italic",
+      "weightMin": 400,
+      "weightMax": 400,
+      "origin": "package",
+      "sha256": "b72cc296b5f6eb2c36e1dc875e10f9254548c957a4684bedba524628c0602f9a",
+      "sourceSha256": "f8062257f4693e438a8e317c9fe2b4393f0d4eed84d897edcbfd733c30a1c1a1",
+      "byteSize": 36076,
+      "provenance": "Studio Serif Italic; renamed Latin subset of Adobe Source Serif 4, 4.005R.",
+      "license": "SIL Open Font License 1.1; retained in the verified profile package."
+    }]
+  }],
+  "responsive": [],
+  "typography": [{
+    "id": "body", "label": "Reading text", "fontId": "reading", "fallback": "serif",
+    "weight": 400, "lineHeight": 1.5,
+    "size": {"min": 16, "max": 24, "from": 360, "to": 1280}, "overrides": []
+  }],
+  "spacing": []
+}

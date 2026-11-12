@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/published-slugs-v1.schema.json",
+  "title": "Portable CMS verified publication slug history v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "profileId",
+    "releaseId",
+    "artifactSha256",
+    "activatedAt",
+    "verificationId",
+    "publicUrlContext",
+    "routes",
+    "previousPaths"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "profileId": {
+      "type": "string",
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$"
+    },
+    "releaseId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "artifactSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "activatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 32
+    },
+    "verificationId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "publicUrlContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "formatVersion",
+        "baseUrl"
+      ],
+      "properties": {
+        "formatVersion": {
+          "const": 1
+        },
+        "baseUrl": {
+          "type": "string",
+          "minLength": 9,
+          "maxLength": 1000,
+          "pattern": "^https://[^\\s]+$"
+        }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "locale",
+          "translationGroup"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^/(?:[A-Za-z0-9._~-]+/)*$"
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+          },
+          "translationGroup": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9:_-]{0,159}$"
+          }
+        }
+      }
+    },
+    "previousPaths": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "locale",
+          "translationGroup"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^/(?:[A-Za-z0-9._~-]+/)*$"
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"
+          },
+          "translationGroup": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9:_-]{0,159}$"
+          }
+        }
+      }
+    }
+  }
+}

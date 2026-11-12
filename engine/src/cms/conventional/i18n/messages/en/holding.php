@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'holding.status.queued' => 'Queued',
+    'holding.status.building' => 'Building',
+    'holding.status.ready' => 'Ready',
+    'holding.status.needs_attention' => 'Needs attention',
+    'holding.settings' => 'Website settings',
+    'holding.settings_help' => 'Choose what the next approved publication will show. Saving does not change the public website. Exact previews always show the real website.',
+    'holding.conflict' => 'Website settings changed',
+    'holding.invalid' => 'Check website settings',
+    'holding.preserved' => 'Your input is preserved below.',
+    'holding.current_values' => 'Current saved mode: {mode}. Website name: {name}.',
+    'holding.name' => 'Website name',
+    'holding.mode' => 'Publication mode',
+    'holding.mode.coming_soon' => 'Coming soon',
+    'holding.mode.live' => 'Live website',
+    'holding.standard' => 'Standard publication can briefly show a mixture of approved versions while applying or recovering. Atomic delivery is not enabled.',
+    'holding.icon' => 'Website icon (optional)',
+    'holding.icon_help' => 'Choose a ready square image of at least 512 pixels. The engine prepares safe icon files.',
+    'holding.icon_id' => 'Icon media ID',
+    'holding.message' => 'Short message',
+    'holding.contact' => 'Contact details (optional, plain text)',
+    'holding.confirm' => 'I understand that publishing Coming soon will replace the public website and remove its existing pages.',
+    'holding.confirm_help' => 'Required when returning from Live to Coming soon. Saving settings alone does not publish anything.',
+    'holding.save' => 'Save settings',
+    'holding.releases' => 'Website releases',
+    'holding.build' => 'Build Coming soon',
+    'holding.build_help' => 'Freeze these settings into a private publication build. No website content is needed; Cron processes the build.',
+    'holding.inspect_help' => 'Review the saved website settings before approving. This build is separate from exact website previews.',
+    'holding.publish_confirm' => 'I approve replacing all public website pages with the Coming soon page. Standard publication can temporarily show mixed approved versions.',
+    'holding.builds' => 'Coming soon builds',
+    'holding.delete' => 'Delete unused build',
+];

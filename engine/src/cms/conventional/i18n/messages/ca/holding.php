@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'holding.status.queued' => 'En cua',
+    'holding.status.building' => 'Generant',
+    'holding.status.ready' => 'Preparat',
+    'holding.status.needs_attention' => 'Cal revisar',
+    'holding.settings' => 'Configuració del web',
+    'holding.settings_help' => 'Tria què mostrarà la propera publicació aprovada. Desar no canvia el web públic. Les previsualitzacions exactes sempre mostren el web real.',
+    'holding.conflict' => 'La configuració del web ha canviat',
+    'holding.invalid' => 'Revisa la configuració del web',
+    'holding.preserved' => 'Les teves dades es conserven a continuació.',
+    'holding.current_values' => 'Mode desat actual: {mode}. Nom del web: {name}.',
+    'holding.name' => 'Nom del web',
+    'holding.mode' => 'Mode de publicació',
+    'holding.mode.coming_soon' => 'Properament',
+    'holding.mode.live' => 'Web complet',
+    'holding.standard' => 'La publicació estàndard pot mostrar breument una barreja de versions aprovades durant l’aplicació o recuperació. La publicació atòmica no està activada.',
+    'holding.icon' => 'Icona del web (opcional)',
+    'holding.icon_help' => 'Tria una imatge quadrada preparada de com a mínim 512 píxels. El sistema genera icones segures.',
+    'holding.icon_id' => 'ID del mitjà per a la icona',
+    'holding.message' => 'Missatge breu',
+    'holding.contact' => 'Dades de contacte (opcional, text pla)',
+    'holding.confirm' => 'Entenc que publicar Properament substituirà el web públic i eliminarà les seves pàgines actuals.',
+    'holding.confirm_help' => 'Cal confirmar-ho per tornar de Web complet a Properament. Desar la configuració no publica res.',
+    'holding.save' => 'Desa la configuració',
+    'holding.releases' => 'Publicacions del web',
+    'holding.build' => 'Genera Properament',
+    'holding.build_help' => 'Congela aquesta configuració en una compilació privada per publicar. No cal contingut del web; Cron processa la compilació.',
+    'holding.inspect_help' => 'Revisa la configuració desada abans d’aprovar-la. Aquesta compilació és independent de les previsualitzacions exactes del web.',
+    'holding.publish_confirm' => 'Aprovo substituir totes les pàgines públiques pel web Properament. La publicació estàndard pot mostrar temporalment una barreja de versions aprovades.',
+    'holding.builds' => 'Compilacions de Properament',
+    'holding.delete' => 'Elimina una compilació sense ús',
+];

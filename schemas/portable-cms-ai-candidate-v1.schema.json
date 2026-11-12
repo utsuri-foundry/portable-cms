@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portable-cms.utsuri.dev/schemas/ai-candidate-v1",
+  "title": "Portable CMS AI editorial candidate v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "suggestions"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "suggestions": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 10,
+      "propertyNames": { "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "caption", "alt", "taxonomy"],
+        "properties": {
+          "description": { "type": "string", "maxLength": 2000 },
+          "caption": { "type": "string", "maxLength": 500 },
+          "alt": { "type": "string", "maxLength": 300 },
+          "taxonomy": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 100 } }
+        }
+      }
+    }
+  }
+}

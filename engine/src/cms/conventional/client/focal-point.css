@@ -1,0 +1,8 @@
+.admin-focal__surface { position: relative; }
+.admin-focal__surface > img { display: block; width: 100%; height: auto; }
+.admin-focal__surface > svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.admin-focal__surface circle { fill: #fff; stroke: #111; stroke-width: 0.6; }
+.admin-focal__pointer { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; cursor: crosshair; }
+.admin-focal__pointer:hover { background: transparent; }
+.admin-focal__pointer:focus-visible { outline: 3px solid var(--admin-accent); outline-offset: 3px; }
+.admin-focal__crop { display: block; width: 100%; max-width: 25rem; background: var(--admin-panel-muted); }

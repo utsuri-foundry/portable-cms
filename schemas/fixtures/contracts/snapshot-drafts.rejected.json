@@ -1,0 +1,68 @@
+{
+  "formatVersion": 1,
+  "snapshotId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "createdAt": "2026-10-02T12:00:00Z",
+  "profile": {
+    "id": "reference-studio",
+    "version": "1.0.0",
+    "packageSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "defaultLocale": "ca",
+    "locales": [
+      "ca",
+      "es",
+      "en"
+    ]
+  },
+  "records": [
+    {
+      "id": "11111111111111111111111111111111",
+      "typeId": "project",
+      "workflowState": "draft",
+      "revisionId": "22222222222222222222222222222222",
+      "revisionNumber": 3,
+      "body": {
+        "title": {
+          "ca": "Casa pati",
+          "es": "Casa patio",
+          "en": "Courtyard house"
+        }
+      },
+      "relationships": [
+        {
+          "fieldId": "disciplines",
+          "kind": "taxonomy",
+          "targetRecordId": "55555555555555555555555555555555",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "id": "55555555555555555555555555555555",
+      "typeId": "discipline",
+      "workflowState": "published",
+      "revisionId": "66666666666666666666666666666666",
+      "revisionNumber": 1,
+      "body": {
+        "label": {
+          "ca": "Arquitectura",
+          "es": "Arquitectura",
+          "en": "Architecture"
+        }
+      },
+      "relationships": []
+    }
+  ],
+  "media": [
+    {
+      "id": "77777777777777777777777777777777",
+      "ownerRecordId": "11111111111111111111111111111111",
+      "variant": "display_1600_webp",
+      "mime": "image/webp",
+      "byteSize": 345678,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "width": 1600,
+      "height": 1067
+    }
+  ],
+  "includeDrafts": "true"
+}

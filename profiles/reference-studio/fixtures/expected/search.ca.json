@@ -1,0 +1,519 @@
+{
+    "formatVersion": 1,
+    "locale": "ca",
+    "normalization": "unicode_nfkd_accent_fold_lower_words_v1",
+    "ordering": "weight_desc_document_id_asc",
+    "documents": [
+        {
+            "id": "10000000000000000000000000000001",
+            "typeId": "project",
+            "route": "/ca/projects/arxiu-de-la-boira/",
+            "title": "Arxiu de la boira",
+            "resultKind": "image",
+            "mediaId": "d0000000000000000000000000000001"
+        },
+        {
+            "id": "30000000000000000000000000000001",
+            "typeId": "article",
+            "route": "/ca/articles/mesurar-lombra/",
+            "title": "Mesurar l'ombra",
+            "resultKind": "text",
+            "mediaId": null
+        },
+        {
+            "id": "40000000000000000000000000000001",
+            "typeId": "person",
+            "route": "/ca/people/nora-vidal/",
+            "title": "Nora Vidal",
+            "resultKind": "text",
+            "mediaId": null
+        },
+        {
+            "id": "c9000000000000000000000000000001",
+            "typeId": "landing",
+            "route": "/ca/landing/",
+            "title": "Espais per compartir",
+            "resultKind": "text",
+            "mediaId": null
+        }
+    ],
+    "terms": [
+        {
+            "token": "2025",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "aire",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "antiga",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "arquitecta",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "arquitectura",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "arxiu",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "boira",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "canvia",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "clima",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "com",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "compartim",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "compartir",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "cultura",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "de",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "del",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "descobreix",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "editora",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "el",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "els",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "espais",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "estudi",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "i",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                },
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 8
+                },
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "idees",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "l",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "la",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "materia",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "mesurar",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "nora",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "nostre",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "notes",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "oberta",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "observar",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "ombra",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "pavello",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "per",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "prenen",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "projecte",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "quan",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "reference",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "salina",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "seleccio",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "sentit",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "sobre",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                },
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "studio",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "temps",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "treballs",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "un",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "una",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                },
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "vidal",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        }
+    ]
+}

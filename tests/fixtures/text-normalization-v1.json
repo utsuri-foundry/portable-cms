@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "cases": [
+    {
+      "input": "  Transparència—i LLUM! ",
+      "search": "transparencia i llum",
+      "slug": "transparencia-i-llum"
+    },
+    {
+      "input": "L’Escala — Àmbit",
+      "search": "l escala ambit",
+      "slug": "l-escala-ambit"
+    },
+    {
+      "input": "Col·legi i habitatge",
+      "search": "col legi i habitatge",
+      "slug": "col-legi-i-habitatge"
+    },
+    {
+      "input": "CAMÍ d'Òdena 2026",
+      "search": "cami d odena 2026",
+      "slug": "cami-d-odena-2026"
+    },
+    {
+      "input": "Qüestió, façana, peñón",
+      "search": "questio facana penon",
+      "slug": "questio-facana-penon"
+    },
+    {
+      "input": "Àtic + COOPERACIÓ",
+      "search": "atic cooperacio",
+      "slug": "atic-cooperacio"
+    },
+    {
+      "input": "  · / — !!!  ",
+      "search": "",
+      "slug": ""
+    }
+  ]
+}

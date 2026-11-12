@@ -1,0 +1,8 @@
+{
+  "formatVersion": 3,
+  "overrides": {
+    "sharingImage": [
+      "https://private.example/original.jpg"
+    ]
+  }
+}

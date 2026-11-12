@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+use Utsuri\PortableCms\Conventional\Http\Request;
+use Utsuri\PortableCms\Conventional\Http\RequestBodyTooLarge;
+use Utsuri\PortableCms\Conventional\Http\Response;
+use Utsuri\PortableCms\Conventional\Http\SecurityHeaders;
+use Utsuri\PortableCms\Conventional\Identity\SystemClock;
+use Utsuri\PortableCms\Conventional\Identity\SystemRandomSource;
+use Utsuri\PortableCms\Conventional\Installation\InstallationGate;
+use Utsuri\PortableCms\Conventional\Installation\InstallationService;
+use Utsuri\PortableCms\Conventional\RuntimeConfiguration;
+
+require_once dirname(__DIR__) . '/engine/src/cms/conventional/bootstrap.php';
+
+/** @param array<string, scalar> $body */
+function installationResponse(int $status, array $body, string $correlationId): never
+{
+    $response = SecurityHeaders::apply(
+        new Response($status, json_encode($body, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n"),
+        $correlationId,
+    )->withHeader('content-type', 'application/json; charset=utf-8');
+    $response->emit();
+}
+
+$correlationId = bin2hex(random_bytes(12));
+try {
+    $https = strtolower((string) ($_SERVER['HTTPS'] ?? ''));
+    if (($https === '' || $https === 'off' || $https === '0') && ($_SERVER['SERVER_PORT'] ?? '') !== '443') {
+        installationResponse(404, ['error' => 'not_found'], $correlationId);
+    }
+    $request = Request::fromGlobals(4_096);
+    if ($request->method !== 'POST') {
+        installationResponse(404, ['error' => 'not_found'], $correlationId);
+    }
+    $gatePath = getenv('CMS_INSTALL_CONFIG');
+    if (!is_string($gatePath) || $gatePath === '') {
+        installationResponse(404, ['error' => 'not_found'], $correlationId);
+    }
+    $documentRoot = is_string($_SERVER['DOCUMENT_ROOT'] ?? null) ? $_SERVER['DOCUMENT_ROOT'] : null;
+    try {
+        $gate = InstallationGate::load($gatePath, $documentRoot);
+    } catch (Throwable) {
+        installationResponse(404, ['error' => 'not_found'], $correlationId);
+    }
+    $installToken = $request->header('x-cms-install-token') ?? '';
+    if (!$gate->authorizes($installToken)) {
+        installationResponse(404, ['error' => 'not_found'], $correlationId);
+    }
+    $configuration = RuntimeConfiguration::load($gate->runtimeConfigurationPath(), $documentRoot);
+    $migrations = glob(dirname(__DIR__) . '/engine/migrations/*.sql');
+    if ($migrations === false) {
+        throw new RuntimeException('Migration directory could not be read');
+    }
+    sort($migrations, SORT_STRING);
+    $result = (new InstallationService(
+        $gate,
+        $configuration,
+        $migrations,
+        new SystemClock(),
+        new SystemRandomSource(),
+    ))->install(
+        $installToken,
+        $request->formValue('login'),
+        $request->formValue('display_name'),
+        $request->formValue('password'),
+    );
+    installationResponse(200, [
+        'status' => $result->status,
+        'migrationsApplied' => $result->migrationsApplied,
+    ], $correlationId);
+} catch (RequestBodyTooLarge) {
+    installationResponse(413, ['error' => 'request_too_large'], $correlationId);
+} catch (UnexpectedValueException) {
+    installationResponse(404, ['error' => 'not_found'], $correlationId);
+} catch (\Utsuri\PortableCms\Conventional\Content\ProfileEngineMismatch $error) {
+    installationResponse(422, $error->document(), $correlationId);
+} catch (InvalidArgumentException) {
+    installationResponse(422, ['error' => 'invalid_administrator'], $correlationId);
+} catch (Throwable $error) {
+    error_log(sprintf(
+        '%s correlation=%s error=%s',
+        gmdate('Y-m-d\TH:i:s\Z'),
+        $correlationId,
+        $error::class,
+    ));
+    installationResponse(500, ['error' => 'installation_failed', 'reference' => $correlationId], $correlationId);
+}

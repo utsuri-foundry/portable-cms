@@ -1,0 +1,130 @@
+name: Repository
+on:
+  pull_request:
+  push:
+    tags: ['v*']
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+    inputs:
+      check:
+        description: Hosted check to run
+        type: choice
+        default: full
+        options: [full, fast, public-site-full, degraded-audit, editor-start, editorial]
+permissions:
+  contents: read
+concurrency:
+  group: repository-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  plan:
+    name: Select affected checks
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      lanes: ${{ steps.plan.outputs.lanes }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - id: plan
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CI_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          lanes="$(nix shell .#ci-plan-tools -c node tools/ci/plan.mjs "$CI_BASE_SHA" "$CI_HEAD_SHA")"
+          echo "lanes=$lanes" >> "$GITHUB_OUTPUT"
+  fast:
+    name: Fast checks
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/check.yml
+    with:
+      lane: fast
+  focused:
+    name: Affected ${{ matrix.lane }}
+    needs: plan
+    if: ${{ github.event_name == 'pull_request' && needs.plan.outputs.lanes != '[]' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        lane: ${{ fromJSON(needs.plan.outputs.lanes) }}
+    uses: ./.github/workflows/check.yml
+    with:
+      lane: ${{ matrix.lane }}
+  required:
+    name: ${{ github.event_name == 'pull_request' && 'Required PR checks' || 'PR checks not requested' }}
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    needs: [plan, fast, focused]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Require every selected check
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          FAST_RESULT: ${{ needs.fast.result }}
+          FOCUSED_RESULT: ${{ needs.focused.result }}
+          LANES: ${{ needs.plan.outputs.lanes }}
+        run: sh tools/ci/require-results.sh
+  qualification-plan:
+    name: Select complete qualification
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.check == 'full') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      lanes: ${{ steps.plan.outputs.lanes }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - id: plan
+        run: |
+          lanes="$(nix shell .#ci-plan-tools -c node tools/ci/qualification.mjs list)"
+          echo "lanes=$lanes" >> "$GITHUB_OUTPUT"
+  qualification:
+    name: Qualification ${{ matrix.lane }}
+    needs: qualification-plan
+    if: ${{ needs.qualification-plan.result == 'success' }}
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        lane: ${{ fromJSON(needs.qualification-plan.outputs.lanes) }}
+    uses: ./.github/workflows/check.yml
+    with:
+      lane: qualification-${{ matrix.lane }}
+  qualified:
+    name: Complete repository gate
+    needs: [qualification-plan, qualification]
+    if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.check == 'full')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Require every qualification lane
+        env:
+          PLAN_RESULT: ${{ needs.qualification-plan.result }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+        run: sh tools/ci/require-qualification.sh
+  manual:
+    name: Focused ${{ inputs.check }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.check != 'full' }}
+    uses: ./.github/workflows/check.yml
+    with:
+      lane: ${{ inputs.check }}

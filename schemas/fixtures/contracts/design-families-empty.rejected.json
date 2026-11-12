@@ -1,0 +1,7 @@
+{
+  "formatVersion": 2,
+  "profileId": "reference-studio",
+  "revision": 0,
+  "fonts": [{"id": "missing", "label": "Missing faces", "faces": []}],
+  "responsive": [], "typography": [], "spacing": []
+}

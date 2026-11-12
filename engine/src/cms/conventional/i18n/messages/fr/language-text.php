@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'language_text.title' => 'Supprimer le texte en {language}',
+    'language_text.title_any' => 'Supprimer le texte d’une langue',
+    'language_text.back' => 'Retour aux langues',
+    'language_text.not_deleted' => 'Texte non supprimé',
+    'language_text.done' => 'Le texte en {language} a été supprimé de {records, plural, one {# fiche} other {# fiches}} et de {media, plural, one {# média} other {# médias}}.',
+    'language_text.history' => 'Les révisions antérieures conservent le texte. Il reste dans l’historique des fiches et dans les exports, et restaurer une révision antérieure le rétablit.',
+    'language_text.running' => 'Suppression du texte en {language}',
+    'language_text.progress' => '{done} sur {records, plural, one {# fiche réécrite} other {# fiches réécrites}}, {media, plural, one {# média vidé} other {# médias vidés}}.',
+    'language_text.continue_help' => 'La suppression se fait par lots. Continuez jusqu’à ce qu’elle soit terminée. Si elle a été interrompue, continuer la reprend là où elle s’était arrêtée.',
+    'language_text.continue' => 'Continuer la suppression',
+    'language_text.unknown' => 'Le site ne comporte pas cette langue.',
+    'language_text.turn_off' => '{language} est publique ou en préparation. Désactivez-la dans Langues avant de supprimer son texte.',
+    'language_text.not_allowed' => 'Seul le propriétaire peut supprimer le texte d’une langue.',
+    'language_text.consequences' => 'Ce qui est supprimé',
+    'language_text.records' => 'Le texte actuel en {language} de {records, plural, one {# fiche} other {# fiches}}. Chacune est enregistrée dans une nouvelle révision sans ce texte.',
+    'language_text.media' => 'Les textes alternatifs, légendes et crédits dans cette langue de {media, plural, one {# média} other {# médias}}.',
+    'language_text.settings' => 'Ses textes du site, ainsi que son message et son contact sur la page Bientôt.',
+    'language_text.backup' => 'Cette action ne peut pas être annulée dans le CMS. Faites d’abord un export.',
+    'language_text.export' => 'Aller à Export',
+    'language_text.confirm_label' => 'Supprimer définitivement le texte en {language} de {records, plural, one {# fiche} other {# fiches}}',
+    'language_text.delete' => 'Supprimer le texte en {language}',
+    'language_text.confirm' => 'Supprimer le texte d’une langue nécessite une confirmation. Cochez la confirmation et réessayez.',
+    'language_text.changed' => 'Le nombre de fiches ayant du texte dans cette langue a changé. Vérifiez le nouveau nombre et confirmez de nouveau.',
+    'language_text.busy' => 'Une autre suppression est encore en cours. Terminez-la d’abord.',
+    'language_text.none' => 'Aucune suppression n’est en cours.',
+    'language_text.not_off' => '{language} n’est plus désactivée. Désactivez-la de nouveau pour supprimer son texte.',
+    'language_text.record_invalid' => 'Un élément {type} ({id}) ne passe plus les vérifications du profil, son texte n’a donc pas pu être supprimé. Corrigez-le et continuez.',
+    'languages.delete_text' => 'Supprimer le texte en {language}',
+    'languages.deletion_running' => 'Le texte en {language} est en cours de suppression.',
+    'languages.deletion_continue' => 'Continuer la suppression',
+];

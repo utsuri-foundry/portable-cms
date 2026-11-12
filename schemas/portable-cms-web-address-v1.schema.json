@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://utsuri.io/schemas/portable-cms-web-address-v1.schema.json",
+  "title": "Portable CMS absolute web address v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "url", "linkText"],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "url": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "linkText": { "type": "string", "maxLength": 200 }
+  }
+}

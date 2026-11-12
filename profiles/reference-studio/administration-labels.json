@@ -1,0 +1,1461 @@
+{
+    "formatVersion": 1,
+    "profileId": "reference-studio",
+    "languages": {
+        "ca": {
+            "types": {
+                "project": {
+                    "label": "Projectes",
+                    "singularLabel": "Projecte"
+                },
+                "article": {
+                    "label": "Articles",
+                    "singularLabel": "Article"
+                },
+                "person": {
+                    "label": "Persones",
+                    "singularLabel": "Persona"
+                },
+                "home": {
+                    "label": "Inici",
+                    "singularLabel": "Inici"
+                },
+                "about": {
+                    "label": "Qui som",
+                    "singularLabel": "Qui som"
+                },
+                "site-settings": {
+                    "label": "Valors de descoberta",
+                    "singularLabel": "Valors de descoberta"
+                },
+                "discipline": {
+                    "label": "Disciplines",
+                    "singularLabel": "Disciplina"
+                },
+                "sector": {
+                    "label": "Sectors",
+                    "singularLabel": "Sector"
+                },
+                "landing": {
+                    "label": "Pàgines de destinació",
+                    "singularLabel": "Pàgina de destinació"
+                }
+            },
+            "fields": {
+                "project.title": "Títol",
+                "project.slug": "Fragment d’URL",
+                "project.year": "Any",
+                "project.sortOrder": "Ordre editorial",
+                "project.featured": "Destacat",
+                "project.publishedOn": "Data de publicació",
+                "project.status": "Estat del projecte",
+                "project.body": "Cos del text",
+                "project.gallery": "Galeria",
+                "project.trailer": "Tràiler",
+                "project.lead": "Responsable del projecte",
+                "project.related": "Projectes relacionats",
+                "project.disciplines": "Disciplines",
+                "project.credits": "Crèdits",
+                "project.credits.role": "Rol",
+                "project.credits.name": "Nom",
+                "project.layout": "Composició",
+                "project.searchSharing": "Cerca i compartició (substitucions opcionals)",
+                "project.searchSharing.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "project.searchSharing.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "project.searchSharing.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "project.searchSharing.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "article.title": "Títol",
+                "article.slug": "Fragment d’URL",
+                "article.sortOrder": "Ordre editorial",
+                "article.excerpt": "Extracte",
+                "article.body": "Cos del text",
+                "article.relatedProjects": "Projectes relacionats",
+                "article.sectors": "Sectors",
+                "article.searchSharing": "Cerca i compartició (substitucions opcionals)",
+                "article.searchSharing.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "article.searchSharing.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "article.searchSharing.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "article.searchSharing.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "person.name": "Nom",
+                "person.slug": "Fragment d’URL",
+                "person.sortOrder": "Ordre editorial",
+                "person.role": "Rol",
+                "person.website": "Lloc web",
+                "person.portrait": "Retrat",
+                "person.searchSharing": "Cerca i compartició (substitucions opcionals)",
+                "person.searchSharing.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "person.searchSharing.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "person.searchSharing.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "person.searchSharing.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "home.introduction": "Introducció",
+                "home.searchSharing": "Cerca i compartició (substitucions opcionals)",
+                "home.searchSharing.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "home.searchSharing.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "home.searchSharing.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "home.searchSharing.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "about.body": "Cos del text",
+                "about.contact": "Contacte",
+                "about.contact.email": "Correu electrònic",
+                "about.contact.city": "Ciutat",
+                "about.searchSharing": "Cerca i compartició (substitucions opcionals)",
+                "about.searchSharing.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "about.searchSharing.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "about.searchSharing.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "about.searchSharing.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "discipline.label": "Etiqueta",
+                "discipline.aliases": "Àlies de cerca (un per línia)",
+                "discipline.deprecated": "Obsolet (es mantenen els usos actuals, però no es pot tornar a triar)",
+                "sector.label": "Etiqueta",
+                "sector.aliases": "Àlies de cerca (un per línia)",
+                "sector.deprecated": "Obsolet (es mantenen els usos actuals, però no es pot tornar a triar)",
+                "site-settings.defaultSearchDescription": "Descripció predeterminada per a cercadors (si la pàgina no té resum)",
+                "site-settings.projectsMetadata": "Projectes — cerca i compartició",
+                "site-settings.projectsMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.projectsMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.projectsMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.projectsMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "site-settings.articlesMetadata": "Quadern — cerca i compartició",
+                "site-settings.articlesMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.articlesMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.articlesMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.articlesMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "site-settings.peopleMetadata": "Persones — cerca i compartició",
+                "site-settings.peopleMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.peopleMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.peopleMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.peopleMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "site-settings.disciplinesMetadata": "Disciplines — cerca i compartició",
+                "site-settings.disciplinesMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.disciplinesMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.disciplinesMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.disciplinesMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "site-settings.sectorsMetadata": "Àmbits — cerca i compartició",
+                "site-settings.sectorsMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.sectorsMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.sectorsMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.sectorsMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "site-settings.searchMetadata": "Cerca — cerca i compartició",
+                "site-settings.searchMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.searchMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.searchMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.searchMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "site-settings.settingsMetadata": "Configuració — cerca i compartició",
+                "site-settings.settingsMetadata.searchTitle": "Títol per a cercadors (buit: s’usa el títol del contingut)",
+                "site-settings.settingsMetadata.description": "Descripció per a cercadors (buit: s’usa el resum de la pàgina)",
+                "site-settings.settingsMetadata.sharingTitle": "Títol per compartir (buit: s’usa el títol per a cercadors)",
+                "site-settings.settingsMetadata.sharingDescription": "Descripció per compartir (buit: s’usa la descripció per a cercadors)",
+                "home.featuredContent": "Projectes i articles destacats",
+                "landing.title": "Títol",
+                "landing.blocks": "Blocs de pàgina",
+                "landing.blocks.hero.heading": "Encapçalament",
+                "landing.blocks.hero.intro": "Introducció",
+                "landing.blocks.quote.quote": "Citació",
+                "landing.blocks.quote.attribution": "Autoria",
+                "landing.blocks.call-to-action.label": "Text de l’enllaç",
+                "landing.blocks.call-to-action.target": "Projecte"
+            },
+            "options": {
+                "project.status.complete": "Acabat",
+                "project.status.ongoing": "En curs"
+            },
+            "items": {
+                "project.credits": "crèdit",
+                "landing.blocks.hero": "Capçalera"
+            },
+            "navigation": {
+                "projects": "Projectes",
+                "articles": "Articles",
+                "people": "Persones",
+                "home": "Inici",
+                "about": "Qui som",
+                "disciplines": "Disciplines",
+                "sectors": "Sectors",
+                "site-settings": "Valors de descoberta",
+                "previews": "Previsualitzacions"
+            },
+            "blocks": {
+                "landing.blocks.hero": "Capçalera",
+                "landing.blocks.quote": "Citació",
+                "landing.blocks.call-to-action": "Crida a l’acció"
+            },
+            "wording": {
+                "interface.skipToContent": {
+                    "label": "Enllaç per saltar al contingut",
+                    "purpose": "El primer enllaç de cada pàgina, que permet saltar la navegació amb el teclat."
+                },
+                "interface.primaryNavigation": {
+                    "label": "Nom de la navegació",
+                    "purpose": "El nom de la navegació principal que anuncien els lectors de pantalla."
+                },
+                "interface.searchLabel": {
+                    "label": "Etiqueta del camp de cerca",
+                    "purpose": "L’etiqueta del camp de cerca a les pàgines d’inici i de cerca."
+                },
+                "interface.searchPlaceholder": {
+                    "label": "Exemple del camp de cerca",
+                    "purpose": "L’exemple que es mostra quan el camp de cerca és buit."
+                },
+                "interface.resultSingular": {
+                    "label": "Un resultat",
+                    "purpose": "La paraula que segueix el nombre de resultats de cerca quan només n’hi ha un."
+                },
+                "interface.resultPlural": {
+                    "label": "Diversos resultats",
+                    "purpose": "La paraula que segueix el nombre de resultats de cerca quan n’hi ha més d’un."
+                },
+                "interface.compositionLabel": {
+                    "label": "Nom de la composició d’imatges",
+                    "purpose": "El nom de la composició d’imatges d’una pàgina que anuncien els lectors de pantalla."
+                },
+                "page.home": {
+                    "label": "Enllaç a l’inici",
+                    "purpose": "L’enllaç de navegació a la pàgina d’inici."
+                },
+                "page.projects": {
+                    "label": "Títol de projectes",
+                    "purpose": "El títol de la pàgina de projectes i el seu enllaç de navegació."
+                },
+                "page.articles": {
+                    "label": "Títol del quadern",
+                    "purpose": "El títol de la pàgina del quadern i el seu enllaç de navegació."
+                },
+                "page.people": {
+                    "label": "Títol de persones",
+                    "purpose": "El títol de la pàgina de persones i el seu enllaç de navegació."
+                },
+                "page.about": {
+                    "label": "Títol de l’estudi",
+                    "purpose": "El títol de la pàgina de l’estudi i el seu enllaç de navegació."
+                },
+                "page.search": {
+                    "label": "Títol de cerca",
+                    "purpose": "El títol de la pàgina de cerca i el seu enllaç de navegació."
+                },
+                "page.disciplines": {
+                    "label": "Títol de disciplines",
+                    "purpose": "El títol de la pàgina que enumera les disciplines."
+                },
+                "page.sectors": {
+                    "label": "Títol d’àmbits",
+                    "purpose": "El títol de la pàgina que enumera els àmbits."
+                },
+                "page.settings": {
+                    "label": "Títol de configuració",
+                    "purpose": "El títol de la pàgina que mostra la configuració del web."
+                },
+                "metadata.year": {
+                    "label": "Etiqueta de l’any",
+                    "purpose": "L’etiqueta de l’any d’un projecte."
+                },
+                "metadata.status": {
+                    "label": "Etiqueta de l’estat",
+                    "purpose": "L’etiqueta de l’estat d’un projecte."
+                },
+                "status.complete": {
+                    "label": "Estat completat",
+                    "purpose": "L’estat d’un projecte quan s’ha completat."
+                },
+                "status.ongoing": {
+                    "label": "Estat en curs",
+                    "purpose": "L’estat d’un projecte mentre continua en curs."
+                },
+                "address.projects": {
+                    "label": "Adreça de projectes",
+                    "purpose": "El fragment de l’adreça de les pàgines de projectes que segueix el codi de llengua."
+                },
+                "address.articles": {
+                    "label": "Adreça del quadern",
+                    "purpose": "El fragment de l’adreça de les pàgines del quadern que segueix el codi de llengua."
+                },
+                "address.people": {
+                    "label": "Adreça de persones",
+                    "purpose": "El fragment de l’adreça de les pàgines de persones que segueix el codi de llengua."
+                },
+                "address.about": {
+                    "label": "Adreça de l’estudi",
+                    "purpose": "El fragment de l’adreça de les pàgines de l’estudi que segueix el codi de llengua."
+                },
+                "address.search": {
+                    "label": "Adreça de cerca",
+                    "purpose": "El fragment de l’adreça de les pàgines de cerca que segueix el codi de llengua."
+                },
+                "address.disciplines": {
+                    "label": "Adreça de disciplines",
+                    "purpose": "El fragment de l’adreça de les pàgines de disciplines que segueix el codi de llengua."
+                },
+                "address.sectors": {
+                    "label": "Adreça d’àmbits",
+                    "purpose": "El fragment de l’adreça de les pàgines d’àmbits que segueix el codi de llengua."
+                },
+                "address.settings": {
+                    "label": "Adreça de configuració",
+                    "purpose": "El fragment de l’adreça de les pàgines de configuració que segueix el codi de llengua."
+                }
+            }
+        },
+        "es": {
+            "types": {
+                "project": {
+                    "label": "Proyectos",
+                    "singularLabel": "Proyecto"
+                },
+                "article": {
+                    "label": "Artículos",
+                    "singularLabel": "Artículo"
+                },
+                "person": {
+                    "label": "Personas",
+                    "singularLabel": "Persona"
+                },
+                "home": {
+                    "label": "Inicio",
+                    "singularLabel": "Inicio"
+                },
+                "about": {
+                    "label": "Quiénes somos",
+                    "singularLabel": "Quiénes somos"
+                },
+                "site-settings": {
+                    "label": "Valores de descubrimiento",
+                    "singularLabel": "Valores de descubrimiento"
+                },
+                "discipline": {
+                    "label": "Disciplinas",
+                    "singularLabel": "Disciplina"
+                },
+                "sector": {
+                    "label": "Sectores",
+                    "singularLabel": "Sector"
+                },
+                "landing": {
+                    "label": "Páginas de destino",
+                    "singularLabel": "Página de destino"
+                }
+            },
+            "fields": {
+                "project.title": "Título",
+                "project.slug": "Fragmento de URL",
+                "project.year": "Año",
+                "project.sortOrder": "Orden editorial",
+                "project.featured": "Destacado",
+                "project.publishedOn": "Fecha de publicación",
+                "project.status": "Estado del proyecto",
+                "project.body": "Cuerpo del texto",
+                "project.gallery": "Galería",
+                "project.trailer": "Tráiler",
+                "project.lead": "Responsable del proyecto",
+                "project.related": "Proyectos relacionados",
+                "project.disciplines": "Disciplinas",
+                "project.credits": "Créditos",
+                "project.credits.role": "Rol",
+                "project.credits.name": "Nombre",
+                "project.layout": "Composición",
+                "project.searchSharing": "Búsqueda y compartir (ajustes opcionales)",
+                "project.searchSharing.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "project.searchSharing.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "project.searchSharing.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "project.searchSharing.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "article.title": "Título",
+                "article.slug": "Fragmento de URL",
+                "article.sortOrder": "Orden editorial",
+                "article.excerpt": "Extracto",
+                "article.body": "Cuerpo del texto",
+                "article.relatedProjects": "Proyectos relacionados",
+                "article.sectors": "Sectores",
+                "article.searchSharing": "Búsqueda y compartir (ajustes opcionales)",
+                "article.searchSharing.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "article.searchSharing.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "article.searchSharing.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "article.searchSharing.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "person.name": "Nombre",
+                "person.slug": "Fragmento de URL",
+                "person.sortOrder": "Orden editorial",
+                "person.role": "Rol",
+                "person.website": "Sitio web",
+                "person.portrait": "Retrato",
+                "person.searchSharing": "Búsqueda y compartir (ajustes opcionales)",
+                "person.searchSharing.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "person.searchSharing.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "person.searchSharing.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "person.searchSharing.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "home.introduction": "Introducción",
+                "home.searchSharing": "Búsqueda y compartir (ajustes opcionales)",
+                "home.searchSharing.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "home.searchSharing.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "home.searchSharing.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "home.searchSharing.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "about.body": "Cuerpo del texto",
+                "about.contact": "Contacto",
+                "about.contact.email": "Correo electrónico",
+                "about.contact.city": "Ciudad",
+                "about.searchSharing": "Búsqueda y compartir (ajustes opcionales)",
+                "about.searchSharing.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "about.searchSharing.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "about.searchSharing.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "about.searchSharing.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "discipline.label": "Etiqueta",
+                "discipline.aliases": "Alias de búsqueda (uno por línea)",
+                "discipline.deprecated": "Obsoleto (conserva los usos actuales e impide nuevas selecciones)",
+                "sector.label": "Etiqueta",
+                "sector.aliases": "Alias de búsqueda (uno por línea)",
+                "sector.deprecated": "Obsoleto (conserva los usos actuales e impide nuevas selecciones)",
+                "site-settings.defaultSearchDescription": "Descripción predeterminada para buscadores (si la página no tiene resumen)",
+                "site-settings.projectsMetadata": "Proyectos — búsqueda y compartir",
+                "site-settings.projectsMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.projectsMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.projectsMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.projectsMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "site-settings.articlesMetadata": "Cuaderno — búsqueda y compartir",
+                "site-settings.articlesMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.articlesMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.articlesMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.articlesMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "site-settings.peopleMetadata": "Personas — búsqueda y compartir",
+                "site-settings.peopleMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.peopleMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.peopleMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.peopleMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "site-settings.disciplinesMetadata": "Disciplinas — búsqueda y compartir",
+                "site-settings.disciplinesMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.disciplinesMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.disciplinesMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.disciplinesMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "site-settings.sectorsMetadata": "Ámbitos — búsqueda y compartir",
+                "site-settings.sectorsMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.sectorsMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.sectorsMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.sectorsMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "site-settings.searchMetadata": "Buscar — búsqueda y compartir",
+                "site-settings.searchMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.searchMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.searchMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.searchMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "site-settings.settingsMetadata": "Configuración — búsqueda y compartir",
+                "site-settings.settingsMetadata.searchTitle": "Título para buscadores (vacío: se usa el título del contenido)",
+                "site-settings.settingsMetadata.description": "Descripción para buscadores (vacío: se usa el resumen de la página)",
+                "site-settings.settingsMetadata.sharingTitle": "Título para compartir (vacío: se usa el título para buscadores)",
+                "site-settings.settingsMetadata.sharingDescription": "Descripción para compartir (vacío: se usa la descripción para buscadores)",
+                "home.featuredContent": "Proyectos y artículos destacados",
+                "landing.title": "Título",
+                "landing.blocks": "Bloques de página",
+                "landing.blocks.hero.heading": "Encabezado",
+                "landing.blocks.hero.intro": "Introducción",
+                "landing.blocks.quote.quote": "Cita",
+                "landing.blocks.quote.attribution": "Autoría",
+                "landing.blocks.call-to-action.label": "Texto del enlace",
+                "landing.blocks.call-to-action.target": "Proyecto"
+            },
+            "options": {
+                "project.status.complete": "Terminado",
+                "project.status.ongoing": "En curso"
+            },
+            "items": {
+                "project.credits": "crédito",
+                "landing.blocks.hero": "Cabecera"
+            },
+            "navigation": {
+                "projects": "Proyectos",
+                "articles": "Artículos",
+                "people": "Personas",
+                "home": "Inicio",
+                "about": "Quiénes somos",
+                "disciplines": "Disciplinas",
+                "sectors": "Sectores",
+                "site-settings": "Valores de descubrimiento",
+                "previews": "Vistas previas"
+            },
+            "blocks": {
+                "landing.blocks.hero": "Cabecera",
+                "landing.blocks.quote": "Cita",
+                "landing.blocks.call-to-action": "Llamada a la acción"
+            },
+            "wording": {
+                "interface.skipToContent": {
+                    "label": "Enlace para saltar al contenido",
+                    "purpose": "El primer enlace de cada página, que permite saltar la navegación con el teclado."
+                },
+                "interface.primaryNavigation": {
+                    "label": "Nombre de la navegación",
+                    "purpose": "El nombre de la navegación principal que anuncian los lectores de pantalla."
+                },
+                "interface.searchLabel": {
+                    "label": "Etiqueta del campo de búsqueda",
+                    "purpose": "La etiqueta del campo de búsqueda en las páginas de inicio y de búsqueda."
+                },
+                "interface.searchPlaceholder": {
+                    "label": "Ejemplo del campo de búsqueda",
+                    "purpose": "El ejemplo que se muestra cuando el campo de búsqueda está vacío."
+                },
+                "interface.resultSingular": {
+                    "label": "Un resultado",
+                    "purpose": "La palabra que sigue al número de resultados de búsqueda cuando solo hay uno."
+                },
+                "interface.resultPlural": {
+                    "label": "Varios resultados",
+                    "purpose": "La palabra que sigue al número de resultados de búsqueda cuando hay más de uno."
+                },
+                "interface.compositionLabel": {
+                    "label": "Nombre de la composición de imágenes",
+                    "purpose": "El nombre de la composición de imágenes de una página que anuncian los lectores de pantalla."
+                },
+                "page.home": {
+                    "label": "Enlace al inicio",
+                    "purpose": "El enlace de navegación a la página de inicio."
+                },
+                "page.projects": {
+                    "label": "Título de proyectos",
+                    "purpose": "El título de la página de proyectos y su enlace de navegación."
+                },
+                "page.articles": {
+                    "label": "Título del cuaderno",
+                    "purpose": "El título de la página del cuaderno y su enlace de navegación."
+                },
+                "page.people": {
+                    "label": "Título de personas",
+                    "purpose": "El título de la página de personas y su enlace de navegación."
+                },
+                "page.about": {
+                    "label": "Título del estudio",
+                    "purpose": "El título de la página del estudio y su enlace de navegación."
+                },
+                "page.search": {
+                    "label": "Título de búsqueda",
+                    "purpose": "El título de la página de búsqueda y su enlace de navegación."
+                },
+                "page.disciplines": {
+                    "label": "Título de disciplinas",
+                    "purpose": "El título de la página que enumera las disciplinas."
+                },
+                "page.sectors": {
+                    "label": "Título de ámbitos",
+                    "purpose": "El título de la página que enumera los ámbitos."
+                },
+                "page.settings": {
+                    "label": "Título de configuración",
+                    "purpose": "El título de la página que muestra la configuración del sitio web."
+                },
+                "metadata.year": {
+                    "label": "Etiqueta del año",
+                    "purpose": "La etiqueta del año de un proyecto."
+                },
+                "metadata.status": {
+                    "label": "Etiqueta del estado",
+                    "purpose": "La etiqueta del estado de un proyecto."
+                },
+                "status.complete": {
+                    "label": "Estado completado",
+                    "purpose": "El estado de un proyecto cuando se ha completado."
+                },
+                "status.ongoing": {
+                    "label": "Estado en curso",
+                    "purpose": "El estado de un proyecto mientras sigue en curso."
+                },
+                "address.projects": {
+                    "label": "Dirección de proyectos",
+                    "purpose": "El fragmento de la dirección de las páginas de proyectos que sigue al código de idioma."
+                },
+                "address.articles": {
+                    "label": "Dirección del cuaderno",
+                    "purpose": "El fragmento de la dirección de las páginas del cuaderno que sigue al código de idioma."
+                },
+                "address.people": {
+                    "label": "Dirección de personas",
+                    "purpose": "El fragmento de la dirección de las páginas de personas que sigue al código de idioma."
+                },
+                "address.about": {
+                    "label": "Dirección del estudio",
+                    "purpose": "El fragmento de la dirección de las páginas del estudio que sigue al código de idioma."
+                },
+                "address.search": {
+                    "label": "Dirección de búsqueda",
+                    "purpose": "El fragmento de la dirección de las páginas de búsqueda que sigue al código de idioma."
+                },
+                "address.disciplines": {
+                    "label": "Dirección de disciplinas",
+                    "purpose": "El fragmento de la dirección de las páginas de disciplinas que sigue al código de idioma."
+                },
+                "address.sectors": {
+                    "label": "Dirección de ámbitos",
+                    "purpose": "El fragmento de la dirección de las páginas de ámbitos que sigue al código de idioma."
+                },
+                "address.settings": {
+                    "label": "Dirección de configuración",
+                    "purpose": "El fragmento de la dirección de las páginas de configuración que sigue al código de idioma."
+                }
+            }
+        },
+        "en": {
+            "types": {
+                "project": {
+                    "label": "Projects",
+                    "singularLabel": "Project"
+                },
+                "article": {
+                    "label": "Articles",
+                    "singularLabel": "Article"
+                },
+                "person": {
+                    "label": "People",
+                    "singularLabel": "Person"
+                },
+                "home": {
+                    "label": "Home",
+                    "singularLabel": "Home"
+                },
+                "about": {
+                    "label": "About",
+                    "singularLabel": "About"
+                },
+                "site-settings": {
+                    "label": "Discovery defaults",
+                    "singularLabel": "Discovery defaults"
+                },
+                "discipline": {
+                    "label": "Disciplines",
+                    "singularLabel": "Discipline"
+                },
+                "sector": {
+                    "label": "Sectors",
+                    "singularLabel": "Sector"
+                },
+                "landing": {
+                    "label": "Landing pages",
+                    "singularLabel": "Landing page"
+                }
+            },
+            "fields": {
+                "project.title": "Title",
+                "project.slug": "Slug",
+                "project.year": "Year",
+                "project.sortOrder": "Editorial order",
+                "project.featured": "Featured",
+                "project.publishedOn": "Published on",
+                "project.status": "Project status",
+                "project.body": "Body",
+                "project.gallery": "Gallery",
+                "project.trailer": "Trailer",
+                "project.lead": "Project lead",
+                "project.related": "Related projects",
+                "project.disciplines": "Disciplines",
+                "project.credits": "Credits",
+                "project.credits.role": "Role",
+                "project.credits.name": "Name",
+                "project.layout": "Layout",
+                "project.searchSharing": "Search & sharing (optional overrides)",
+                "project.searchSharing.searchTitle": "Search title (blank uses the content title)",
+                "project.searchSharing.description": "Search description (blank uses the page summary)",
+                "project.searchSharing.sharingTitle": "Sharing title (blank uses the search title)",
+                "project.searchSharing.sharingDescription": "Sharing description (blank uses the search description)",
+                "article.title": "Title",
+                "article.slug": "Slug",
+                "article.sortOrder": "Editorial order",
+                "article.excerpt": "Excerpt",
+                "article.body": "Body",
+                "article.relatedProjects": "Related projects",
+                "article.sectors": "Sectors",
+                "article.searchSharing": "Search & sharing (optional overrides)",
+                "article.searchSharing.searchTitle": "Search title (blank uses the content title)",
+                "article.searchSharing.description": "Search description (blank uses the page summary)",
+                "article.searchSharing.sharingTitle": "Sharing title (blank uses the search title)",
+                "article.searchSharing.sharingDescription": "Sharing description (blank uses the search description)",
+                "person.name": "Name",
+                "person.slug": "Slug",
+                "person.sortOrder": "Editorial order",
+                "person.role": "Role",
+                "person.website": "Website",
+                "person.portrait": "Portrait",
+                "person.searchSharing": "Search & sharing (optional overrides)",
+                "person.searchSharing.searchTitle": "Search title (blank uses the content title)",
+                "person.searchSharing.description": "Search description (blank uses the page summary)",
+                "person.searchSharing.sharingTitle": "Sharing title (blank uses the search title)",
+                "person.searchSharing.sharingDescription": "Sharing description (blank uses the search description)",
+                "home.introduction": "Introduction",
+                "home.searchSharing": "Search & sharing (optional overrides)",
+                "home.searchSharing.searchTitle": "Search title (blank uses the content title)",
+                "home.searchSharing.description": "Search description (blank uses the page summary)",
+                "home.searchSharing.sharingTitle": "Sharing title (blank uses the search title)",
+                "home.searchSharing.sharingDescription": "Sharing description (blank uses the search description)",
+                "about.body": "Body",
+                "about.contact": "Contact",
+                "about.contact.email": "Email",
+                "about.contact.city": "City",
+                "about.searchSharing": "Search & sharing (optional overrides)",
+                "about.searchSharing.searchTitle": "Search title (blank uses the content title)",
+                "about.searchSharing.description": "Search description (blank uses the page summary)",
+                "about.searchSharing.sharingTitle": "Sharing title (blank uses the search title)",
+                "about.searchSharing.sharingDescription": "Sharing description (blank uses the search description)",
+                "discipline.label": "Label",
+                "discipline.aliases": "Search aliases (one per line)",
+                "discipline.deprecated": "Deprecated (retain existing uses, prevent new selections)",
+                "sector.label": "Label",
+                "sector.aliases": "Search aliases (one per line)",
+                "sector.deprecated": "Deprecated (retain existing uses, prevent new selections)",
+                "site-settings.defaultSearchDescription": "Default search description (used when a page has no summary)",
+                "site-settings.projectsMetadata": "Work index — search and sharing",
+                "site-settings.projectsMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.projectsMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.projectsMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.projectsMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "site-settings.articlesMetadata": "Journal index — search and sharing",
+                "site-settings.articlesMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.articlesMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.articlesMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.articlesMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "site-settings.peopleMetadata": "People index — search and sharing",
+                "site-settings.peopleMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.peopleMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.peopleMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.peopleMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "site-settings.disciplinesMetadata": "Disciplines index — search and sharing",
+                "site-settings.disciplinesMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.disciplinesMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.disciplinesMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.disciplinesMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "site-settings.sectorsMetadata": "Sectors index — search and sharing",
+                "site-settings.sectorsMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.sectorsMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.sectorsMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.sectorsMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "site-settings.searchMetadata": "Search page — search and sharing",
+                "site-settings.searchMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.searchMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.searchMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.searchMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "site-settings.settingsMetadata": "Settings page — search and sharing",
+                "site-settings.settingsMetadata.searchTitle": "Search title (blank uses the content title)",
+                "site-settings.settingsMetadata.description": "Search description (blank uses the page summary)",
+                "site-settings.settingsMetadata.sharingTitle": "Sharing title (blank uses the search title)",
+                "site-settings.settingsMetadata.sharingDescription": "Sharing description (blank uses the search description)",
+                "home.featuredContent": "Featured projects and articles",
+                "landing.title": "Title",
+                "landing.blocks": "Page blocks",
+                "landing.blocks.hero.heading": "Heading",
+                "landing.blocks.hero.intro": "Introduction",
+                "landing.blocks.quote.quote": "Quote",
+                "landing.blocks.quote.attribution": "Attribution",
+                "landing.blocks.call-to-action.label": "Link label",
+                "landing.blocks.call-to-action.target": "Project"
+            },
+            "options": {
+                "project.status.complete": "Complete",
+                "project.status.ongoing": "Ongoing"
+            },
+            "items": {
+                "project.credits": "credit",
+                "landing.blocks.hero": "Hero"
+            },
+            "navigation": {
+                "projects": "Projects",
+                "articles": "Articles",
+                "people": "People",
+                "home": "Home",
+                "about": "About",
+                "disciplines": "Disciplines",
+                "sectors": "Sectors",
+                "site-settings": "Discovery defaults",
+                "previews": "Previews"
+            },
+            "blocks": {
+                "landing.blocks.hero": "Hero",
+                "landing.blocks.quote": "Quote",
+                "landing.blocks.call-to-action": "Call to action"
+            },
+            "wording": {
+                "interface.skipToContent": {
+                    "label": "Skip link",
+                    "purpose": "The first link of every page, which lets keyboard users skip the navigation."
+                },
+                "interface.primaryNavigation": {
+                    "label": "Navigation name",
+                    "purpose": "The name screen readers give the main navigation."
+                },
+                "interface.searchLabel": {
+                    "label": "Search field label",
+                    "purpose": "The label of the search field on the home and search pages."
+                },
+                "interface.searchPlaceholder": {
+                    "label": "Search field example",
+                    "purpose": "The example shown in the empty search field."
+                },
+                "interface.resultSingular": {
+                    "label": "One result",
+                    "purpose": "The word after the number of search results when there is one."
+                },
+                "interface.resultPlural": {
+                    "label": "Several results",
+                    "purpose": "The word after the number of search results when there are several."
+                },
+                "interface.compositionLabel": {
+                    "label": "Image layout name",
+                    "purpose": "The name screen readers give the image layout of a page."
+                },
+                "page.home": {
+                    "label": "Home link",
+                    "purpose": "The navigation link to the home page."
+                },
+                "page.projects": {
+                    "label": "Projects title",
+                    "purpose": "The title of the projects page and its navigation link."
+                },
+                "page.articles": {
+                    "label": "Journal title",
+                    "purpose": "The title of the journal page and its navigation link."
+                },
+                "page.people": {
+                    "label": "People title",
+                    "purpose": "The title of the people page and its navigation link."
+                },
+                "page.about": {
+                    "label": "Studio title",
+                    "purpose": "The title of the studio page and its navigation link."
+                },
+                "page.search": {
+                    "label": "Search title",
+                    "purpose": "The title of the search page and its navigation link."
+                },
+                "page.disciplines": {
+                    "label": "Disciplines title",
+                    "purpose": "The title of the page that lists the disciplines."
+                },
+                "page.sectors": {
+                    "label": "Sectors title",
+                    "purpose": "The title of the page that lists the sectors."
+                },
+                "page.settings": {
+                    "label": "Settings title",
+                    "purpose": "The title of the page that shows the website settings."
+                },
+                "metadata.year": {
+                    "label": "Year label",
+                    "purpose": "The label of a project’s year."
+                },
+                "metadata.status": {
+                    "label": "Status label",
+                    "purpose": "The label of a project’s status."
+                },
+                "status.complete": {
+                    "label": "Complete status",
+                    "purpose": "A project’s status once it is complete."
+                },
+                "status.ongoing": {
+                    "label": "Ongoing status",
+                    "purpose": "A project’s status while it continues."
+                },
+                "address.projects": {
+                    "label": "Projects address",
+                    "purpose": "The part of the address of the projects pages after the language."
+                },
+                "address.articles": {
+                    "label": "Journal address",
+                    "purpose": "The part of the address of the journal pages after the language."
+                },
+                "address.people": {
+                    "label": "People address",
+                    "purpose": "The part of the address of the people pages after the language."
+                },
+                "address.about": {
+                    "label": "Studio address",
+                    "purpose": "The part of the address of the studio pages after the language."
+                },
+                "address.search": {
+                    "label": "Search address",
+                    "purpose": "The part of the address of the search pages after the language."
+                },
+                "address.disciplines": {
+                    "label": "Disciplines address",
+                    "purpose": "The part of the address of the disciplines pages after the language."
+                },
+                "address.sectors": {
+                    "label": "Sectors address",
+                    "purpose": "The part of the address of the sectors pages after the language."
+                },
+                "address.settings": {
+                    "label": "Settings address",
+                    "purpose": "The part of the address of the settings pages after the language."
+                }
+            }
+        },
+        "fr": {
+            "types": {
+                "project": {
+                    "label": "Projets",
+                    "singularLabel": "Projet"
+                },
+                "article": {
+                    "label": "Articles",
+                    "singularLabel": "Article"
+                },
+                "person": {
+                    "label": "Personnes",
+                    "singularLabel": "Personne"
+                },
+                "home": {
+                    "label": "Accueil",
+                    "singularLabel": "Accueil"
+                },
+                "about": {
+                    "label": "À propos",
+                    "singularLabel": "À propos"
+                },
+                "site-settings": {
+                    "label": "Valeurs de découverte",
+                    "singularLabel": "Valeurs de découverte"
+                },
+                "discipline": {
+                    "label": "Disciplines",
+                    "singularLabel": "Discipline"
+                },
+                "sector": {
+                    "label": "Secteurs",
+                    "singularLabel": "Secteur"
+                },
+                "landing": {
+                    "label": "Pages de destination",
+                    "singularLabel": "Page de destination"
+                }
+            },
+            "fields": {
+                "project.title": "Titre",
+                "project.slug": "Segment d’URL",
+                "project.year": "Année",
+                "project.sortOrder": "Ordre éditorial",
+                "project.featured": "En vedette",
+                "project.publishedOn": "Date de publication",
+                "project.status": "État du projet",
+                "project.body": "Corps du texte",
+                "project.gallery": "Galerie",
+                "project.trailer": "Bande-annonce",
+                "project.lead": "Responsable du projet",
+                "project.related": "Projets associés",
+                "project.disciplines": "Disciplines",
+                "project.credits": "Crédits",
+                "project.credits.role": "Rôle",
+                "project.credits.name": "Nom",
+                "project.layout": "Mise en page",
+                "project.searchSharing": "Recherche et partage (remplacements facultatifs)",
+                "project.searchSharing.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "project.searchSharing.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "project.searchSharing.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "project.searchSharing.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "article.title": "Titre",
+                "article.slug": "Segment d’URL",
+                "article.sortOrder": "Ordre éditorial",
+                "article.excerpt": "Extrait",
+                "article.body": "Corps du texte",
+                "article.relatedProjects": "Projets associés",
+                "article.sectors": "Secteurs",
+                "article.searchSharing": "Recherche et partage (remplacements facultatifs)",
+                "article.searchSharing.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "article.searchSharing.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "article.searchSharing.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "article.searchSharing.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "person.name": "Nom",
+                "person.slug": "Segment d’URL",
+                "person.sortOrder": "Ordre éditorial",
+                "person.role": "Rôle",
+                "person.website": "Site web",
+                "person.portrait": "Portrait",
+                "person.searchSharing": "Recherche et partage (remplacements facultatifs)",
+                "person.searchSharing.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "person.searchSharing.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "person.searchSharing.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "person.searchSharing.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "home.introduction": "Introduction",
+                "home.searchSharing": "Recherche et partage (remplacements facultatifs)",
+                "home.searchSharing.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "home.searchSharing.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "home.searchSharing.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "home.searchSharing.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "about.body": "Corps du texte",
+                "about.contact": "Contact",
+                "about.contact.email": "Adresse e-mail",
+                "about.contact.city": "Ville",
+                "about.searchSharing": "Recherche et partage (remplacements facultatifs)",
+                "about.searchSharing.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "about.searchSharing.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "about.searchSharing.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "about.searchSharing.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "discipline.label": "Libellé",
+                "discipline.aliases": "Alias de recherche (un par ligne)",
+                "discipline.deprecated": "Obsolète (conserve les usages existants, empêche toute nouvelle sélection)",
+                "sector.label": "Libellé",
+                "sector.aliases": "Alias de recherche (un par ligne)",
+                "sector.deprecated": "Obsolète (conserve les usages existants, empêche toute nouvelle sélection)",
+                "site-settings.defaultSearchDescription": "Description par défaut pour les moteurs (si la page n’a pas de résumé)",
+                "site-settings.projectsMetadata": "Projets — recherche et partage",
+                "site-settings.projectsMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.projectsMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.projectsMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.projectsMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "site-settings.articlesMetadata": "Journal — recherche et partage",
+                "site-settings.articlesMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.articlesMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.articlesMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.articlesMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "site-settings.peopleMetadata": "Personnes — recherche et partage",
+                "site-settings.peopleMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.peopleMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.peopleMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.peopleMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "site-settings.disciplinesMetadata": "Disciplines — recherche et partage",
+                "site-settings.disciplinesMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.disciplinesMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.disciplinesMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.disciplinesMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "site-settings.sectorsMetadata": "Secteurs — recherche et partage",
+                "site-settings.sectorsMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.sectorsMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.sectorsMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.sectorsMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "site-settings.searchMetadata": "Recherche — recherche et partage",
+                "site-settings.searchMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.searchMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.searchMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.searchMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "site-settings.settingsMetadata": "Paramètres — recherche et partage",
+                "site-settings.settingsMetadata.searchTitle": "Titre pour les moteurs de recherche (vide : titre du contenu)",
+                "site-settings.settingsMetadata.description": "Description pour les moteurs de recherche (vide : résumé de la page)",
+                "site-settings.settingsMetadata.sharingTitle": "Titre de partage (vide : titre pour les moteurs de recherche)",
+                "site-settings.settingsMetadata.sharingDescription": "Description de partage (vide : description pour les moteurs de recherche)",
+                "home.featuredContent": "Projets et articles à la une",
+                "landing.title": "Titre",
+                "landing.blocks": "Blocs de page",
+                "landing.blocks.hero.heading": "Titre du bloc",
+                "landing.blocks.hero.intro": "Introduction",
+                "landing.blocks.quote.quote": "Citation",
+                "landing.blocks.quote.attribution": "Attribution",
+                "landing.blocks.call-to-action.label": "Texte du lien",
+                "landing.blocks.call-to-action.target": "Projet"
+            },
+            "options": {
+                "project.status.complete": "Terminé",
+                "project.status.ongoing": "En cours"
+            },
+            "items": {
+                "project.credits": "crédit",
+                "landing.blocks.hero": "En-tête"
+            },
+            "navigation": {
+                "projects": "Projets",
+                "articles": "Articles",
+                "people": "Personnes",
+                "home": "Accueil",
+                "about": "À propos",
+                "disciplines": "Disciplines",
+                "sectors": "Secteurs",
+                "site-settings": "Valeurs de découverte",
+                "previews": "Aperçus"
+            },
+            "blocks": {
+                "landing.blocks.hero": "En-tête",
+                "landing.blocks.quote": "Citation",
+                "landing.blocks.call-to-action": "Appel à l’action"
+            },
+            "wording": {
+                "interface.skipToContent": {
+                    "label": "Lien d’accès au contenu",
+                    "purpose": "Le premier lien de chaque page, qui permet de passer la navigation au clavier."
+                },
+                "interface.primaryNavigation": {
+                    "label": "Nom de la navigation",
+                    "purpose": "Le nom de la navigation principale annoncé par les lecteurs d’écran."
+                },
+                "interface.searchLabel": {
+                    "label": "Libellé du champ de recherche",
+                    "purpose": "Le libellé du champ de recherche sur les pages d’accueil et de recherche."
+                },
+                "interface.searchPlaceholder": {
+                    "label": "Exemple du champ de recherche",
+                    "purpose": "L’exemple affiché lorsque le champ de recherche est vide."
+                },
+                "interface.resultSingular": {
+                    "label": "Un résultat",
+                    "purpose": "Le mot qui suit le nombre de résultats de recherche lorsqu’il n’y en a qu’un."
+                },
+                "interface.resultPlural": {
+                    "label": "Plusieurs résultats",
+                    "purpose": "Le mot qui suit le nombre de résultats de recherche lorsqu’il y en a plusieurs."
+                },
+                "interface.compositionLabel": {
+                    "label": "Nom de la composition d’images",
+                    "purpose": "Le nom de la composition d’images d’une page annoncé par les lecteurs d’écran."
+                },
+                "page.home": {
+                    "label": "Lien vers l’accueil",
+                    "purpose": "Le lien de navigation vers la page d’accueil."
+                },
+                "page.projects": {
+                    "label": "Titre des projets",
+                    "purpose": "Le titre de la page des projets et son lien de navigation."
+                },
+                "page.articles": {
+                    "label": "Titre du journal",
+                    "purpose": "Le titre de la page du journal et son lien de navigation."
+                },
+                "page.people": {
+                    "label": "Titre des personnes",
+                    "purpose": "Le titre de la page des personnes et son lien de navigation."
+                },
+                "page.about": {
+                    "label": "Titre du studio",
+                    "purpose": "Le titre de la page du studio et son lien de navigation."
+                },
+                "page.search": {
+                    "label": "Titre de la recherche",
+                    "purpose": "Le titre de la page de recherche et son lien de navigation."
+                },
+                "page.disciplines": {
+                    "label": "Titre des disciplines",
+                    "purpose": "Le titre de la page qui répertorie les disciplines."
+                },
+                "page.sectors": {
+                    "label": "Titre des secteurs",
+                    "purpose": "Le titre de la page qui répertorie les secteurs."
+                },
+                "page.settings": {
+                    "label": "Titre des réglages",
+                    "purpose": "Le titre de la page qui présente les réglages du site web."
+                },
+                "metadata.year": {
+                    "label": "Libellé de l’année",
+                    "purpose": "Le libellé de l’année d’un projet."
+                },
+                "metadata.status": {
+                    "label": "Libellé du statut",
+                    "purpose": "Le libellé du statut d’un projet."
+                },
+                "status.complete": {
+                    "label": "Statut terminé",
+                    "purpose": "Le statut d’un projet une fois terminé."
+                },
+                "status.ongoing": {
+                    "label": "Statut en cours",
+                    "purpose": "Le statut d’un projet pendant sa réalisation."
+                },
+                "address.projects": {
+                    "label": "Adresse des projets",
+                    "purpose": "La partie de l’adresse des pages de projets qui suit le code de langue."
+                },
+                "address.articles": {
+                    "label": "Adresse du journal",
+                    "purpose": "La partie de l’adresse des pages du journal qui suit le code de langue."
+                },
+                "address.people": {
+                    "label": "Adresse des personnes",
+                    "purpose": "La partie de l’adresse des pages de personnes qui suit le code de langue."
+                },
+                "address.about": {
+                    "label": "Adresse du studio",
+                    "purpose": "La partie de l’adresse des pages du studio qui suit le code de langue."
+                },
+                "address.search": {
+                    "label": "Adresse de la recherche",
+                    "purpose": "La partie de l’adresse des pages de recherche qui suit le code de langue."
+                },
+                "address.disciplines": {
+                    "label": "Adresse des disciplines",
+                    "purpose": "La partie de l’adresse des pages de disciplines qui suit le code de langue."
+                },
+                "address.sectors": {
+                    "label": "Adresse des secteurs",
+                    "purpose": "La partie de l’adresse des pages de secteurs qui suit le code de langue."
+                },
+                "address.settings": {
+                    "label": "Adresse des réglages",
+                    "purpose": "La partie de l’adresse des pages de réglages qui suit le code de langue."
+                }
+            }
+        },
+        "de": {
+            "types": {
+                "project": {
+                    "label": "Projekte",
+                    "singularLabel": "Projekt"
+                },
+                "article": {
+                    "label": "Artikel",
+                    "singularLabel": "Artikel"
+                },
+                "person": {
+                    "label": "Personen",
+                    "singularLabel": "Person"
+                },
+                "home": {
+                    "label": "Startseite",
+                    "singularLabel": "Startseite"
+                },
+                "about": {
+                    "label": "Über uns",
+                    "singularLabel": "Über uns"
+                },
+                "site-settings": {
+                    "label": "Auffindbarkeit",
+                    "singularLabel": "Auffindbarkeit"
+                },
+                "discipline": {
+                    "label": "Disziplinen",
+                    "singularLabel": "Disziplin"
+                },
+                "sector": {
+                    "label": "Branchen",
+                    "singularLabel": "Branche"
+                },
+                "landing": {
+                    "label": "Landingpages",
+                    "singularLabel": "Landingpage"
+                }
+            },
+            "fields": {
+                "project.title": "Titel",
+                "project.slug": "URL-Segment",
+                "project.year": "Jahr",
+                "project.sortOrder": "Redaktionelle Reihenfolge",
+                "project.featured": "Hervorgehoben",
+                "project.publishedOn": "Veröffentlicht am",
+                "project.status": "Projektstatus",
+                "project.body": "Haupttext",
+                "project.gallery": "Galerie",
+                "project.trailer": "Trailer",
+                "project.lead": "Projektleitung",
+                "project.related": "Verwandte Projekte",
+                "project.disciplines": "Disziplinen",
+                "project.credits": "Mitwirkende",
+                "project.credits.role": "Rolle",
+                "project.credits.name": "Name",
+                "project.layout": "Layout",
+                "project.searchSharing": "Suche und Teilen (optionale Überschreibungen)",
+                "project.searchSharing.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "project.searchSharing.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "project.searchSharing.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "project.searchSharing.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "article.title": "Titel",
+                "article.slug": "URL-Segment",
+                "article.sortOrder": "Redaktionelle Reihenfolge",
+                "article.excerpt": "Auszug",
+                "article.body": "Haupttext",
+                "article.relatedProjects": "Verwandte Projekte",
+                "article.sectors": "Branchen",
+                "article.searchSharing": "Suche und Teilen (optionale Überschreibungen)",
+                "article.searchSharing.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "article.searchSharing.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "article.searchSharing.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "article.searchSharing.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "person.name": "Name",
+                "person.slug": "URL-Segment",
+                "person.sortOrder": "Redaktionelle Reihenfolge",
+                "person.role": "Rolle",
+                "person.website": "Website",
+                "person.portrait": "Porträt",
+                "person.searchSharing": "Suche und Teilen (optionale Überschreibungen)",
+                "person.searchSharing.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "person.searchSharing.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "person.searchSharing.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "person.searchSharing.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "home.introduction": "Einleitung",
+                "home.searchSharing": "Suche und Teilen (optionale Überschreibungen)",
+                "home.searchSharing.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "home.searchSharing.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "home.searchSharing.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "home.searchSharing.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "about.body": "Haupttext",
+                "about.contact": "Kontakt",
+                "about.contact.email": "E-Mail",
+                "about.contact.city": "Stadt",
+                "about.searchSharing": "Suche und Teilen (optionale Überschreibungen)",
+                "about.searchSharing.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "about.searchSharing.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "about.searchSharing.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "about.searchSharing.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "discipline.label": "Bezeichnung",
+                "discipline.aliases": "Suchaliasse (einer pro Zeile)",
+                "discipline.deprecated": "Veraltet (bestehende Verwendungen bleiben, keine neue Auswahl)",
+                "sector.label": "Bezeichnung",
+                "sector.aliases": "Suchaliasse (einer pro Zeile)",
+                "sector.deprecated": "Veraltet (bestehende Verwendungen bleiben, keine neue Auswahl)",
+                "site-settings.defaultSearchDescription": "Standardbeschreibung für Suchmaschinen (wenn die Seite keine Zusammenfassung hat)",
+                "site-settings.projectsMetadata": "Projekte — Suche und Teilen",
+                "site-settings.projectsMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.projectsMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.projectsMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.projectsMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "site-settings.articlesMetadata": "Journal — Suche und Teilen",
+                "site-settings.articlesMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.articlesMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.articlesMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.articlesMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "site-settings.peopleMetadata": "Personen — Suche und Teilen",
+                "site-settings.peopleMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.peopleMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.peopleMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.peopleMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "site-settings.disciplinesMetadata": "Disziplinen — Suche und Teilen",
+                "site-settings.disciplinesMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.disciplinesMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.disciplinesMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.disciplinesMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "site-settings.sectorsMetadata": "Sektoren — Suche und Teilen",
+                "site-settings.sectorsMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.sectorsMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.sectorsMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.sectorsMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "site-settings.searchMetadata": "Suche — Suche und Teilen",
+                "site-settings.searchMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.searchMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.searchMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.searchMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "site-settings.settingsMetadata": "Einstellungen — Suche und Teilen",
+                "site-settings.settingsMetadata.searchTitle": "Titel für Suchmaschinen (leer: Titel des Inhalts)",
+                "site-settings.settingsMetadata.description": "Beschreibung für Suchmaschinen (leer: Zusammenfassung der Seite)",
+                "site-settings.settingsMetadata.sharingTitle": "Titel zum Teilen (leer: Titel für Suchmaschinen)",
+                "site-settings.settingsMetadata.sharingDescription": "Beschreibung zum Teilen (leer: Beschreibung für Suchmaschinen)",
+                "home.featuredContent": "Ausgewählte Projekte und Artikel",
+                "landing.title": "Titel",
+                "landing.blocks": "Seitenblöcke",
+                "landing.blocks.hero.heading": "Überschrift",
+                "landing.blocks.hero.intro": "Einleitung",
+                "landing.blocks.quote.quote": "Zitat",
+                "landing.blocks.quote.attribution": "Urheberschaft",
+                "landing.blocks.call-to-action.label": "Linktext",
+                "landing.blocks.call-to-action.target": "Projekt"
+            },
+            "options": {
+                "project.status.complete": "Abgeschlossen",
+                "project.status.ongoing": "Laufend"
+            },
+            "items": {
+                "project.credits": "Mitwirkende",
+                "landing.blocks.hero": "Kopfbereich"
+            },
+            "navigation": {
+                "projects": "Projekte",
+                "articles": "Artikel",
+                "people": "Personen",
+                "home": "Startseite",
+                "about": "Über uns",
+                "disciplines": "Disziplinen",
+                "sectors": "Branchen",
+                "site-settings": "Auffindbarkeit",
+                "previews": "Vorschauen"
+            },
+            "blocks": {
+                "landing.blocks.hero": "Kopfbereich",
+                "landing.blocks.quote": "Zitat",
+                "landing.blocks.call-to-action": "Handlungsaufruf"
+            },
+            "wording": {
+                "interface.skipToContent": {
+                    "label": "Link zum Inhalt",
+                    "purpose": "Der erste Link jeder Seite, mit dem die Navigation per Tastatur übersprungen werden kann."
+                },
+                "interface.primaryNavigation": {
+                    "label": "Name der Navigation",
+                    "purpose": "Der Name der Hauptnavigation, den Screenreader ansagen."
+                },
+                "interface.searchLabel": {
+                    "label": "Beschriftung des Suchfelds",
+                    "purpose": "Die Beschriftung des Suchfelds auf der Startseite und der Suchseite."
+                },
+                "interface.searchPlaceholder": {
+                    "label": "Beispiel im Suchfeld",
+                    "purpose": "Das Beispiel, das im leeren Suchfeld angezeigt wird."
+                },
+                "interface.resultSingular": {
+                    "label": "Ein Ergebnis",
+                    "purpose": "Das Wort nach der Anzahl der Suchergebnisse, wenn es genau eines gibt."
+                },
+                "interface.resultPlural": {
+                    "label": "Mehrere Ergebnisse",
+                    "purpose": "Das Wort nach der Anzahl der Suchergebnisse, wenn es mehrere gibt."
+                },
+                "interface.compositionLabel": {
+                    "label": "Name der Bildkomposition",
+                    "purpose": "Der Name der Bildkomposition einer Seite, den Screenreader ansagen."
+                },
+                "page.home": {
+                    "label": "Link zur Startseite",
+                    "purpose": "Der Navigationslink zur Startseite."
+                },
+                "page.projects": {
+                    "label": "Titel der Projekte",
+                    "purpose": "Der Titel der Projektseite und ihr Navigationslink."
+                },
+                "page.articles": {
+                    "label": "Titel des Journals",
+                    "purpose": "Der Titel der Journalseite und ihr Navigationslink."
+                },
+                "page.people": {
+                    "label": "Titel der Personen",
+                    "purpose": "Der Titel der Personenseite und ihr Navigationslink."
+                },
+                "page.about": {
+                    "label": "Titel des Studios",
+                    "purpose": "Der Titel der Studioseite und ihr Navigationslink."
+                },
+                "page.search": {
+                    "label": "Titel der Suche",
+                    "purpose": "Der Titel der Suchseite und ihr Navigationslink."
+                },
+                "page.disciplines": {
+                    "label": "Titel der Disziplinen",
+                    "purpose": "Der Titel der Seite, die die Disziplinen auflistet."
+                },
+                "page.sectors": {
+                    "label": "Titel der Bereiche",
+                    "purpose": "Der Titel der Seite, die die Bereiche auflistet."
+                },
+                "page.settings": {
+                    "label": "Titel der Einstellungen",
+                    "purpose": "Der Titel der Seite mit den Website-Einstellungen."
+                },
+                "metadata.year": {
+                    "label": "Beschriftung des Jahres",
+                    "purpose": "Die Beschriftung des Jahres eines Projekts."
+                },
+                "metadata.status": {
+                    "label": "Beschriftung des Status",
+                    "purpose": "Die Beschriftung des Status eines Projekts."
+                },
+                "status.complete": {
+                    "label": "Status abgeschlossen",
+                    "purpose": "Der Status eines abgeschlossenen Projekts."
+                },
+                "status.ongoing": {
+                    "label": "Status in Arbeit",
+                    "purpose": "Der Status eines Projekts während seiner Bearbeitung."
+                },
+                "address.projects": {
+                    "label": "Adresse der Projekte",
+                    "purpose": "Der Teil der Adresse der Projektseiten nach dem Sprachcode."
+                },
+                "address.articles": {
+                    "label": "Adresse des Journals",
+                    "purpose": "Der Teil der Adresse der Journalseiten nach dem Sprachcode."
+                },
+                "address.people": {
+                    "label": "Adresse der Personen",
+                    "purpose": "Der Teil der Adresse der Personenseiten nach dem Sprachcode."
+                },
+                "address.about": {
+                    "label": "Adresse des Studios",
+                    "purpose": "Der Teil der Adresse der Studioseiten nach dem Sprachcode."
+                },
+                "address.search": {
+                    "label": "Adresse der Suche",
+                    "purpose": "Der Teil der Adresse der Suchseiten nach dem Sprachcode."
+                },
+                "address.disciplines": {
+                    "label": "Adresse der Disziplinen",
+                    "purpose": "Der Teil der Adresse der Disziplinseiten nach dem Sprachcode."
+                },
+                "address.sectors": {
+                    "label": "Adresse der Bereiche",
+                    "purpose": "Der Teil der Adresse der Bereichsseiten nach dem Sprachcode."
+                },
+                "address.settings": {
+                    "label": "Adresse der Einstellungen",
+                    "purpose": "Der Teil der Adresse der Einstellungsseiten nach dem Sprachcode."
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "prerender": [
+    {
+      "where": { "selector_matches": "a[data-preview-trigger]" },
+      "eagerness": "moderate"
+    }
+  ]
+}

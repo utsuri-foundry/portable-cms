@@ -1,0 +1,57 @@
+/* Live preview workspace; loaded only on record pages. Tokens come from admin.css. */
+/* Wide windows: folded menu, the form at a remembered width, the page beside it. Narrow: one or the other. */
+.admin-live { display: grid; min-width: 0; grid-template-rows: auto auto minmax(0, 1fr); background: var(--admin-canvas); }
+.admin-live__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2) var(--admin-space-3); padding: var(--admin-space-2) var(--admin-space-4); border-bottom: 1px solid var(--admin-border); background: var(--admin-panel); }
+.admin-live__page { display: inline-flex; align-items: center; gap: var(--admin-space-2); color: var(--admin-muted); font-size: var(--admin-text-xs); }
+.admin-live__page select { width: auto; min-height: var(--admin-control-small); padding-block: 0; font-size: var(--admin-text-xs); }
+.admin-live__actions { display: inline-flex; gap: var(--admin-space-1); margin-left: auto; }
+.admin-live__actions a[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+.admin-live__state { display: flex; min-height: 2.5rem; align-items: center; justify-content: space-between; gap: var(--admin-space-3); padding: var(--admin-space-1) var(--admin-space-4); }
+.admin-live__status { margin: 0; color: var(--admin-muted); font-size: var(--admin-text-xs); }
+.admin-live__stage { min-height: 0; margin: 0 var(--admin-space-4) var(--admin-space-4); overflow: hidden; }
+.admin-live__box { position: relative; height: 100%; max-width: 100%; margin-inline: auto; overflow: hidden; border: 1px solid var(--admin-border); border-radius: var(--admin-radius-small); background: var(--admin-preview-ground); box-shadow: var(--admin-shadow); }
+.admin-live__box iframe { position: absolute; top: 0; left: 0; border: 0; background: var(--admin-preview-ground); transform-origin: top left; }
+/* The page being prepared stays laid out, so it can load and take its scroll position unseen. */
+.admin-live__box iframe:not([data-live-active]) { visibility: hidden; }
+.admin-live-separator { position: fixed; z-index: 11; top: 0; bottom: 0; left: calc(3.5rem + var(--admin-live-form, 30vw) - 0.375rem); width: 0.75rem; cursor: col-resize; touch-action: none; }
+.admin-live-separator::after { position: absolute; top: 50%; left: 50%; width: 0.25rem; height: 2.5rem; border-radius: 999px; background: var(--admin-border-strong); content: ""; transform: translate(-50%, -50%); }
+.admin-live-separator:hover::after, .admin-live-separator:focus-visible::after { background: var(--admin-accent); }
+
+@media (min-width: 68.75rem) {
+  .admin-shell--live { grid-template-columns: 3.5rem minmax(0, var(--admin-live-form, 30vw)); }
+  .admin-shell--live > .admin-topbar {
+    position: sticky; z-index: 20; top: 0; display: flex; height: 100vh; flex-direction: column; align-items: center; gap: var(--admin-space-3);
+    padding: var(--admin-space-3) 0; border-right: 1px solid var(--admin-border); background: var(--admin-panel);
+  }
+  .admin-shell--live > .admin-topbar .admin-brand { padding: 0; border: 0; }
+  .admin-shell--live > .admin-topbar .admin-brand__text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .admin-shell--live .admin-menu-button { padding: 0 0.375rem; }
+  @supports selector(:popover-open) {
+    .admin-shell--live .admin-sidebar:not(:popover-open) { display: none; }
+    .admin-shell--live .admin-sidebar:popover-open {
+      position: fixed; inset: var(--admin-space-3) auto var(--admin-space-3) 4rem; display: flex; width: 16rem; height: auto; margin: 0;
+      border: 1px solid var(--admin-border); border-radius: var(--admin-radius); box-shadow: var(--admin-shadow);
+    }
+    .admin-shell--live .admin-sidebar::backdrop { background: var(--admin-overlay); }
+  }
+  .admin-shell--live .admin-main { padding: var(--admin-space-4); }
+  .admin-shell--live .admin-live { position: fixed; z-index: 10; inset: 0 0 0 calc(3.5rem + var(--admin-live-form, 30vw)); border-left: 1px solid var(--admin-border); }
+  .admin-shell--live .admin-live__modes { display: none; }
+}
+
+/* In the workspace the save bar sits above the form, where the language switch joins it. */
+.admin-shell--live .admin-editor__rail .admin-save-bar { position: sticky; z-index: 6; top: 0; bottom: auto; order: -1; }
+.admin-shell--live .admin-editor__rail .admin-outline { position: static; }
+
+@media (max-width: 68.74rem) {
+  .admin-live-separator { display: none; }
+  .admin-shell--live .admin-live { position: fixed; z-index: 30; inset: 0; }
+  .admin-shell--live[data-live-view="edit"] .admin-live { top: auto; grid-template-rows: auto; box-shadow: var(--admin-shadow); }
+  .admin-shell--live[data-live-view="edit"] .admin-live > :not(.admin-live__bar),
+  .admin-shell--live[data-live-view="edit"] .admin-live__bar > :not(.admin-live__modes) { display: none; }
+  .admin-shell--live[data-live-view="edit"] .admin-main { padding-bottom: 5rem; }
+}
+
+@media (forced-colors: active) {
+  .admin-live-separator::after { background: CanvasText; }
+}

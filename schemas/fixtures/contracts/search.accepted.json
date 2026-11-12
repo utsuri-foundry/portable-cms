@@ -1,0 +1,15 @@
+{
+  "formatVersion": 1,
+  "locale": "en",
+  "normalization": "unicode_nfkd_accent_fold_lower_words_v1",
+  "ordering": "weight_desc_document_id_asc",
+  "documents": [
+    { "id": "11111111111111111111111111111111", "typeId": "project", "route": "/en/projects/courtyard-house/", "title": "Courtyard house", "resultKind": "image", "mediaId": "77777777777777777777777777777777" },
+    { "id": "22222222222222222222222222222222", "typeId": "article", "route": "/en/articles/material-notes/", "title": "Material notes", "resultKind": "text", "mediaId": null }
+  ],
+  "terms": [
+    { "token": "courtyard", "postings": [{ "documentId": "11111111111111111111111111111111", "weight": 12 }] },
+    { "token": "material", "postings": [{ "documentId": "22222222222222222222222222222222", "weight": 10 }, { "documentId": "11111111111111111111111111111111", "weight": 4 }] },
+    { "token": "wood", "postings": [{ "documentId": "11111111111111111111111111111111", "weight": 8 }] }
+  ]
+}

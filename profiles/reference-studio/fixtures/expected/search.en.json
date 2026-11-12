@@ -1,0 +1,503 @@
+{
+    "formatVersion": 1,
+    "locale": "en",
+    "normalization": "unicode_nfkd_accent_fold_lower_words_v1",
+    "ordering": "weight_desc_document_id_asc",
+    "documents": [
+        {
+            "id": "10000000000000000000000000000001",
+            "typeId": "project",
+            "route": "/en/projects/archive-of-mist/",
+            "title": "Archive of Mist",
+            "resultKind": "image",
+            "mediaId": "d0000000000000000000000000000001"
+        },
+        {
+            "id": "30000000000000000000000000000001",
+            "typeId": "article",
+            "route": "/en/articles/measuring-shade/",
+            "title": "Measuring Shade",
+            "resultKind": "text",
+            "mediaId": null
+        },
+        {
+            "id": "40000000000000000000000000000001",
+            "typeId": "person",
+            "route": "/en/people/nora-vidal/",
+            "title": "Nora Vidal",
+            "resultKind": "text",
+            "mediaId": null
+        },
+        {
+            "id": "c9000000000000000000000000000001",
+            "typeId": "landing",
+            "route": "/en/landing/",
+            "title": "Spaces to share",
+            "resultKind": "text",
+            "mediaId": null
+        }
+    ],
+    "terms": [
+        {
+            "token": "2025",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "a",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "above",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "air",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "an",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "and",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                },
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 8
+                },
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "architect",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "architecture",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "archive",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "changing",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "climate",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "culture",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "discover",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "editor",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "find",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "for",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "former",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "from",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "ideas",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "marsh",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "matter",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "meaning",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "measuring",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "mist",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "nora",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "notes",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "observing",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "of",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "on",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "open",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "our",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "pavilion",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "project",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "reference",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "riba",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "salt",
+            "postings": [
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "selection",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "shade",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "share",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "spaces",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "studio",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "the",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "them",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "time",
+            "postings": [
+                {
+                    "documentId": "30000000000000000000000000000001",
+                    "weight": 8
+                }
+            ]
+        },
+        {
+            "token": "to",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 16
+                }
+            ]
+        },
+        {
+            "token": "vidal",
+            "postings": [
+                {
+                    "documentId": "40000000000000000000000000000001",
+                    "weight": 16
+                },
+                {
+                    "documentId": "10000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "we",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "when",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        },
+        {
+            "token": "work",
+            "postings": [
+                {
+                    "documentId": "c9000000000000000000000000000001",
+                    "weight": 4
+                }
+            ]
+        }
+    ]
+}

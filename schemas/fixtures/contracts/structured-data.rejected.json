@@ -1,0 +1,1 @@
+{"@context":"https://untrusted.example","@graph":[{"@type":"Organization","name":"Reference Studio","url":"https://studio.example/en/","script":"alert(1)"}]}

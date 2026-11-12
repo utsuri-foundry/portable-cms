@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'language_text.title' => 'Eliminar el texto en {language}',
+    'language_text.title_any' => 'Eliminar el texto de un idioma',
+    'language_text.back' => 'Volver a Idiomas',
+    'language_text.not_deleted' => 'No se ha eliminado el texto',
+    'language_text.done' => 'Se ha eliminado el texto en {language} de {records, plural, one {# registro} other {# registros}} y {media, plural, one {# elemento multimedia} other {# elementos multimedia}}.',
+    'language_text.history' => 'Las revisiones anteriores conservan el texto. Sigue en el historial de los registros y en las exportaciones, y restaurar una revisión anterior lo recupera.',
+    'language_text.running' => 'Eliminando el texto en {language}',
+    'language_text.progress' => 'Se han reescrito {done} de {records, plural, one {# registro} other {# registros}} y se han vaciado {media, plural, one {# elemento multimedia} other {# elementos multimedia}}.',
+    'language_text.continue_help' => 'La eliminación se hace por lotes. Continúa hasta que termine. Si se ha interrumpido, continuar la retoma donde se detuvo.',
+    'language_text.continue' => 'Seguir eliminando',
+    'language_text.unknown' => 'El sitio web no tiene este idioma.',
+    'language_text.turn_off' => '{language} es público o está en preparación. Desactívalo en Idiomas antes de eliminar su texto.',
+    'language_text.not_allowed' => 'Solo el propietario puede eliminar el texto de un idioma.',
+    'language_text.consequences' => 'Qué se elimina',
+    'language_text.records' => 'El texto actual en {language} de {records, plural, one {# registro} other {# registros}}. Cada uno se guarda como una revisión nueva sin ese texto.',
+    'language_text.media' => 'Los textos alternativos, pies y créditos en este idioma de {media, plural, one {# elemento multimedia} other {# elementos multimedia}}.',
+    'language_text.settings' => 'Sus textos del sitio, y el mensaje y el contacto de la página Próximamente.',
+    'language_text.backup' => 'Esto no se puede deshacer en el CMS. Haz primero una exportación.',
+    'language_text.export' => 'Ir a Exportación',
+    'language_text.confirm_label' => 'Eliminar definitivamente el texto en {language} de {records, plural, one {# registro} other {# registros}}',
+    'language_text.delete' => 'Eliminar el texto en {language}',
+    'language_text.confirm' => 'Eliminar el texto de un idioma necesita confirmación. Marca la confirmación y vuelve a intentarlo.',
+    'language_text.changed' => 'Ha cambiado el número de registros con texto en este idioma. Revisa el nuevo recuento y vuelve a confirmar.',
+    'language_text.busy' => 'Todavía se está haciendo otra eliminación. Termínala primero.',
+    'language_text.none' => 'No se está haciendo ninguna eliminación.',
+    'language_text.not_off' => '{language} ya no está desactivado. Vuelve a desactivarlo para eliminar su texto.',
+    'language_text.record_invalid' => 'Un {type} ({id}) ya no supera las comprobaciones del perfil y no se ha podido eliminar su texto. Corrígelo y continúa.',
+    'languages.delete_text' => 'Eliminar el texto en {language}',
+    'languages.deletion_running' => 'Se está eliminando el texto en {language}.',
+    'languages.deletion_continue' => 'Continuar la eliminación',
+];

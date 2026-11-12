@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.utsuri.io/portable-cms/design-registries-v1.schema.json",
+  "title": "Website design registries v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "profileId",
+    "revision",
+    "fonts",
+    "responsive",
+    "typography",
+    "spacing"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "profileId": {
+      "type": "string",
+      "maxLength": 80,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "fonts": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "origin",
+          "sha256",
+          "byteSize",
+          "sourceSha256",
+          "provenance",
+          "license"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[^\\x00-\\x1f\\x7f<>]+$"
+          },
+          "origin": {
+            "enum": [
+              "package",
+              "upload"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "byteSize": {
+            "type": "integer",
+            "minimum": 48,
+            "maximum": 2097152
+          },
+          "sourceSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "provenance": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f<>]+$"
+          },
+          "license": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f<>]+$"
+          }
+        }
+      }
+    },
+    "responsive": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "minWidth"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[^\\x00-\\x1f\\x7f<>]+$"
+          },
+          "minWidth": {
+            "type": "integer",
+            "minimum": 240,
+            "maximum": 3840
+          }
+        }
+      }
+    },
+    "typography": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "fontId",
+          "fallback",
+          "weight",
+          "lineHeight",
+          "size",
+          "overrides"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[^\\x00-\\x1f\\x7f<>]+$"
+          },
+          "fontId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "fallback": {
+            "enum": [
+              "serif",
+              "sans-serif",
+              "monospace"
+            ]
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 900
+          },
+          "lineHeight": {
+            "type": "number",
+            "minimum": 0.8,
+            "maximum": 3
+          },
+          "size": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "min",
+              "max",
+              "from",
+              "to"
+            ],
+            "properties": {
+              "min": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 512
+              },
+              "max": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 512
+              },
+              "from": {
+                "type": "integer",
+                "minimum": 240,
+                "maximum": 3840
+              },
+              "to": {
+                "type": "integer",
+                "minimum": 240,
+                "maximum": 3840
+              }
+            }
+          },
+          "overrides": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "thresholdId",
+                "size"
+              ],
+              "properties": {
+                "thresholdId": {
+                  "type": "string",
+                  "maxLength": 80,
+                  "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+                },
+                "size": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "min",
+                    "max",
+                    "from",
+                    "to"
+                  ],
+                  "properties": {
+                    "min": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 512
+                    },
+                    "max": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 512
+                    },
+                    "from": {
+                      "type": "integer",
+                      "minimum": 240,
+                      "maximum": 3840
+                    },
+                    "to": {
+                      "type": "integer",
+                      "minimum": 240,
+                      "maximum": 3840
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "spacing": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "size"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[^\\x00-\\x1f\\x7f<>]+$"
+          },
+          "size": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "min",
+              "max",
+              "from",
+              "to"
+            ],
+            "properties": {
+              "min": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 512
+              },
+              "max": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 512
+              },
+              "from": {
+                "type": "integer",
+                "minimum": 240,
+                "maximum": 3840
+              },
+              "to": {
+                "type": "integer",
+                "minimum": 240,
+                "maximum": 3840
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

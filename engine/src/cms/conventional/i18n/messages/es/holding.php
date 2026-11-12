@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'holding.status.queued' => 'En cola',
+    'holding.status.building' => 'Generando',
+    'holding.status.ready' => 'Preparado',
+    'holding.status.needs_attention' => 'Requiere atención',
+    'holding.settings' => 'Configuración del sitio',
+    'holding.settings_help' => 'Elige qué mostrará la próxima publicación aprobada. Guardar no cambia el sitio público. Las vistas previas exactas siempre muestran el sitio real.',
+    'holding.conflict' => 'La configuración ha cambiado',
+    'holding.invalid' => 'Revisa la configuración',
+    'holding.preserved' => 'Tus datos se conservan a continuación.',
+    'holding.current_values' => 'Modo guardado actual: {mode}. Nombre del sitio: {name}.',
+    'holding.name' => 'Nombre del sitio',
+    'holding.mode' => 'Modo de publicación',
+    'holding.mode.coming_soon' => 'Próximamente',
+    'holding.mode.live' => 'Sitio completo',
+    'holding.standard' => 'La publicación estándar puede mostrar brevemente una mezcla de versiones aprobadas durante la aplicación o recuperación. La publicación atómica no está activada.',
+    'holding.icon' => 'Icono del sitio (opcional)',
+    'holding.icon_help' => 'Elige una imagen cuadrada preparada de al menos 512 píxeles. El sistema genera iconos seguros.',
+    'holding.icon_id' => 'ID del medio para el icono',
+    'holding.message' => 'Mensaje breve',
+    'holding.contact' => 'Datos de contacto (opcional, texto plano)',
+    'holding.confirm' => 'Entiendo que publicar Próximamente sustituirá el sitio público y eliminará sus páginas actuales.',
+    'holding.confirm_help' => 'Obligatorio al volver de Sitio completo a Próximamente. Guardar la configuración no publica nada.',
+    'holding.save' => 'Guardar configuración',
+    'holding.releases' => 'Publicaciones del sitio',
+    'holding.build' => 'Generar Próximamente',
+    'holding.build_help' => 'Congela esta configuración en una compilación privada para publicar. No requiere contenido del sitio; Cron procesa la compilación.',
+    'holding.inspect_help' => 'Revisa la configuración guardada antes de aprobar. Esta compilación es independiente de las vistas previas exactas.',
+    'holding.publish_confirm' => 'Apruebo sustituir todas las páginas públicas por Próximamente. La publicación estándar puede mostrar temporalmente una mezcla de versiones aprobadas.',
+    'holding.builds' => 'Compilaciones de Próximamente',
+    'holding.delete' => 'Eliminar compilación sin uso',
+];

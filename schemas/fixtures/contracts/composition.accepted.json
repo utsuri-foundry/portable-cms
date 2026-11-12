@@ -1,0 +1,4 @@
+{
+  "formatVersion": 1,
+  "rows": [{"id": "intro", "columns": [{"share": 2, "content": null}, {"share": 1, "content": {"kind": "rich_text", "field": "body"}, "width": 80, "anchor": "bottom-right"}]}]
+}

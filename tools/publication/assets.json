@@ -1,0 +1,92 @@
+[
+  {
+    "path": "profiles/reference-studio/assets/icon.svg",
+    "sha256": "f717165c6fe41c1cdee895a4a327d33dcc8ce7f65da8cd270cfe82eddc46b92e",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/assets/studio-sans-latin.woff2",
+    "sha256": "99e2eaadce0bb7b13fe490f7f9c5d9e6fc3dbd57c392f8550e06b7fb2cfcee7f",
+    "license": "OFL-1.1",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/assets/studio-serif-italic-latin.woff2",
+    "sha256": "b72cc296b5f6eb2c36e1dc875e10f9254548c957a4684bedba524628c0602f9a",
+    "license": "OFL-1.1",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/assets/studio-serif-latin.woff2",
+    "sha256": "45e2c6d281a2834b67d97349c6c7325f23a2bb59ac769d0ab421467d39c7e618",
+    "license": "OFL-1.1",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000001-display_1600_webp.webp",
+    "sha256": "090cfff2bc9f71309336e31ca6f02b2f92440c3603746972f2189135f0610a30",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000001-display_480_webp.webp",
+    "sha256": "bb99e096320d844a46a48899e5fef19e1e0aff09ef05fb5962aac227243eb4b9",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000001-display_960_webp.webp",
+    "sha256": "de67499ff4d4cd93bb36b8d3ded9bf54b6ee8994aef4529044559b2197b8377e",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000002-display_1600_webp.webp",
+    "sha256": "3aad72a76def96182cd3dcd7b21a404ce6ded81badba6a0307de87a489f2ec1a",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000002-display_480_webp.webp",
+    "sha256": "735df4f779fe1aa7edd5834355c05ceaad2abaec7d632ffb994978c3eaa3581c",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000002-display_960_webp.webp",
+    "sha256": "7ac75eb60bc1687378e084c20accaa0fb7852a91e5e954ba61556315b2e7993b",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000003-display_1600_webp.webp",
+    "sha256": "46ee7b6ad246d69197412b7c7cd1b3fff2e5e81e04cd4d84bb9c7c968100acb6",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000003-display_480_webp.webp",
+    "sha256": "a2b25921e3f874c2b8044d646c9b08471e1e8e20a8c10e560e242918c7397128",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "profiles/reference-studio/fixtures/media/d0000000000000000000000000000003-display_960_webp.webp",
+    "sha256": "730fa86fd149797b27ff37989bc2b276cc5a347f36ac49fc8fcd91758f2b795b",
+    "license": "Apache-2.0",
+    "provenance": "profiles/reference-studio/PROVENANCE.md"
+  },
+  {
+    "path": "tests/fixtures/video/prepared.mp4",
+    "sha256": "c8539682e08d72380a314056705cbe93537cecb1e7bbc1f73cf12025205e4b1a",
+    "license": "Apache-2.0",
+    "provenance": "tests/fixtures/video/README.md"
+  },
+  {
+    "path": "tests/fixtures/video/prepared.webm",
+    "sha256": "14abbfb8bbbba8cb614d3a1a9b53116cac659d8e6813ac6ed536b20374da5d6c",
+    "license": "Apache-2.0",
+    "provenance": "tests/fixtures/video/README.md"
+  }
+]

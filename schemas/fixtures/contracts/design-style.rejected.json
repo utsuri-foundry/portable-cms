@@ -1,0 +1,104 @@
+{
+  "formatVersion": 1,
+  "profileId": "reference-studio",
+  "revision": 0,
+  "fonts": [
+    {
+      "id": "sans",
+      "label": "Source Sans 3",
+      "origin": "package",
+      "sha256": "9b90c48085afb6225ed6a7e891b084e3a02e50875492b95c2d4696e0ca308b20",
+      "byteSize": 44492,
+      "sourceSha256": "9b90c48085afb6225ed6a7e891b084e3a02e50875492b95c2d4696e0ca308b20",
+      "provenance": "Adobe Source Sans 3, 3.052R; reviewed Latin subset.",
+      "license": "SIL Open Font License 1.1; retained in the verified profile package."
+    },
+    {
+      "id": "serif",
+      "label": "Source Serif 4",
+      "origin": "package",
+      "sha256": "ea3b12d0b778a508129dc5a697f1b8de63488acc054cca68a62ee244cee9d6a1",
+      "byteSize": 43892,
+      "sourceSha256": "ea3b12d0b778a508129dc5a697f1b8de63488acc054cca68a62ee244cee9d6a1",
+      "provenance": "Adobe Source Serif 4, 4.005R; reviewed Latin subset.",
+      "license": "SIL Open Font License 1.1; retained in the verified profile package."
+    }
+  ],
+  "responsive": [
+    {
+      "id": "tablet",
+      "label": "Tablet and above",
+      "minWidth": 768
+    },
+    {
+      "id": "wide",
+      "label": "Wide screens",
+      "minWidth": 1280
+    }
+  ],
+  "typography": [
+    {
+      "id": "body",
+      "label": "Body text",
+      "fontId": "sans",
+      "fallback": "sans-serif",
+      "weight": 400,
+      "lineHeight": 1.55,
+      "size": {
+        "min": 16,
+        "max": 18,
+        "from": 360,
+        "to": 1280
+      },
+      "overrides": [],
+      "style": "color:red"
+    },
+    {
+      "id": "title",
+      "label": "Page title",
+      "fontId": "serif",
+      "fallback": "serif",
+      "weight": 400,
+      "lineHeight": 1.1,
+      "size": {
+        "min": 32,
+        "max": 64,
+        "from": 360,
+        "to": 1280
+      },
+      "overrides": []
+    }
+  ],
+  "spacing": [
+    {
+      "id": "small",
+      "label": "Small gap",
+      "size": {
+        "min": 8,
+        "max": 12,
+        "from": 360,
+        "to": 1280
+      }
+    },
+    {
+      "id": "medium",
+      "label": "Medium gap",
+      "size": {
+        "min": 16,
+        "max": 24,
+        "from": 360,
+        "to": 1280
+      }
+    },
+    {
+      "id": "large",
+      "label": "Large gap",
+      "size": {
+        "min": 32,
+        "max": 48,
+        "from": 360,
+        "to": 1280
+      }
+    }
+  ]
+}

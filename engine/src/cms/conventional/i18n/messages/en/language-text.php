@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'language_text.title' => 'Delete the {language} text',
+    'language_text.title_any' => 'Delete the text of a language',
+    'language_text.back' => 'Back to Languages',
+    'language_text.not_deleted' => 'Text not deleted',
+    'language_text.done' => 'The {language} text was deleted from {records, plural, one {# record} other {# records}} and {media, plural, one {# media item} other {# media items}}.',
+    'language_text.history' => 'Earlier revisions keep their text. It stays in the record history and in exports, and restoring an earlier revision brings it back.',
+    'language_text.running' => 'Deleting the {language} text',
+    'language_text.progress' => '{done} of {records, plural, one {# record} other {# records}} rewritten, {media, plural, one {# media item} other {# media items}} cleared.',
+    'language_text.continue_help' => 'Deletion runs in batches. Continue until it is complete. If it was interrupted, continuing resumes where it stopped.',
+    'language_text.continue' => 'Continue deleting',
+    'language_text.unknown' => 'The website has no such language.',
+    'language_text.turn_off' => '{language} is public or in preparation. Turn it off in Languages before deleting its text.',
+    'language_text.not_allowed' => 'Only the owner can delete the text of a language.',
+    'language_text.consequences' => 'What is deleted',
+    'language_text.records' => 'The current {language} text of {records, plural, one {# record} other {# records}}. Each is saved as a new revision without it.',
+    'language_text.media' => 'Alternative text, captions and credits in this language of {media, plural, one {# media item} other {# media items}}.',
+    'language_text.settings' => 'Its site wording, and its message and contact on the Coming soon page.',
+    'language_text.backup' => 'This cannot be undone in the CMS. Make an export first.',
+    'language_text.export' => 'Go to Export',
+    'language_text.confirm_label' => 'Permanently delete the {language} text of {records, plural, one {# record} other {# records}}',
+    'language_text.delete' => 'Delete the {language} text',
+    'language_text.confirm' => 'Deleting the text of a language needs confirmation. Tick the confirmation and try again.',
+    'language_text.changed' => 'The number of records with text in this language has changed. Review the new count and confirm again.',
+    'language_text.busy' => 'Another deletion is still running. Finish it first.',
+    'language_text.none' => 'No deletion is running.',
+    'language_text.not_off' => '{language} is no longer off. Turn it off again to delete its text.',
+    'language_text.record_invalid' => 'A {type} ({id}) no longer passes the profile’s checks, so its text could not be deleted. Correct it and continue.',
+    'languages.delete_text' => 'Delete the {language} text',
+    'languages.deletion_running' => 'The {language} text is being deleted.',
+    'languages.deletion_continue' => 'Continue the deletion',
+];

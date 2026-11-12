@@ -1,0 +1,7 @@
+{
+  "formatVersion": 1,
+  "profileId": "another-profile",
+  "languages": {
+    "de": { "fields": { "project.title": "Titel" } }
+  }
+}

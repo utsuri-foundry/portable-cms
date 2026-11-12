@@ -1,0 +1,501 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://schemas.utsuri.io/portable-cms/feed-page-v1.schema.json",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "formatVersion",
+        "typeId",
+        "locale",
+        "page",
+        "nextPage",
+        "records"
+    ],
+    "properties": {
+        "formatVersion": {
+            "const": 1
+        },
+        "typeId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$",
+            "maxLength": 160
+        },
+        "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$",
+            "maxLength": 7
+        },
+        "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3200
+        },
+        "nextPage": {
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "minimum": 2,
+                    "maximum": 3201
+                },
+                {
+                    "type": "null"
+                }
+            ]
+        },
+        "records": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "id",
+                    "revisionNumber",
+                    "fields"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{32}$"
+                    },
+                    "revisionNumber": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 4294967294
+                    },
+                    "fields": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "maxProperties": 32,
+                        "propertyNames": {
+                            "type": "string",
+                            "pattern": "^[a-z][A-Za-z0-9]*(?:[-_][a-z0-9]+)*$",
+                            "maxLength": 160
+                        },
+                        "additionalProperties": {
+                            "anyOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "integer",
+                                    "minimum": -9007199254740991,
+                                    "maximum": 9007199254740991
+                                },
+                                {
+                                    "type": "string",
+                                    "maxLength": 1000000
+                                },
+                                {
+                                    "$ref": "#/$defs/reference"
+                                },
+                                {
+                                    "$ref": "#/$defs/address"
+                                },
+                                {
+                                    "$ref": "#/$defs/rich1"
+                                },
+                                {
+                                    "$ref": "#/$defs/rich2"
+                                },
+                                {
+                                    "type": "array",
+                                    "maxItems": 1000,
+                                    "items": {
+                                        "anyOf": [
+                                            {
+                                                "type": "string",
+                                                "pattern": "^[a-f0-9]{32}$"
+                                            },
+                                            {
+                                                "$ref": "#/$defs/reference"
+                                            },
+                                            {
+                                                "$ref": "#/$defs/image"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "$defs": {
+        "rich1-runs": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+                "$ref": "#/$defs/rich1-run"
+            }
+        },
+        "rich1-run": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "text",
+                "marks"
+            ],
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "maxLength": 10000
+                },
+                "marks": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "uniqueItems": true,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "enum": [
+                                    "bold",
+                                    "italic",
+                                    "underline"
+                                ]
+                            },
+                            {
+                                "$ref": "#/$defs/rich1-link"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "rich1-link": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "href"
+            ],
+            "properties": {
+                "type": {
+                    "const": "link"
+                },
+                "href": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2048
+                }
+            }
+        },
+        "rich1-textBlock": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "children"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "paragraph",
+                        "heading_2",
+                        "heading_3"
+                    ]
+                },
+                "children": {
+                    "$ref": "#/$defs/rich1-runs"
+                }
+            }
+        },
+        "rich1-listItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "children"
+            ],
+            "properties": {
+                "type": {
+                    "const": "list_item"
+                },
+                "children": {
+                    "$ref": "#/$defs/rich1-runs"
+                }
+            }
+        },
+        "rich1-list": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "children"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "bullet_list",
+                        "ordered_list"
+                    ]
+                },
+                "children": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5000,
+                    "items": {
+                        "$ref": "#/$defs/rich1-listItem"
+                    }
+                }
+            }
+        },
+        "rich1": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "formatVersion",
+                "nodes"
+            ],
+            "properties": {
+                "formatVersion": {
+                    "const": 1
+                },
+                "nodes": {
+                    "type": "array",
+                    "maxItems": 5000,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/$defs/rich1-textBlock"
+                            },
+                            {
+                                "$ref": "#/$defs/rich1-list"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "rich2-runs": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+                "$ref": "#/$defs/rich2-run"
+            }
+        },
+        "rich2-run": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "text",
+                "marks"
+            ],
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "maxLength": 10000
+                },
+                "marks": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "uniqueItems": true,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "enum": [
+                                    "bold",
+                                    "italic",
+                                    "underline",
+                                    "smallCaps"
+                                ]
+                            },
+                            {
+                                "$ref": "#/$defs/rich2-link"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "rich2-link": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "href"
+            ],
+            "properties": {
+                "type": {
+                    "const": "link"
+                },
+                "href": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2048
+                }
+            }
+        },
+        "rich2-textBlock": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "children"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "paragraph",
+                        "heading_2",
+                        "heading_3"
+                    ]
+                },
+                "children": {
+                    "$ref": "#/$defs/rich2-runs"
+                }
+            }
+        },
+        "rich2-listItem": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "children"
+            ],
+            "properties": {
+                "type": {
+                    "const": "list_item"
+                },
+                "children": {
+                    "$ref": "#/$defs/rich2-runs"
+                }
+            }
+        },
+        "rich2-list": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "children"
+            ],
+            "properties": {
+                "type": {
+                    "enum": [
+                        "bullet_list",
+                        "ordered_list"
+                    ]
+                },
+                "children": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5000,
+                    "items": {
+                        "$ref": "#/$defs/rich2-listItem"
+                    }
+                }
+            }
+        },
+        "rich2": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "formatVersion",
+                "nodes"
+            ],
+            "properties": {
+                "formatVersion": {
+                    "const": 2
+                },
+                "nodes": {
+                    "type": "array",
+                    "maxItems": 5000,
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/$defs/rich2-textBlock"
+                            },
+                            {
+                                "$ref": "#/$defs/rich2-list"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "reference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "typeId",
+                "recordId"
+            ],
+            "properties": {
+                "typeId": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$",
+                    "maxLength": 160
+                },
+                "recordId": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{32}$"
+                }
+            }
+        },
+        "image": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "url",
+                "mime",
+                "width",
+                "height"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "maxLength": 4096,
+                    "pattern": "(?:^|/)feed/v1/media/[a-f0-9]{64}\\.webp$"
+                },
+                "mime": {
+                    "const": "image/webp"
+                },
+                "width": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 50000
+                },
+                "height": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 50000
+                }
+            }
+        },
+        "address": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "formatVersion",
+                "url",
+                "linkText"
+            ],
+            "properties": {
+                "formatVersion": {
+                    "const": 1
+                },
+                "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2048
+                },
+                "linkText": {
+                    "type": "string",
+                    "maxLength": 200
+                }
+            }
+        }
+    }
+}
