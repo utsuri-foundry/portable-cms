@@ -321,6 +321,16 @@ $tests['requires protected private storage and verified outbound HTTPS'] = stati
     assertSameValue('unsupported', $report['installationClass'], 'missing security capabilities are unsupported');
 };
 
+$tests['passes the document root rules through to the report'] = static function (): void {
+    $rules = ['present' => true, 'marker' => false, 'hostLines' => true, 'handler' => 'application/x-lsphp85'];
+    $snapshot = compatibleSnapshot();
+    $snapshot['documentRoot'] = ['known' => true, 'rules' => $rules];
+    $report = EnvironmentReport::fromSnapshot($snapshot);
+    assertSameValue(['known' => true, 'rules' => $rules], $report['documentRoot'], 'the handler a host keeps in its document root is reported, not judged');
+    assertSameValue('compatible', $report['status'], 'a host handler block is not a blocker');
+    assertSameValue(['known' => false, 'rules' => null], EnvironmentReport::fromSnapshot(compatibleSnapshot())['documentRoot'], 'older snapshots report an unknown document root');
+};
+
 $tests['reports missing AVIF as an optional capability'] = static function (): void {
     $snapshot = compatibleSnapshot();
     $snapshot['media']['engines']['imagick']['formats']['avif'] = false;

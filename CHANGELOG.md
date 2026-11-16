@@ -5,6 +5,15 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.12.7
+
+- The CMS document root's `.htaccess` keeps the host's own lines, such as the
+  PHP handler block a shared host's panel writes to select a version, above a
+  marker line; the engine's rules follow the marker and only they are rewritten
+  when a backup installs the stable front controller. A file from before the
+  marker is adopted once. Dry runs report the file's state and the handler it
+  names. No profile API, migration or export format changes.
+
 ## 0.12.6
 
 - Include Apache licence, copyright, third-party inventory and retained upstream

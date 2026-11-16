@@ -137,7 +137,7 @@ php tools/build-conventional-cms-bundle.php \
 
 Upload `private/runtime/` and the packaged `private/profile/` outside the document root, upload the generated owner-only `cms.json` beside `runtime/`, and upload `public/` as the dedicated CMS hostname's document root. The bundle's `public/` directory serves the administration; the separate publication folder receives the approved static website. The generated public entry point contains only the absolute private include/configuration locations. The bundle manifest records SHA-256 and byte length for every generated file. The builder refuses to merge into or overwrite an existing output directory.
 
-The included `.htaccess` uses Apache `FallbackResource` so server-rendered routes reach the one front controller. A real-host acceptance run must confirm this behavior rather than assuming every provider has the same Apache configuration.
+The included `.htaccess` uses Apache `FallbackResource` so server-rendered routes reach the one front controller. A real-host acceptance run must confirm this behavior rather than assuming every provider has the same Apache configuration. Its first line is the engine's marker; a host that already keeps a PHP handler block in that document root keeps it above the marker, and the upgrade guide describes how later operations preserve it.
 
 ## Roles and account management
 

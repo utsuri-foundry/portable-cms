@@ -262,3 +262,43 @@ $tests['runtime leases exclude competing upgrades and reject stale workers witho
         RestoreTestFixture::remove($root);
     }
 };
+
+$tests['CMS root rules keep host lines above the marker and adopt files from before it'] = static function (): void {
+    $rules = \Utsuri\PortableCms\Conventional\Upgrade\CmsRootRules::class;
+    $handler = "<FilesMatch \".(php|phtml)$\">\n\tSetHandler application/x-lsphp85\n</FilesMatch>\n";
+    assertSameValue('', $rules::hostLines(null), 'no file has no host lines');
+    assertSameValue('', $rules::hostLines(''), 'an empty file has no host lines');
+    assertSameValue('', $rules::hostLines($rules::BUNDLE_RULES), 'a bundle file from before the marker is engine-only');
+    assertSameValue('', $rules::hostLines($rules::LAUNCHER_RULES), 'a launcher file from before the marker is engine-only');
+    assertSameValue($handler, $rules::hostLines($handler), 'a host file from before the marker is adopted whole');
+    assertSameValue($handler, $rules::hostLines(rtrim($handler, "\n")), 'adopted host lines end in one newline');
+    $composed = $rules::compose($handler, $rules::LAUNCHER_RULES);
+    assertSameValue($handler . $rules::MARKER . "\n" . $rules::LAUNCHER_RULES, $composed, 'host lines, then the marker, then the engine rules');
+    assertSameValue($handler, $rules::hostLines($composed), 'the host lines come back out of a composed file');
+    assertSameValue($composed, $rules::compose($rules::hostLines($composed), $rules::LAUNCHER_RULES), 'rewriting a composed file is stable');
+    assertSameValue($rules::MARKER . "\n" . $rules::LAUNCHER_RULES, $rules::compose($rules::hostLines($rules::compose('', $rules::BUNDLE_RULES)), $rules::LAUNCHER_RULES), 'a bundle file without host lines becomes launcher rules under the marker');
+    assertSameValue('application/x-lsphp85', $rules::handler($handler), 'the selected handler is named');
+    assertSameValue('application/x-httpd-ea-php83', $rules::handler("AddHandler application/x-httpd-ea-php83 .php .phtml\n"), 'an AddHandler line names its handler too');
+    assertSameValue(null, $rules::handler("Options -Indexes\n"), 'no handler without a handler line');
+    foreach ([str_repeat('#', 20_000), "Options -Indexes\0\n"] as $refused) {
+        try {
+            $rules::hostLines($refused);
+            throw new RuntimeException('Unsafe host lines accepted');
+        } catch (UpgradeFailure $error) {
+            assertSameValue('cms_root_host_rules_refused', $error->getMessage(), 'host lines are bounded and plain text');
+        }
+    }
+    $root = sys_get_temp_dir() . '/portable-cms-root-rules-' . bin2hex(random_bytes(8));
+    mkdir($root, 0700);
+    try {
+        assertSameValue(['present' => false, 'marker' => false, 'hostLines' => false, 'handler' => null], $rules::describe($root . '/.htaccess'), 'a missing file is described as absent');
+        file_put_contents($root . '/.htaccess', $handler);
+        assertSameValue(['present' => true, 'marker' => false, 'hostLines' => true, 'handler' => 'application/x-lsphp85'], $rules::describe($root . '/.htaccess'), 'a host file from before the marker is described with its handler');
+        file_put_contents($root . '/.htaccess', $composed);
+        assertSameValue(['present' => true, 'marker' => true, 'hostLines' => true, 'handler' => 'application/x-lsphp85'], $rules::describe($root . '/.htaccess'), 'a composed file is described with its marker and handler');
+        file_put_contents($root . '/.htaccess', $rules::compose('', $rules::BUNDLE_RULES));
+        assertSameValue(['present' => true, 'marker' => true, 'hostLines' => false, 'handler' => null], $rules::describe($root . '/.htaccess'), 'an engine-only file has no host lines');
+    } finally {
+        RestoreTestFixture::remove($root);
+    }
+};

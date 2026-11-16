@@ -14,6 +14,7 @@ use Utsuri\PortableCms\Conventional\Identity\MariaDbIdentityRepository;
 use Utsuri\PortableCms\Conventional\Identity\SystemClock;
 use Utsuri\PortableCms\Conventional\Identity\SystemRandomSource;
 use Utsuri\PortableCms\Conventional\RuntimeConfiguration;
+use Utsuri\PortableCms\Conventional\Upgrade\CmsRootRules;
 use Utsuri\PortableCms\Conventional\Upgrade\DatabaseBackup;
 use Utsuri\PortableCms\Conventional\Upgrade\UpgradeBundle;
 use Utsuri\PortableCms\Conventional\Upgrade\UpgradeChecks;
@@ -298,7 +299,9 @@ try {
     assertSameValue($before, (new DatabaseBackup($pdo))->fingerprint(), 'dry run changes no rows');
     assertSameValue($files, UpgradeFiles::inventory($case['root']), 'dry run changes no files');
     upgradeRefused('fresh_verified_backup_required', fn() => $case['service']->apply($case['bundle'], $case['backup'], $case['bundle']->checksum, null));
+    assertSameValue(['present' => true, 'marker' => true, 'hostLines' => false, 'handler' => null], json_decode($dry['out'], true, flags: JSON_THROW_ON_ERROR)['cmsRootRules'], 'dry run describes the bundle\'s own root rules');
     $case['service']->backup($case['backup']);
+    assertSameValue(CmsRootRules::compose('', CmsRootRules::LAUNCHER_RULES), file_get_contents($case['root'] . '/cms/.htaccess'), 'the first backup writes the engine rules under the marker when the host has no lines of its own');
     $staleClock = new UpgradeService($case['config'], $case['root'] . '/cms', $now->modify('+2 hours'));
     upgradeRefused('fresh_verified_backup_required', fn() => $staleClock->apply($case['bundle'], $case['backup'], $case['bundle']->checksum, null));
     upgradeRefused('bundle_confirmation_required', fn() => $case['service']->apply($case['bundle'], $case['backup'], str_repeat('0', 64), null));
@@ -307,9 +310,19 @@ try {
     file_put_contents($sql, "tampered\n", FILE_APPEND);
     upgradeRefused('backup_verification_failed', fn() => $case['service']->apply($case['bundle'], $case['backup'], $case['bundle']->checksum, null));
     $case = $fixture('noop-in-place', 'in_place');
+    // A shared host's panel wrote its PHP handler into the CMS root before the first backup.
+    $handler = "<FilesMatch \".(php|phtml)$\">\n\tSetHandler application/x-lsphp85\n</FilesMatch>\n";
+    file_put_contents($case['root'] . '/cms/.htaccess', $handler);
+    assertSameValue(['present' => true, 'marker' => false, 'hostLines' => true, 'handler' => 'application/x-lsphp85'], $case['service']->dryRun($case['bundle'])['cmsRootRules'], 'dry run names the handler a host file from before the marker selects');
     $case['service']->backup($case['backup']);
+    $kept = CmsRootRules::compose($handler, CmsRootRules::LAUNCHER_RULES);
+    assertSameValue($kept, file_get_contents($case['root'] . '/cms/.htaccess'), 'the first backup adopts the host handler above the marker');
     assertSameValue('no_op', $case['service']->apply($case['bundle'], $case['backup'], $case['bundle']->checksum, null)['status'], 'an in-place installation has no-op upgrades too');
     assertTrueValue(!is_file($case['root'] . '/private/upgrade/maintenance.json'), 'a no-op never closes the CMS');
+    assertSameValue($kept, file_get_contents($case['root'] . '/cms/.htaccess'), 'apply leaves the host handler in place');
+    $case['service']->backup($case['backup'] . '-later');
+    assertSameValue($kept, file_get_contents($case['root'] . '/cms/.htaccess'), 'a later backup keeps the host handler above the marker');
+    assertSameValue(['present' => true, 'marker' => true, 'hostLines' => true, 'handler' => 'application/x-lsphp85'], $case['service']->dryRun($case['bundle'])['cmsRootRules'], 'dry run reports the kept handler under the marker');
     fwrite(STDOUT, "PASS upgrade dry run, packaged no-op in both modes and corrupted backup refusal\n");
 
     $contentRows = static function (PDO $database): array {

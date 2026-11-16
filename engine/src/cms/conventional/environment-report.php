@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Utsuri\PortableCms\Conventional;
 
 require_once __DIR__ . '/media/video-support.php';
+require_once __DIR__ . '/upgrade/upgrade-files.php';
+require_once __DIR__ . '/upgrade/cms-root-rules.php';
 
 final class EnvironmentReport
 {
@@ -79,6 +81,7 @@ final class EnvironmentReport
             'limits' => self::runtimeLimits(),
             'configuration' => self::inspectConfiguration(),
             'storage' => $storage,
+            'documentRoot' => self::inspectDocumentRoot($paths['documentRoot'] ?? ($server['DOCUMENT_ROOT'] ?? null)),
             'scheduler' => [
                 'heartbeat' => self::inspectHeartbeat($paths['cronHeartbeat'] ?? null, $now),
                 'postResponseFunction' => function_exists('fastcgi_finish_request'),
@@ -298,6 +301,7 @@ final class EnvironmentReport
             'limits' => $snapshot['limits'] ?? [],
             'configuration' => $snapshot['configuration'] ?? [],
             'storage' => $snapshot['storage'] ?? [],
+            'documentRoot' => $snapshot['documentRoot'] ?? ['known' => false, 'rules' => null],
             'scheduler' => $snapshot['scheduler'] ?? [],
             'media' => $snapshot['media'] ?? [],
             'transport' => $snapshot['transport'] ?? [],
@@ -394,6 +398,21 @@ final class EnvironmentReport
             'outsideDocumentRoot' => !$inside,
             'denyRuleVerified' => false,
         ];
+    }
+
+    /**
+     * The CMS document root's own rules file, when the root is known: a PHP handler block a
+     * host's panel keeps there is what the engine preserves above its marker.
+     *
+     * @return array{known: bool, rules: array{present: bool, marker: bool, hostLines: bool, handler: string|null}|null}
+     */
+    private static function inspectDocumentRoot(mixed $documentRoot): array
+    {
+        $path = is_string($documentRoot) ? HostIo::attempt(fn() => realpath($documentRoot))->value : false;
+        if (!is_string($path)) {
+            return ['known' => false, 'rules' => null];
+        }
+        return ['known' => true, 'rules' => Upgrade\CmsRootRules::describe(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '.htaccess')];
     }
 
     /** @return array{attempted: bool, fileWrite: bool, fileRename: bool, fileReplace: bool, directoryRename: bool, symlink: bool, cleanupComplete: bool} */

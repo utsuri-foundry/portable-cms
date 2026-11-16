@@ -314,6 +314,7 @@ require_once __DIR__ . '/runtime-configuration.php';
 require_once __DIR__ . '/identity-application.php';
 require_once __DIR__ . '/application-factory.php';
 require_once __DIR__ . '/upgrade/upgrade-files.php';
+require_once __DIR__ . '/upgrade/cms-root-rules.php';
 require_once __DIR__ . '/upgrade/engine-build.php';
 require_once __DIR__ . '/upgrade/database-backup.php';
 require_once __DIR__ . '/upgrade/profile-manifest-changes.php';
