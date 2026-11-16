@@ -12,6 +12,12 @@ after 0.1.2; older commits are not assigned invented release versions.
   slots to the other lane. Heartbeats include explicit per-lane processing and
   queued counts. No profile API, migration or export format changes.
 
+## 0.12.8
+
+- Upgrade and migration HTTPS clients send `Content-Type: application/json`
+  with their empty POST bodies so shared-host front servers do not reject them
+  before PHP runs. No profile API, migration or export format changes.
+
 ## 0.12.7
 
 - The CMS document root's `.htaccess` keeps the host's own lines, such as the
