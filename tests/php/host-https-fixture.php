@@ -24,6 +24,7 @@ try {
             stream_set_timeout($stream, 5);
             $first = fgets($stream);
             $size = 0;
+            $contentTypes = [];
             for ($line = 0; $line < 32; $line++) {
                 $header = fgets($stream);
                 if (!is_string($header)) {
@@ -35,10 +36,15 @@ try {
                 if (preg_match('/\AContent-Length: (\d+)/i', $header, $matches) === 1) {
                     $size = (int) $matches[1];
                 }
+                if (preg_match('/\AContent-Type:\s*(.+)/i', $header, $matches) === 1) {
+                    $contentTypes[] = trim($matches[1]);
+                }
             }
             if ($size > 4096) {
                 throw new RuntimeException('Loopback request exceeds bounds');
             }
+            fwrite(STDOUT, json_encode(['request' => trim((string) $first), 'contentTypes' => $contentTypes, 'bodyBytes' => $size], JSON_THROW_ON_ERROR) . "\n");
+            fflush(STDOUT);
             while ($size > 0) {
                 $body = fread($stream, $size);
                 if (!is_string($body) || $body === '') {

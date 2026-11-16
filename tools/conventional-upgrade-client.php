@@ -29,7 +29,7 @@ try {
     if (preg_match('/\A[a-f0-9]{64}\z/', $token) !== 1) {
         throw new RuntimeException('Upgrade token is invalid');
     }
-    $context = stream_context_create(['http' => ['method' => 'POST', 'header' => 'X-CMS-Upgrade-Token: ' . $token, 'content' => '', 'follow_location' => 0, 'ignore_errors' => true, 'timeout' => 300], 'ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
+    $context = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/json\r\nX-CMS-Upgrade-Token: " . $token, 'content' => '', 'follow_location' => 0, 'ignore_errors' => true, 'timeout' => 300], 'ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
     $headers = [];
     $body = HostIo::attempt(static function () use ($endpoint, $context, &$headers) {
         $http_response_header = [];
