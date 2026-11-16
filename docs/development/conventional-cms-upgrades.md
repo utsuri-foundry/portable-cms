@@ -113,6 +113,19 @@ continues serving static files. Apache needs `mod_rewrite`, `FallbackResource`
 and the qualified `.htaccess` override permissions for the CMS root. Upgrade
 qualification must exercise these rules before using the installation live.
 
+The CMS root's `.htaccess` belongs to the host above its marker line
+(`CmsRootRules::MARKER`) and to the engine below it. Shared hosts whose panel
+selects the PHP version with a `SetHandler` block in that file keep the block
+above the marker: a backup rewrites only the engine's lines and carries the
+host's over, and apply, rollback and recovery do not touch the file. A file
+written before the marker existed is adopted once, engine-only content as no
+host lines and anything else whole, up to 16 KiB. Dry runs report
+`cmsRootRules` (`present`, `marker`, `hostLines`, `handler`) and the environment
+probe reports the same under `documentRoot.rules`, so the operator sees which
+handler the installation keeps. When the host already has such a
+file at installation, place its lines above the marker in the bundle's
+`public/.htaccess` before uploading it; the bundle ships the marker first.
+
 ## Review, backup and apply
 
 Engine compatibility and build provenance follow the [release policy](engine-releases.md).

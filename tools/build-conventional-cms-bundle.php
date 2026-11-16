@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Utsuri\PortableCms\Conventional\Upgrade\CmsRootRules;
+
+require_once dirname(__DIR__) . '/engine/src/cms/conventional/upgrade/cms-root-rules.php';
+
 if (PHP_SAPI !== 'cli') {
     http_response_code(404);
     exit;
@@ -234,11 +238,9 @@ try {
         . 'putenv(' . var_export('CMS_UPGRADE_CONFIG=' . $privateRoot . '/upgrade-gate.json', true) . ");\n"
         . 'require ' . var_export($upgradeRoot . '/private/runtime/tools/conventional-upgrade-web.php', true) . ";\n";
     file_put_contents($operator . '/upgrade.php', $upgradeEndpoint, LOCK_EX);
-    file_put_contents(
-        $public . '/.htaccess',
-        "Options -Indexes\nDirectoryIndex index.php\nFallbackResource /index.php\n",
-        LOCK_EX,
-    );
+    // The marker comes first: a host that keeps a PHP handler block in this document root
+    // places it above the marker before uploading, and later backups preserve it there.
+    file_put_contents($public . '/.htaccess', CmsRootRules::compose('', CmsRootRules::BUNDLE_RULES), LOCK_EX);
 
     $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($output));
     $manifest = [];

@@ -50,6 +50,7 @@ final class UpgradeService
         $profile = $configuration->profileRoot === null ? null : ProfilePackage::load($configuration->profileRoot, $currentBuild->version, allowLegacyProfile: true);
         $report = UpgradePlan::report($bundle, $configuration->connect(), $profile, $active['engineVersion'], $currentBuild);
         $report['noOp'] = $this->sameRuntime($bundle, $active) && $report['pendingMigrations'] === [] && $report['manifestChanges'] === [] && !$report['identityMigration'];
+        $report['cmsRootRules'] = CmsRootRules::describe($this->cmsRoot . '/.htaccess');
         $bytes = (new DatabaseBackup($configuration->connect()))->bytes();
         $report['database'] = ['mode' => $configuration->databaseUpgradeMode, 'bytes' => $bytes['database'], 'tableSetBytes' => $bytes['tableSet'],
             'maximumBytes' => $configuration->databaseMaximumBytes,
@@ -509,7 +510,10 @@ final class UpgradeService
         $entry = "<?php\n\ndeclare(strict_types=1);\nputenv(" . var_export('CMS_UPGRADE_ROOT=' . $this->stateRoot, true) . ");\nrequire " . var_export($this->stateRoot . '/release-launcher.php', true) . ";\n";
         UpgradeFiles::atomic($this->cmsRoot . '/index.php', $entry);
         HostIo::required(fn() => chmod($this->cmsRoot . '/index.php', 0644));
-        UpgradeFiles::atomic($this->cmsRoot . '/.htaccess', "Options -Indexes\nDirectoryIndex index.php\nRewriteEngine On\nRewriteRule ^assets/ index.php [END]\nFallbackResource /index.php\n");
+        // The host's own lines, such as the PHP handler a panel wrote, stay above the engine's.
+        $rules = $this->cmsRoot . '/.htaccess';
+        $existing = is_link($rules) || !is_file($rules) ? null : (string) file_get_contents($rules);
+        UpgradeFiles::atomic($rules, CmsRootRules::compose(CmsRootRules::hostLines($existing), CmsRootRules::LAUNCHER_RULES));
         HostIo::required(fn() => chmod($this->cmsRoot . '/.htaccess', 0644));
         UpgradeFiles::atomic($this->stateRoot . '/worker.php', $entry);
     }
