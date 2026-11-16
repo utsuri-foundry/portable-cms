@@ -18,7 +18,7 @@ final class MediaLibraryPage
     {
         $policy ??= new \Utsuri\PortableCms\Conventional\Media\VideoUploadPolicy();
         $t = AdminShell::translator($chrome);
-        $markup = AdminShell::breadcrumbs([[$t->text('shell.group.library'), null], [$t->text('media.title'), null]], $t)
+        $markup = AdminShell::breadcrumbs([[$t->text('shell.group.content'), null], [$t->text('media.title'), null]], $t)
             . AdminShell::header($t->text('media.title'), '<p class="admin-lede">' . $t->html('media.lede') . '</p>')
             . '<form class="admin-toolbar" method="get" action="/media" role="search"><label class="admin-visually-hidden" for="media-query">' . $t->html('media.find') . '</label>'
             . '<input type="search" id="media-query" name="q" maxlength="100" placeholder="' . $t->html('media.find') . '" value="' . Html::attribute($page->query) . '"><button type="submit">' . $t->html('media.search') . '</button></form>';
@@ -85,7 +85,7 @@ final class MediaLibraryPage
         $video = VideoPreview::ready($media);
         $codec = $media->thumbnail?->parameters['codec'] ?? null;
         $codec = is_string($codec) ? (['h264' => 'H.264', 'vp8' => 'VP8', 'vp9' => 'VP9'][$codec] ?? $t->text('video.codec_unknown')) : $t->text('video.codec_unknown');
-        $markup = AdminShell::breadcrumbs([[$t->text('shell.group.library'), null], [$t->text('media.title'), '/media'], [$media->name, null]], $t)
+        $markup = AdminShell::breadcrumbs([[$t->text('shell.group.content'), null], [$t->text('media.title'), '/media'], [$media->name, null]], $t)
             . AdminShell::header($media->name, '<p class="admin-meta">' . Html::text(ReferenceControls::metadata($media, $t)) . '</p>')
             . '<div class="admin-media-detail"><div class="admin-section">' . ($video ? VideoPreview::player($media, preload: 'metadata') . '<p class="admin-meta">' . $t->html('video.codec', ['codec' => $codec]) . '</p>' : ReferenceControls::thumbnail($media)) . '</div><div class="admin-media-detail__side">'
             . '<section class="admin-section" aria-labelledby="media-name-heading"><h2 id="media-name-heading">' . $t->html('media.name.title') . '</h2>'

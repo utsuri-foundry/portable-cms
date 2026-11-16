@@ -17,7 +17,7 @@ final class AdministrationMenuLabels
             $presented = $terminology->present($profile, $language, $labels);
             $t = Translator::load($language);
             $reserved = [];
-            foreach (['shell.nav.overview', 'shell.nav.media', 'shell.nav.content_names', 'shell.nav.website_design', 'shell.nav.export', 'installation.title', 'holding.settings', 'languages.title', 'wording.title', 'account.team', 'account.personal', 'publication.title', 'preview.list.title'] as $key) {
+            foreach (['shell.nav.overview', 'shell.nav.media', 'shell.nav.content_names', 'shell.nav.website_design', 'shell.nav.export', 'shell.nav.previews', 'shell.nav.releases', 'shell.nav.settings', 'shell.nav.wording', 'shell.nav.design', 'shell.nav.installation', 'installation.title', 'holding.settings', 'languages.title', 'wording.title', 'account.team', 'account.personal', 'publication.title', 'preview.list.title'] as $key) {
                 $reserved[self::normalize($t->text($key))] = $key;
             }
             $seen = [];

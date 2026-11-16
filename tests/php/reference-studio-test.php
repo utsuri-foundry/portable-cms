@@ -192,7 +192,7 @@ $tests['reference administration derives navigation and ordinary controls from i
     $dashboard = Pages::dashboard(str_repeat('a', 32), 'Editor', $profile);
     $positions = [];
     foreach (
-        ['Projects', 'Articles', 'People', 'Home', 'About', 'Disciplines', 'Sectors', 'Previews', 'Discovery defaults', 'Content names'] as $label
+        ['Projects', 'Articles', 'People', 'Home', 'About', 'Disciplines', 'Sectors', 'Discovery defaults', 'Media', 'Previews', 'Content names'] as $label
     ) {
         $position = strpos($dashboard, '<span>' . $label . '</span>');
         assertTrueValue(is_int($position), "navigation should include {$label}");
@@ -201,7 +201,7 @@ $tests['reference administration derives navigation and ordinary controls from i
     assertSameValue($positions, array_values(array_unique($positions)), 'navigation entries should be unique');
     $sorted = $positions;
     sort($sorted, SORT_NUMERIC);
-    assertSameValue($sorted, $positions, 'navigation should follow positions within Content, Pages, Library, Publish and Website groups');
+    assertSameValue($sorted, $positions, 'navigation should follow positions within the Content, Publish and Website groups');
 
     $project = $profile->type('project');
     assertTrueValue($project !== null, 'project definition should be installed');

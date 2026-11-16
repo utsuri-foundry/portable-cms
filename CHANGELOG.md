@@ -5,6 +5,17 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.12.10
+
+- The administration sidebar groups destinations by the editor's work: Content
+  (every record type, then Media), Publish (Previews and Releases whenever the
+  installation serves them, whatever the profile's navigation declares) and
+  Website (Settings, Languages and Wording for everyone, plus Content names,
+  Design and Accounts for owners and administrators). Installation, Revision
+  history and Export sit in a "For the agency" foot that editors do not see,
+  and the footer no longer repeats Releases. No profile API, migration or
+  export format changes.
+
 ## 0.12.9
 
 - Reserve the first scheduled worker slot for exact previews and holding builds,

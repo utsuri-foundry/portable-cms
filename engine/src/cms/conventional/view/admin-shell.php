@@ -6,7 +6,6 @@ namespace Utsuri\PortableCms\Conventional\View;
 
 use Utsuri\PortableCms\Conventional\Content\NavigationDefinition;
 use Utsuri\PortableCms\Conventional\Content\ProfileManifest;
-use Utsuri\PortableCms\Conventional\Content\RecordTypeDefinition;
 use Utsuri\PortableCms\Conventional\Content\WebsiteIdentity;
 use Utsuri\PortableCms\Conventional\Http\Html;
 use Utsuri\PortableCms\Conventional\I18n\InterfaceLanguage;
@@ -232,9 +231,18 @@ final class AdminShell
             . $content . '</body></html>';
     }
 
+    /**
+     * Four groups in the order of the work: Content (every record type, then Media), Publish
+     * (Previews and Releases whenever the installation serves them, whatever the profile's
+     * navigation declares), Website (the settings an editor may open, and for owners and
+     * administrators also Content names, Design and Accounts). The agency's pages sit in the
+     * sidebar's foot, out of an editor's sight.
+     */
     private static function navigation(?ProfileManifest $profile, string $current, ?AdminChrome $chrome, Translator $t): string
     {
-        $groups = ['content' => [], 'pages' => [], 'library' => [self::link('/media', $t->text('shell.nav.media'), $current === 'media')], 'publish' => [], 'website' => []];
+        $editor = $chrome?->role === 'editor';
+        $unavailable = $chrome === null ? [] : $chrome->unavailable;
+        $groups = ['content' => [], 'publish' => [], 'website' => []];
         if ($profile !== null) {
             $navigation = $profile->navigation;
             usort(
@@ -244,47 +252,43 @@ final class AdminShell
             );
             foreach ($navigation as $item) {
                 if ($item->targetKind === 'system') {
-                    if (in_array($item->targetId, ['previews', 'releases'], true) && !in_array($item->targetId, $chrome->unavailable ?? [], true)) {
-                        $groups['publish'][] = self::link(self::systemRoute($item->targetId), $item->label, $current === $item->targetId);
-                    }
                     continue;
                 }
                 $type = $profile->type($item->targetId);
-                if ($chrome?->role === 'editor' && $type?->archetype === 'site_settings') {
+                if ($editor && $type?->archetype === 'site_settings') {
                     continue;
                 }
                 $count = $type !== null && $type->kind !== 'singleton' ? ($chrome?->counts[$type->id] ?? null) : null;
-                $groups[self::groupFor($item, $type)][] = self::link('/records/' . $item->targetId, $item->label, $current === $item->targetId, $count);
+                $groups['content'][] = self::link('/records/' . $item->targetId, $item->label, $current === $item->targetId, $count);
             }
         }
-        $groups['website'][] = self::link('/settings/terminology', $t->text('shell.nav.content_names'), $current === 'terminology');
+        $groups['content'][] = self::link('/media', $t->text('shell.nav.media'), $current === 'media');
         if ($profile !== null) {
-            $groups['website'][] = self::link('/settings/installation', $t->text('installation.title'), $current === 'installation');
-            $groups['website'][] = self::link('/settings/history', $t->text('history.title'), $current === 'history');
+            foreach (['previews', 'releases'] as $destination) {
+                if (!in_array($destination, $unavailable, true)) {
+                    $groups['publish'][] = self::link(self::systemRoute($destination), $t->text('shell.nav.' . $destination), $current === $destination);
+                }
+            }
+            if (!in_array('publication-settings', $unavailable, true)) {
+                $groups['website'][] = self::link('/settings/publication', $t->text('shell.nav.settings'), $current === 'publication-settings');
+            }
+            // Editors see the site's languages but cannot change them.
+            if (count($profile->locales) > 1 && !in_array('languages', $unavailable, true)) {
+                $groups['website'][] = self::link('/settings/languages', $t->text('languages.title'), $current === 'languages');
+            }
+            // Editors write the site's wording as well as its content.
+            if ($profile->wording !== [] && !in_array('wording', $unavailable, true)) {
+                $groups['website'][] = self::link('/settings/wording', $t->text('shell.nav.wording'), $current === 'wording');
+            }
         }
-        if ($profile !== null && !in_array('publication-settings', $chrome === null ? [] : $chrome->unavailable, true)) {
-            $groups['website'][] = self::link('/settings/publication', $t->text('holding.settings'), $current === 'publication-settings');
-        }
-        // Editors see the site's languages but cannot change them.
-        $languages = $profile !== null && count($profile->locales) > 1 && !in_array('languages', $chrome === null ? [] : $chrome->unavailable, true)
-            ? self::link('/settings/languages', $t->text('languages.title'), $current === 'languages') : null;
-        if ($languages !== null) {
-            $groups['website'][] = $languages;
-        }
-        // Editors write the site's wording as well as its content.
-        $wording = $profile !== null && $profile->wording !== [] && !in_array('wording', $chrome === null ? [] : $chrome->unavailable, true)
-            ? self::link('/settings/wording', $t->text('wording.title'), $current === 'wording') : null;
-        if ($wording !== null) {
-            $groups['website'][] = $wording;
-        }
-        if ($profile?->designRegistries !== null) {
-            $groups['website'][] = self::link('/settings/design', $t->text('shell.nav.website_design'), $current === 'design');
-        }
-        if ($chrome?->accountsAvailable === true) {
-            $groups['website'][] = self::link('/accounts', $t->text('account.team'), $current === 'accounts');
-        }
-        if ($chrome?->role === 'editor') {
-            $groups['website'] = array_values(array_filter([$languages, $wording]));
+        if (!$editor) {
+            $groups['website'][] = self::link('/settings/terminology', $t->text('shell.nav.content_names'), $current === 'terminology');
+            if ($profile?->designRegistries !== null) {
+                $groups['website'][] = self::link('/settings/design', $t->text('shell.nav.design'), $current === 'design');
+            }
+            if ($chrome?->accountsAvailable === true) {
+                $groups['website'][] = self::link('/accounts', $t->text('account.team'), $current === 'accounts');
+            }
         }
         $markup = '<nav class="admin-navigation" aria-label="' . $t->html('shell.nav.label') . '"><ul class="admin-navigation__list"><li>'
             . self::link('/', $t->text('shell.nav.overview'), $current === 'overview') . '</li></ul>';
@@ -296,26 +300,16 @@ final class AdminShell
         return $markup . '</nav>';
     }
 
-    private static function groupFor(NavigationDefinition $item, ?RecordTypeDefinition $type): string
-    {
-        return match (true) {
-            $item->targetKind === 'taxonomy' || $type?->kind === 'taxonomy' => 'library',
-            $type?->archetype === 'site_settings' => 'website',
-            $item->targetKind === 'singleton' || $type?->kind === 'singleton' => 'pages',
-            default => 'content',
-        };
-    }
-
     private static function footer(string $current, ?AdminChrome $chrome, Translator $t, ?ProfileManifest $profile): string
     {
         $markup = '<div class="admin-sidebar__footer">';
-        if ($chrome?->role === 'editor') {
-            $markup .= '<nav aria-label="' . $t->html('shell.operations') . '"><ul class="admin-navigation__list"><li>' . self::link('/releases', $t->text('publication.title'), $current === 'releases') . '</li></ul></nav>';
-        }
-        if ($chrome?->role !== 'editor') {
-            $markup .= '<nav aria-label="' . $t->html('shell.operations') . '"><ul class="admin-navigation__list"><li>'
-            . self::link('/exports', $t->text('shell.nav.export'), $current === 'exports') . '</li><li>'
-            . self::link('/releases', $t->text('publication.title'), $current === 'releases') . '</li></ul></nav>';
+        // The agency's pages: visibly apart from the editorial groups, and absent for editors.
+        if ($chrome !== null && $chrome->role !== 'editor' && $profile !== null) {
+            $markup .= '<nav class="admin-navigation" aria-label="' . $t->html('shell.group.agency') . '">' . self::navigationGroup('agency', $t->text('shell.group.agency'), [
+                self::link('/settings/installation', $t->text('shell.nav.installation'), $current === 'installation'),
+                self::link('/settings/history', $t->text('history.title'), $current === 'history'),
+                self::link('/exports', $t->text('shell.nav.export'), $current === 'exports'),
+            ]) . '</nav>';
         }
         if ($chrome === null) {
             return $markup . '</div>';

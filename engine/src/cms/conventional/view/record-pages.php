@@ -44,14 +44,10 @@ final class RecordPages
     private const MEDIA_UPLOAD_ASSET_VERSION = '7';
     private const LIVE_PREVIEW_STYLE_VERSION = '2';
 
+    /** Every record type, whatever its kind, is listed under Content in the sidebar and in breadcrumbs. */
     public static function groupLabel(RecordTypeDefinition $type, ?Translator $translator = null): string
     {
-        return ($translator ?? Translator::english())->text('shell.group.' . match (true) {
-            $type->kind === 'taxonomy' => 'library',
-            $type->archetype === 'site_settings' => 'website',
-            $type->kind === 'singleton' => 'pages',
-            default => 'content',
-        });
+        return ($translator ?? Translator::english())->text('shell.group.content');
     }
 
     public static function listing(ProfileManifest $profile, RecordTypeDefinition $type, RecordListing $listing, ?AdminChrome $chrome): string
