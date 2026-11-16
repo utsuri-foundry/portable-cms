@@ -8,7 +8,21 @@ const source = readFileSync(
 	"utf8",
 );
 
-function viewer(fetch, kind = "shared") {
+class Anchor extends EventTarget {
+	constructor(href) {
+		super();
+		this.href = href;
+		this.attributes = new Map();
+	}
+	setAttribute(name, value) {
+		this.attributes.set(name, value);
+	}
+	removeAttribute(name) {
+		this.attributes.delete(name);
+	}
+}
+
+function viewer(fetch, kind = "shared", languages = []) {
 	class Frame extends EventTarget {}
 	const frame = new Frame();
 	const tabs = [];
@@ -30,6 +44,8 @@ function viewer(fetch, kind = "shared") {
 	const document = {
 		hidden: false,
 		querySelector: (selector) => (selector.startsWith("iframe[") ? frame : null),
+		querySelectorAll: (selector) =>
+			selector === "[data-share-language]" ? languages : [],
 		addEventListener: (name, fn) => listeners.set(name, fn),
 		removeEventListener: (name) => listeners.delete(name),
 	};
@@ -38,6 +54,7 @@ function viewer(fetch, kind = "shared") {
 		URLSearchParams,
 		AbortController,
 		HTMLIFrameElement: Frame,
+		HTMLAnchorElement: Anchor,
 		HTMLFormElement: class {},
 		HTMLInputElement: class {},
 		HTMLElement: class {},
@@ -57,6 +74,7 @@ function viewer(fetch, kind = "shared") {
 		frame,
 		window,
 		tabs,
+		languages,
 		supports,
 		message: (data, patch = {}) =>
 			windowListeners.get("message")?.({
@@ -186,4 +204,26 @@ test("shared shell permits only user-activated fixed Vimeo links from its exact 
 	page.hide();
 	page.message(data);
 	assert.equal(page.tabs.length, 2, "disposed shells remove the handoff");
+});
+
+test("the language choice moves the frame to that language and marks it current", () => {
+	const files = `https://cms.example.test/shared-preview-files/${"a".repeat(32)}/${"b".repeat(64)}/`;
+	const page = viewer(() => Promise.resolve({ status: 204 }), "shared", [
+		new Anchor(`${files}en/`),
+		new Anchor(`${files}ca/`),
+	]);
+	let prevented = 0;
+	const click = new Event("click");
+	click.preventDefault = () => prevented++;
+	page.languages[1].dispatchEvent(click);
+	assert.equal(prevented, 1, "the viewer stays on its page");
+	assert.equal(page.frame.src, `${files}ca/`, "the frame moves to the chosen language");
+	assert.equal(page.languages[1].attributes.get("aria-current"), "true");
+	page.languages[0].dispatchEvent(click);
+	assert.equal(page.frame.src, `${files}en/`);
+	assert.equal(
+		page.languages[1].attributes.has("aria-current"),
+		false,
+		"only one language is current",
+	);
 });

@@ -4,21 +4,29 @@ declare(strict_types=1);
 
 namespace Utsuri\PortableCms\Conventional\Preview;
 
-use Utsuri\PortableCms\Conventional\Content\ProfileManifest;
 use Utsuri\PortableCms\Conventional\Http\Cookie;
 use Utsuri\PortableCms\Conventional\Http\OriginPolicy;
 use Utsuri\PortableCms\Conventional\Http\Request;
 use Utsuri\PortableCms\Conventional\Http\Response;
 use Utsuri\PortableCms\Conventional\I18n\Translator;
-use Utsuri\PortableCms\Conventional\View\AdminChrome;
-use Utsuri\PortableCms\Conventional\View\NewestPreviewLinksView;
-use Utsuri\PortableCms\Conventional\View\Pages;
 use Utsuri\PortableCms\Conventional\View\PreviewSharePage;
-use Utsuri\PortableCms\Conventional\View\TrustedHtml;
 
+/** The guest side of a newest preview link: secret exchange, the viewer, pinned downloads and files. Links are made on the Previews page. */
 final class NewestPreviewHttp
 {
-    public function __construct(private readonly NewestPreviewLinkService $links, private readonly PreviewService $previews, private readonly OriginPolicy $originPolicy, private readonly string $origin) {}
+    /**
+     * @param (\Closure(): ?string)|null $siteName
+     * @param (\Closure(string): ?string)|null $actorName
+     * @param array<string, string> $languageLabels Locale to label, in the site's order.
+     */
+    public function __construct(
+        private readonly NewestPreviewLinkService $links,
+        private readonly PreviewService $previews,
+        private readonly OriginPolicy $originPolicy,
+        private readonly ?\Closure $siteName = null,
+        private readonly ?\Closure $actorName = null,
+        private readonly array $languageLabels = [],
+    ) {}
 
     public function guest(Request $request, Translator $t): Response
     {
@@ -100,40 +108,15 @@ final class NewestPreviewHttp
         $mount = $base . 'pinned/' . $resolution->previewId . '/artifact/';
         if ($suffix === '/') {
             $files = (new PreviewFileHttp($this->previews, 'newest-preview-files'))->base($id, $this->links->createFiles($resolution));
-            return (new Response(200, PreviewSharePage::viewer($base, $t, $files)))->withVimeoWorkspace()->withHeader('content-type', 'text/html; charset=utf-8');
+            $sharer = $resolution->link->createdBy === null || $this->actorName === null ? null : ($this->actorName)($resolution->link->createdBy);
+            return (new Response(200, PreviewSharePage::viewer($base, $t, $files, $this->siteName === null ? null : ($this->siteName)(), $sharer, PreviewLanguages::of($this->previews->find($resolution->previewId), $this->languageLabels))))
+                ->withVimeoWorkspace()->withHeader('content-type', 'text/html; charset=utf-8');
         }
         if ($pinned === null) {
             // Relative Location is same-origin, and the final manifest address is the file base.
             return Response::redirect($mount . ($path ?? 'index.html'), 307);
         }
         return $this->previews->artifactResponse($resolution->previewId, (string) $path, $mount, $request->header('range'), true) ?? $unavailable;
-    }
-
-    public function listing(string $csrf, Translator $t, ?string $url = null, ?string $manifest = null): TrustedHtml
-    {
-        return NewestPreviewLinksView::render($csrf, $this->links->active(), $t, $url, $manifest);
-    }
-
-    /** Caller checks publication authority, origin and CSRF before entering. */
-    public function manage(Request $request, string $actor, string $csrf, ?ProfileManifest $profile, AdminChrome $chrome, int $pendingPublication = 0): Response
-    {
-        try {
-            if (preg_match('#\A/previews/shares/newest/([a-f0-9]{32})/revoke\z#', $request->path, $match) === 1) {
-                $this->links->revoke($match[1], $actor);
-                return Response::redirect('/previews#newest-preview-links');
-            }
-            $hours = $request->formValue('expiry_hours');
-            if (!in_array($hours, ['1', '24', '168', '720'], true)) {
-                throw new InvalidShareExpiry();
-            }
-            $created = $this->links->create($actor, (int) $hours);
-            $base = $this->origin . '/newest-previews/' . $created['link']->id . '/';
-            return new Response(200, Pages::previewList($csrf, $profile, $this->previews->list(), $chrome, $this->previews->latestCheck(), preparation: $this->previews->preparationLanguages(), newestLinks: $this->listing($csrf, \Utsuri\PortableCms\Conventional\View\AdminShell::translator($chrome), $base . '#' . $created['token'], $base . 'artifact/artifact.json'), pendingPublication: $pendingPublication));
-        } catch (InvalidShareExpiry) {
-            return new Response(422);
-        } catch (ShareUnavailable) {
-            return new Response(409);
-        }
     }
 
     public static function cookieName(string $id): string

@@ -163,7 +163,7 @@ SQL);
                 ...($snapshot->preparationLocales === [] ? [] : ['preparationLocales' => implode(',', $snapshot->preparationLocales)]),
             ], $time);
             $this->pdo->commit();
-            return new PreviewStatus($previewId, 'queued', $jobId, null, null, $now, $now, $includeDrafts, $snapshot->holdingPage === null ? 'website' : 'holding', includePreparation: $snapshot->preparationLocales !== []);
+            return new PreviewStatus($previewId, 'queued', $jobId, null, null, $now, $now, $includeDrafts, $snapshot->holdingPage === null ? 'website' : 'holding', includePreparation: $snapshot->preparationLocales !== [], createdBy: $actorUserId);
         } catch (Throwable $error) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
@@ -177,7 +177,7 @@ SQL);
         $limit = max(1, min(100, $limit));
         $kind = $this->holdingSource === null ? 'website' : 'holding';
         $rows = $this->pdo->query(<<<SQL
-SELECT p.id, p.status, p.job_id, p.error_code, p.manifest_json, p.created_at, p.updated_at, p.include_drafts, p.include_preparation, p.build_kind, j.progress_json
+SELECT p.id, p.status, p.job_id, p.error_code, p.manifest_json, p.created_at, p.updated_at, p.include_drafts, p.include_preparation, p.build_kind, p.created_by, j.progress_json
 FROM cms_previews p JOIN cms_jobs j ON j.id = p.job_id
 WHERE p.build_kind = '{$kind}' ORDER BY p.created_at DESC, p.id DESC LIMIT {$limit}
 SQL)->fetchAll(PDO::FETCH_ASSOC);
@@ -190,7 +190,7 @@ SQL)->fetchAll(PDO::FETCH_ASSOC);
             return null;
         }
         $statement = $this->pdo->prepare(<<<'SQL'
-SELECT p.id, p.status, p.job_id, p.error_code, p.manifest_json, p.created_at, p.updated_at, p.include_drafts, p.include_preparation, p.build_kind, j.progress_json
+SELECT p.id, p.status, p.job_id, p.error_code, p.manifest_json, p.created_at, p.updated_at, p.include_drafts, p.include_preparation, p.build_kind, p.created_by, j.progress_json
 FROM cms_previews p JOIN cms_jobs j ON j.id = p.job_id WHERE p.id = :id
 SQL);
         $statement->execute(['id' => $previewId]);
@@ -224,7 +224,7 @@ SQL);
     {
         // Browsing and review need metadata only. Artifact/status detail still uses find().
         return <<<'SQL'
-SELECT p.id, p.status, p.job_id, p.error_code, NULL AS manifest_json, p.created_at, p.updated_at, p.include_drafts, p.include_preparation, p.build_kind, NULL AS progress_json, j.status AS job_status,
+SELECT p.id, p.status, p.job_id, p.error_code, NULL AS manifest_json, p.created_at, p.updated_at, p.include_drafts, p.include_preparation, p.build_kind, p.created_by, NULL AS progress_json, j.status AS job_status,
 EXISTS(SELECT 1 FROM cms_releases r WHERE r.preview_id = p.id) AS release_linked,
 (SELECT COUNT(*) FROM cms_preview_shares s WHERE s.preview_id = p.id AND s.revoked_at IS NULL AND s.expires_at > :now) AS active_shares
 FROM cms_previews p JOIN cms_jobs j ON j.id = p.job_id
@@ -745,6 +745,7 @@ SQL);
             (string) ($row['build_kind'] ?? 'website'),
             PreviewDiagnostics::fromDocument(is_array($progress) ? ($progress['diagnostics'] ?? null) : null),
             (int) ($row['include_preparation'] ?? 0) === 1,
+            is_string($row['created_by'] ?? null) ? $row['created_by'] : null,
         );
     }
 

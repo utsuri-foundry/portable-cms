@@ -146,12 +146,11 @@ try {
 		title,
 		"discard restores the published words",
 	);
-	await navigate("/previews", "[data-pending-publication]");
+	await navigate("/previews", "form[action='/previews']");
 	assert.equal(
-		await evaluate(
-			"document.querySelector('[data-pending-publication]').dataset.pendingPublication",
-		),
-		"0",
+		await evaluate("document.querySelector('[data-pending-publication]')"),
+		null,
+		"nothing pending shows no notice",
 	);
 	assert.deepEqual(browserErrors, []);
 	process.stdout.write(

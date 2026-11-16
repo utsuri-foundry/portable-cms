@@ -66,6 +66,7 @@ final class IdentityApplication
         private readonly ?Content\RecordHistoryService $recordHistory = null,
         private readonly ?Preview\EditorExactPreview $editorExact = null,
         private readonly bool $previewCronOnly = false,
+        private readonly ?Preview\PreviewSharingHttp $sharing = null,
     ) {}
 
     public function handle(Request $request): Response
@@ -671,11 +672,8 @@ final class IdentityApplication
                         $session,
                     );
                 }
-                if ($previewRoute['kind'] === 'newest-shares') {
-                    return $this->withSessionCookies($this->newestPreviews?->manage($request, $session->userId, $session->csrfToken, $profile, $this->chrome($request, $session), $this->content?->pendingPublicationCount() ?? 0) ?? new Response(501), $session);
-                }
-                if ($previewRoute['kind'] === 'shares') {
-                    return $this->withSessionCookies($this->previewShares?->manage($request, (string) $previewRoute['previewId'], $session->userId, $session->csrfToken, $profile, $this->chrome($request, $session)) ?? new Response(501), $session);
+                if ($previewRoute['kind'] === 'sharing') {
+                    return $this->withSessionCookies($this->sharing?->manage($request, $session->userId, fn(Preview\SharedLink $created): Response => $this->previewListResponse($request, $session, $profile, $created)) ?? new Response(501), $session);
                 }
                 if ($previewRoute['kind'] === 'delete') {
                     try {
@@ -698,7 +696,7 @@ final class IdentityApplication
                 if ($previewRoute['kind'] === 'cleanup') {
                     return $this->withSessionCookies($this->previewCleanup?->mutate($request, $session->userId, $session->csrfToken, $profile, $this->chrome($request, $session)) ?? new Response(501), $session);
                 }
-                if (!in_array($request->formValue('include_drafts'), ['', '1'], true) || !in_array($request->formValue('include_preparation'), ['', '1'], true)) {
+                if (!in_array($request->formValue('include_drafts'), ['', '0', '1'], true) || !in_array($request->formValue('include_preparation'), ['', '1'], true)) {
                     return $this->withSessionCookies(new Response(400, Pages::error(400, $correlationId, $t)), $session);
                 }
                 $includeDrafts = $request->formValue('include_drafts') === '1';
@@ -709,30 +707,13 @@ final class IdentityApplication
                     return $this->withSessionCookies(new Response(422, View\PreviewPreflightPage::render($profile, $session->csrfToken, $failure->issues, $this->chrome($request, $session), $includeDrafts, $failure->reference, $failure->checkedAt, $failure->links, $includePreparation)), $session);
                 }
                 return $this->withSessionCookies(
-                    (new Response(202, Pages::previewQueued($profile, $preview, $this->chrome($request, $session))))
+                    (new Response(202, Pages::previewQueued($profile, $preview, $this->chrome($request, $session), $this->sharing?->timeZone)))
                         ->withHeader('refresh', '2; url=/previews/' . $preview->id),
                     $session,
                 );
             }
-            if ($previewRoute['kind'] === 'shares') {
-                return $this->withSessionCookies($this->previewShares?->manage($request, (string) $previewRoute['previewId'], $session->userId, $session->csrfToken, $profile, $this->chrome($request, $session)) ?? new Response(501), $session);
-            }
             if ($previewRoute['kind'] === 'list') {
-                $newestLinks = $session->administrator() ? $this->newestPreviews?->listing($session->csrfToken, $t) : null;
-                if ($this->previewCleanup !== null) {
-                    return $this->withSessionCookies($this->previewCleanup->listing($request, $session->userId, $session->csrfToken, $profile, $this->chrome($request, $session), $this->content, $newestLinks), $session);
-                }
-                return $this->withSessionCookies(new Response(200, Pages::previewList(
-                    $session->csrfToken,
-                    $profile,
-                    $this->previews->list(),
-                    $this->chrome($request, $session),
-                    $this->previews->latestCheck(),
-                    $this->content === null ? [] : $this->previews->setup($this->content),
-                    preparation: $this->previews->preparationLanguages(),
-                    newestLinks: $newestLinks,
-                    pendingPublication: $this->content?->pendingPublicationCount() ?? 0,
-                )), $session);
+                return $this->withSessionCookies($this->previewListResponse($request, $session, $profile), $session);
             }
             $previewId = (string) $previewRoute['previewId'];
             if ($previewRoute['kind'] === 'artifact') {
@@ -747,7 +728,7 @@ final class IdentityApplication
             $preview = $this->previews->find($previewId);
             $response = $preview === null
                 ? new Response(404, Pages::error(404, $correlationId, $t))
-                : new Response(200, Pages::previewStatus($session->csrfToken, $profile, $preview, $this->chrome($request, $session), $this->previewShares !== null, $this->publication === null ? '' : View\ReleaseScheduleView::notice(array_values(array_filter($this->publication->list(), static fn($release): bool => $release->previewId === $previewId)), $this->publication, $t), $this->recordHistory?->missingPreviewRevisions($previewId) ?? 0));
+                : new Response(200, Pages::previewStatus($session->csrfToken, $profile, $preview, $chrome = $this->chrome($request, $session), $this->sharing !== null, $this->publication === null ? '' : View\ReleaseScheduleView::notice(array_values(array_filter($this->publication->list(), static fn($release): bool => $release->previewId === $previewId)), $this->publication, $t), $this->recordHistory?->missingPreviewRevisions($previewId) ?? 0, $this->sharing?->panel($preview, $session->csrfToken, $chrome), $preview->createdBy === null ? null : $this->actorName()?->__invoke($preview->createdBy), $this->sharing?->timeZone));
             if ($preview !== null && in_array($preview->status, ['queued', 'building'], true)) {
                 $response = $response->withHeader('refresh', '2; url=/previews/' . $preview->id);
             }
@@ -970,18 +951,14 @@ final class IdentityApplication
         return null;
     }
 
-    /** @return array{kind: 'list'|'status'|'artifact'|'delete'|'shares'|'newest-shares'|'cleanup', previewId: string|null, artifactPath: string|null}|null */
+    /** @return array{kind: 'list'|'status'|'artifact'|'delete'|'sharing'|'cleanup', previewId: string|null, artifactPath: string|null}|null */
     private function previewRoute(string $method, string $path): ?array
     {
-        if ($method === 'POST' && ($path === '/previews/shares/newest' || preg_match('#\A/previews/shares/newest/[a-f0-9]{32}/revoke\z#', $path) === 1)) {
-            return ['kind' => 'newest-shares', 'previewId' => null, 'artifactPath' => null];
+        if ($method === 'POST' && ($path === '/previews/shares' || preg_match('#\A/previews/shares/(?:preview|newest)/[a-f0-9]{32}/(?:extend|stop)\z#', $path) === 1)) {
+            return ['kind' => 'sharing', 'previewId' => null, 'artifactPath' => null];
         }
         if ($method === 'POST' && in_array($path, ['/previews/delete/review', '/previews/delete/confirm'], true)) {
             return ['kind' => 'cleanup', 'previewId' => null, 'artifactPath' => null];
-        }
-        if ((in_array($method, ['GET', 'POST'], true) && preg_match('#\A/previews/([a-f0-9]{32})/shares\z#', $path, $shareMatch) === 1)
-            || ($method === 'POST' && preg_match('#\A/previews/([a-f0-9]{32})/shares/[a-f0-9]{32}/revoke\z#', $path, $shareMatch) === 1)) {
-            return ['kind' => 'shares', 'previewId' => $shareMatch[1], 'artifactPath' => null];
         }
         if (in_array($method, ['GET', 'POST'], true) && $path === '/previews') {
             return ['kind' => 'list', 'previewId' => null, 'artifactPath' => null];
@@ -1060,6 +1037,32 @@ final class IdentityApplication
     }
 
     /** @return ?\Closure(string): ?string */
+    /** The Previews page, with the shared links and, right after creating one, that link in full. */
+    private function previewListResponse(Request $request, SessionContext $session, ?ProfileManifest $profile, ?Preview\SharedLink $created = null): Response
+    {
+        $chrome = $this->chrome($request, $session);
+        $sharing = $this->sharing;
+        $sharedLinks = $sharing?->section($session->csrfToken, $chrome, $this->actorName(), $created);
+        $sharePanel = $sharing === null ? null : static fn(Preview\PreviewStatus $preview): string => $sharing->panel($preview, $session->csrfToken, $chrome);
+        if ($this->previewCleanup !== null && $this->previews !== null) {
+            return $this->previewCleanup->listing($request, (string) $session->userId, $session->csrfToken, $profile, $chrome, $this->content, $sharedLinks, $sharePanel, $this->actorName(), $sharing?->timeZone);
+        }
+        return new Response(200, Pages::previewList(
+            $session->csrfToken,
+            $profile,
+            $this->previews?->list() ?? [],
+            $chrome,
+            $this->previews?->latestCheck(),
+            $this->content === null || $this->previews === null ? [] : $this->previews->setup($this->content),
+            preparation: $this->previews?->preparationLanguages() ?? [],
+            pendingPublication: $this->content?->pendingPublicationCount() ?? 0,
+            sharedLinks: $sharedLinks,
+            sharePanel: $sharePanel,
+            actorName: $this->actorName(),
+            zone: $sharing?->timeZone,
+        ));
+    }
+
     private function actorName(): ?\Closure
     {
         $accounts = $this->accounts;

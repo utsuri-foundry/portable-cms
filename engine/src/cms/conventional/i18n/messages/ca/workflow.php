@@ -21,7 +21,6 @@ return [
     'workflow.required' => '{field} és obligatori en totes les llengües del web perquè el registre estigui a punt.',
     'workflow.relationship' => 'Marca primer com a punt els registres referenciats o elimina la referència.',
     'workflow.media' => 'Els mitjans seleccionats han d’haver acabat de processar-se. Els mitjans no compatibles no s’hi poden incloure.',
-    'preview.include_drafts' => 'Inclou els esborranys desats i els canvis encara no marcats com a punt (només revisió)',
     'preview.mode.drafts' => 'Inclou esborranys desats. Només revisió; no es pot publicar al web.',
     'preview.include_preparation' => 'Inclou les llengües en preparació: {languages} (només revisió)',
     'preview.mode.preparation' => 'Inclou llengües en preparació. Només revisió; no es pot publicar al web.',

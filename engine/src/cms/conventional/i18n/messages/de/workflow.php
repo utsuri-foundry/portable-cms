@@ -21,7 +21,6 @@ return [
     'workflow.required' => '{field} ist in jeder Website-Sprache erforderlich, damit der Eintrag bereit ist.',
     'workflow.relationship' => 'Markieren Sie zuerst referenzierte Einträge als bereit oder entfernen Sie den Verweis.',
     'workflow.media' => 'Ausgewählte Medien müssen fertig verarbeitet sein. Nicht unterstützte Medien können nicht aufgenommen werden.',
-    'preview.include_drafts' => 'Gespeicherte Entwürfe und noch nicht als bereit markierte Änderungen einschließen (nur zur Prüfung)',
     'preview.mode.drafts' => 'Enthält gespeicherte Entwürfe. Nur Prüfung; keine Veröffentlichung möglich.',
     'preview.include_preparation' => 'Sprachen in Vorbereitung einbeziehen: {languages} (nur Prüfung)',
     'preview.mode.preparation' => 'Enthält Sprachen in Vorbereitung. Nur Prüfung; keine Veröffentlichung möglich.',

@@ -309,7 +309,7 @@ $tests['native preview cleanup routes retain authentication origin CSRF and fini
         foreach ([['origin' => 'https://foreign.test'], ['origin' => 'https://cms.example.test']] as $headers) {
             assertSameValue(403, $app->handle(new Request('POST', $path, $headers, ['_csrf' => 'wrong', 'preview_ids' => [$id]], $cookies))->status, 'bad origin or CSRF refused');
         }
-        $list = $app->handle(new Request('GET', '/previews', cookies: $cookies));
+        $list = $app->handle(new Request('GET', '/previews', cookies: $cookies, query: ['select' => '1']));
         assertTrueValue(str_contains($list->body, 'name="preview_ids[]"') && preg_match('/<input[^>]*name="preview_ids\[\]"[^>]*\bchecked\b/', $list->body) === 0, 'native default-unselected form');
         assertSameValue(404, $app->handle(new Request('GET', $path, cookies: $cookies))->status, 'GET cannot review or mutate');
         $review = $app->handle(new Request('POST', $path, contentMutationHeaders(), ['_csrf' => $csrf, 'preview_ids' => [$id, $id]], $cookies));

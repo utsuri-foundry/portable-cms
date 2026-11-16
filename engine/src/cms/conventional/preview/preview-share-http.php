@@ -4,22 +4,28 @@ declare(strict_types=1);
 
 namespace Utsuri\PortableCms\Conventional\Preview;
 
-use Utsuri\PortableCms\Conventional\Content\ProfileManifest;
 use Utsuri\PortableCms\Conventional\Http\Cookie;
 use Utsuri\PortableCms\Conventional\Http\OriginPolicy;
 use Utsuri\PortableCms\Conventional\Http\Request;
 use Utsuri\PortableCms\Conventional\Http\Response;
 use Utsuri\PortableCms\Conventional\I18n\Translator;
-use Utsuri\PortableCms\Conventional\View\AdminChrome;
 use Utsuri\PortableCms\Conventional\View\PreviewSharePage;
 
+/** The guest side of a fixed share link: secret exchange, the viewer and its files. Links are made on the Previews page. */
 final class PreviewShareHttp
 {
+    /**
+     * @param (\Closure(): ?string)|null $siteName
+     * @param (\Closure(string): ?string)|null $actorName
+     * @param array<string, string> $languageLabels Locale to label, in the site's order.
+     */
     public function __construct(
         private readonly PreviewShareService $shares,
         private readonly PreviewService $previews,
         private readonly OriginPolicy $originPolicy,
-        private readonly string $origin,
+        private readonly ?\Closure $siteName = null,
+        private readonly ?\Closure $actorName = null,
+        private readonly array $languageLabels = [],
     ) {}
 
     public function guest(Request $request, Translator $t): Response
@@ -65,7 +71,7 @@ final class PreviewShareHttp
             if ($share === null) {
                 return new Response(404, $t->html('share.unavailable'));
             }
-            return Response::redirect($base)->withCookie(new Cookie(self::cookieName($id), $token, 7 * 86400, true, 'Strict'));
+            return Response::redirect($base)->withCookie(new Cookie(self::cookieName($id), $token, 30 * 86400, true, 'Strict'));
         }
         if ($request->method !== 'GET') {
             return new Response(404, $t->html('share.unavailable'));
@@ -80,7 +86,9 @@ final class PreviewShareHttp
         }
         if ($suffix === '/') {
             $files = (new PreviewFileHttp($this->previews, 'shared-preview-files'))->base($id, $this->shares->createFiles($share));
-            return (new Response(200, PreviewSharePage::viewer($base, $t, $files)))->withVimeoWorkspace()->withHeader('content-type', 'text/html; charset=utf-8');
+            $sharer = $share->createdBy === null || $this->actorName === null ? null : ($this->actorName)($share->createdBy);
+            return (new Response(200, PreviewSharePage::viewer($base, $t, $files, $this->siteName === null ? null : ($this->siteName)(), $sharer, PreviewLanguages::of($this->previews->find($share->previewId), $this->languageLabels))))
+                ->withVimeoWorkspace()->withHeader('content-type', 'text/html; charset=utf-8');
         }
         if ($suffix === '/artifact') {
             return Response::redirect($base . 'artifact/', 308);
@@ -99,40 +107,38 @@ final class PreviewShareHttp
             ?? new Response(404, $t->html('share.unavailable'));
     }
 
-    /** Caller has already checked publication authority, same-origin and CSRF for mutations. */
-    public function manage(Request $request, string $previewId, string $actor, string $csrf, ?ProfileManifest $profile, AdminChrome $chrome): Response
-    {
-        $preview = $this->previews->find($previewId);
-        if ($preview === null) {
-            return new Response(404);
-        }
-        if ($preview->status !== 'ready') {
-            return new Response(409);
-        }
-        $url = null;
-        try {
-            if ($request->method === 'POST') {
-                if (preg_match('#/shares/([a-f0-9]{32})/revoke\z#', $request->path, $match) === 1) {
-                    $this->shares->revoke($previewId, $match[1], $actor);
-                    return Response::redirect('/previews/' . $previewId . '/shares');
-                }
-                $expiry = $request->formValue('expiry_hours');
-                if (!in_array($expiry, ['1', '24', '168'], true)) {
-                    throw new InvalidShareExpiry();
-                }
-                $created = $this->shares->create($previewId, $actor, (int) $expiry);
-                $url = $this->origin . '/shared-previews/' . $created['share']->id . '/#' . $created['token'];
-            }
-        } catch (InvalidShareExpiry) {
-            return new Response(422);
-        } catch (ShareUnavailable) {
-            return new Response(409);
-        }
-        return new Response(200, PreviewSharePage::manage($previewId, $csrf, $this->shares->active($previewId), $url, $profile, $chrome));
-    }
-
     public static function cookieName(string $id): string
     {
         return '__Host-preview-share-' . $id;
+    }
+}
+
+/** The languages a frozen preview actually contains, named as the site names them. */
+final class PreviewLanguages
+{
+    /**
+     * @param array<string, string> $labels
+     * @return array<string, string>
+     */
+    public static function of(?PreviewStatus $preview, array $labels): array
+    {
+        if ($preview === null || $preview->manifest === null || $labels === []) {
+            return [];
+        }
+        try {
+            $paths = [];
+            foreach (PreviewBuild::fromManifest($preview->manifest)->artifacts as $artifact) {
+                $paths[$artifact->path] = true;
+            }
+        } catch (\InvalidArgumentException) {
+            return [];
+        }
+        $languages = [];
+        foreach ($labels as $locale => $label) {
+            if (isset($paths[$locale . '/index.html'])) {
+                $languages[$locale] = $label;
+            }
+        }
+        return $languages;
     }
 }

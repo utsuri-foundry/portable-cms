@@ -21,7 +21,6 @@ return [
     'workflow.required' => '{field} es obligatorio en todos los idiomas del sitio para que el registro esté listo.',
     'workflow.relationship' => 'Marca primero como listos los registros referenciados o elimina la referencia.',
     'workflow.media' => 'Los medios seleccionados deben haber terminado de procesarse. Los medios no compatibles no pueden incluirse.',
-    'preview.include_drafts' => 'Incluir borradores guardados y cambios aún no marcados como listos (solo revisión)',
     'preview.mode.drafts' => 'Incluye borradores guardados. Solo revisión; no puede publicarse en el sitio.',
     'preview.include_preparation' => 'Incluir los idiomas en preparación: {languages} (solo revisión)',
     'preview.mode.preparation' => 'Incluye idiomas en preparación. Solo revisión; no puede publicarse en el sitio.',

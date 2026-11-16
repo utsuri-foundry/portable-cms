@@ -37,17 +37,23 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     $origin = 'https://cms.example.test';
     $identity = new IdentityService($identityRepository, $clock, $random, str_repeat('s', 32));
     $policy = new OriginPolicy($origin);
-    $http = new PreviewShareHttp($shares, $previews, $policy, $origin);
-    $app = new IdentityApplication($identity, $policy, $clock, $random, profile: $profile, previews: $previews, previewShares: $http);
-    $created = $shares->create($previewId, $actor, 1);
+    $http = new PreviewShareHttp($shares, $previews, $policy, static fn(): string => 'Reference Studio', static fn(string $id): string => 'Montse', ['en' => 'English', 'ca' => 'Català']);
+    $newest = new \Utsuri\PortableCms\Conventional\Preview\NewestPreviewLinkService(new \Utsuri\PortableCms\Conventional\Preview\MariaDbNewestPreviewLinkRepository($pdo), $identityRepository, $clock, $random, str_repeat('s', 32));
+    $sharing = new \Utsuri\PortableCms\Conventional\Preview\PreviewSharingHttp($shares, $newest, $previews, $origin, new DateTimeZone('Europe/Madrid'));
+    $app = new IdentityApplication($identity, $policy, $clock, $random, profile: $profile, previews: $previews, previewShares: $http, sharing: $sharing);
+    $created = $shares->create($previewId, $actor, 1, 'Designer');
     $share = $created['share'];
     $token = $created['token'];
     $base = '/shared-previews/' . $share->id . '/';
     $cookies = [PreviewShareHttp::cookieName($share->id) => $token];
     $headers = ['origin' => $origin, 'sec-fetch-site' => 'same-origin'];
-    $stored = $pdo->prepare('SELECT token_hash FROM cms_preview_shares WHERE id = :id');
+    $stored = $pdo->prepare('SELECT token_hash, sealed_secret, note FROM cms_preview_shares WHERE id = :id');
     $stored->execute(['id' => $share->id]);
-    assertSameValue(hash('sha256', $token), $stored->fetchColumn(), 'database persists only the secret hash');
+    $storedRow = $stored->fetch(PDO::FETCH_ASSOC);
+    assertSameValue(hash('sha256', $token), $storedRow['token_hash'], 'authorization uses only the secret hash');
+    assertTrueValue(is_string($storedRow['sealed_secret']) && !str_contains($storedRow['sealed_secret'], $token), 'the sealed copy never holds the secret in clear');
+    assertSameValue('Designer', $storedRow['note'], 'the note is stored with the link');
+    assertSameValue($origin . $base . '#' . $token, $shares->url($shares->listed()[0], $origin), 'the installation can open its sealed copy to show the link again');
     $sessions = (int) $pdo->query('SELECT COUNT(*) FROM cms_sessions')->fetchColumn();
     $opened = $app->handle(new Request('POST', $base . 'open', $headers, ['token' => $token]));
     assertSameValue(303, $opened->status, 'fragment secret exchanges through same-origin POST');
@@ -62,7 +68,8 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     assertSameValue(200, $viewer->status, 'authorized viewer opens without an account');
     assertTrueValue(str_contains($viewer->body, '/assets/preview-vimeo.js'), 'shared viewer supplies the sibling player module');
     assertTrueValue(str_contains($viewer->headers()['content-security-policy'][0], "frame-src 'self' https://player.vimeo.com"), 'shared shell admits its page and fixed provider only');
-    assertTrueValue(str_contains($viewer->body, 'data-share-dismiss') && str_contains($viewer->body, 'sandbox="allow-scripts"'), 'separate shell supplies a dismissible notice and bounded frame');
+    assertTrueValue(str_contains($viewer->body, 'data-share-notice') && str_contains($viewer->body, 'sandbox="allow-scripts"'), 'separate shell supplies the bar and a bounded frame');
+    assertTrueValue(str_contains($viewer->body, 'Preview of Reference Studio, not public, shared by Montse') && str_contains($viewer->body, 'data-share-language="en"') && str_contains($viewer->body, 'data-share-language="ca"'), 'the bar names the site and the sharer and offers the languages the build contains');
     assertSameValue(1, preg_match('#src="(/shared-preview-files/[a-f0-9]{32}/([a-f0-9]{64})/)"#', $viewer->body, $fileMatch), 'viewer mints a separate file address');
     $fileBase = $fileMatch[1];
     $fileToken = $fileMatch[2];
@@ -101,7 +108,7 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
         assertSameValue(404, $app->handle(new Request($method, $fileBase . 'index.html'))->status, 'file capability is read-only');
     }
     assertSameValue($uses, (int) $pdo->query("SELECT COUNT(*) FROM cms_audit_events WHERE event_type = 'preview.share.used'")->fetchColumn(), 'file requests do not write per-file use audits');
-    $other = $shares->create($previewId, $actor, 24);
+    $other = $shares->create($previewId, $actor, 7);
     assertSameValue(404, $app->handle(new Request('GET', str_replace($share->id, $other['share']->id, $fileBase), remoteAddress: 'wrong-share'))->status, 'token cannot move even to another share of the same preview');
     assertSameValue(404, $app->handle(new Request('GET', str_replace($fileToken, $token, $fileBase), remoteAddress: 'wrong-file'))->status, 'share cookie secret cannot serve isolated files');
     assertSameValue(false, $shares->renewFiles($other['share'], $fileToken), 'another share cannot renew a file token');
@@ -153,19 +160,39 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     $login = $identity->login($anonymous, 'sandbox@example.test', 'sandbox integration password', 'manager');
     assertTrueValue($login->authenticated, 'sandbox administrator signs in for link management');
     $auth = [IdentityService::SESSION_COOKIE => $login->session->sessionToken, IdentityService::CSRF_COOKIE => $login->session->csrfToken];
-    $route = '/previews/' . $previewId . '/shares';
-    assertSameValue(403, $app->handle(new Request('POST', $route, $headers, ['expiry_hours' => '24'], $auth))->status, 'link creation requires CSRF');
-    assertSameValue(422, $app->handle(new Request('POST', $route, $headers, ['expiry_hours' => '999', '_csrf' => $login->session->csrfToken], $auth))->status, 'native form rejects arbitrary expiry');
-    $managed = $app->handle(new Request('POST', $route, $headers, ['expiry_hours' => '24', '_csrf' => $login->session->csrfToken], $auth));
-    assertSameValue(200, $managed->status, 'publisher creates link through native form');
-    assertTrueValue(str_contains($managed->body, '/#'), 'secret appears only in complete fragment link');
-    assertTrueValue(!str_contains($app->handle(new Request('GET', $route, cookies: $auth))->body, '/#'), 'later management cannot recover raw secrets');
-    $wrongPreview = str_repeat('f', 32);
-    try {
-        $shares->revoke($wrongPreview, $share->id, $actor);
-        throw new RuntimeException('cross-preview revocation accepted');
-    } catch (ShareUnavailable) {
-    }
+    $route = '/previews/shares';
+    $form = ['kind' => 'preview', 'preview' => $previewId, 'days' => '7', 'note' => 'Marta, distributor'];
+    assertSameValue(403, $app->handle(new Request('POST', $route, $headers, $form, $auth))->status, 'link creation requires CSRF');
+    assertSameValue(422, $app->handle(new Request('POST', $route, $headers, [...$form, 'days' => '999', '_csrf' => $login->session->csrfToken], $auth))->status, 'the form rejects an arbitrary lifetime');
+    assertSameValue(422, $app->handle(new Request('POST', $route, $headers, [...$form, 'note' => str_repeat('n', 121), '_csrf' => $login->session->csrfToken], $auth))->status, 'the form rejects an overlong note');
+    assertSameValue(409, $app->handle(new Request('POST', $route, $headers, [...$form, 'preview' => str_repeat('f', 32), '_csrf' => $login->session->csrfToken], $auth))->status, 'an unknown preview cannot be shared');
+    $managed = $app->handle(new Request('POST', $route, $headers, [...$form, '_csrf' => $login->session->csrfToken], $auth));
+    assertSameValue(200, $managed->status, 'the Share panel creates a link and shows the Previews page');
+    assertTrueValue(str_contains($managed->body, 'data-share-created') && str_contains($managed->body, 'Marta, distributor') && preg_match('#id="share-link" type="text" readonly value="' . preg_quote($origin, '#') . '/shared-previews/[a-f0-9]{32}/\#[a-f0-9]{64}"#', $managed->body) === 1, 'the new link is named by its note and shown in full');
+    $listedPage = $app->handle(new Request('GET', '/previews', cookies: $auth))->body;
+    assertTrueValue(preg_match('#data-copy="' . preg_quote($origin, '#') . '/shared-previews/[a-f0-9]{32}/\#[a-f0-9]{64}"#', $listedPage) === 1, 'a listed link can be copied again in full');
+    assertTrueValue(!str_contains($listedPage, 'UTC') && !str_contains(strip_tags($listedPage), $share->id), 'the list shows neither UTC nor identities');
+    assertSameValue(1, preg_match('#/shared-previews/([a-f0-9]{32})/\#[a-f0-9]{64}#', $managed->body, $managedLink), 'the response names the new link');
+    $findShare = static fn(string $id): ?PreviewShare => array_values(array_filter($shares->listed(), static fn(PreviewShare $candidate): bool => $candidate->id === $id))[0] ?? null;
+    $managedShare = $findShare($managedLink[1]);
+    assertSameValue('Marta, distributor', $managedShare?->note, 'the listed link is the one just made, with its note');
+    assertSameValue(303, $app->handle(new Request('POST', $route . '/preview/' . $managedLink[1] . '/extend', $headers, ['days' => '30', '_csrf' => $login->session->csrfToken], $auth))->status, 'Extend returns to the list');
+    assertSameValue($clock->now()->modify('+30 days')->getTimestamp(), $findShare($managedLink[1])?->expiresAt->getTimestamp(), 'Extend counts from today');
+    assertSameValue(422, $app->handle(new Request('POST', $route . '/preview/' . $managedShare->id . '/extend', $headers, ['days' => '2', '_csrf' => $login->session->csrfToken], $auth))->status, 'Extend accepts only the offered lifetimes');
+    assertSameValue(303, $app->handle(new Request('POST', $route . '/preview/' . $managedLink[1] . '/stop', $headers, ['_csrf' => $login->session->csrfToken], $auth))->status, 'Stop returns to the list');
+    assertSameValue(null, $findShare($managedLink[1]), 'a stopped link leaves the list');
+    assertSameValue(404, $app->handle(new Request('POST', $route . '/preview/' . $managedLink[1] . '/stop', $headers, ['_csrf' => $login->session->csrfToken], $auth))->status, 'a stopped link cannot be stopped again');
+    $editorId = bin2hex($random->bytes(16));
+    $pdo->prepare("INSERT INTO cms_users (id, login_name, display_name, password_hash, role, status, created_at, password_changed_at) VALUES (:id, 'sharing-editor@example.test', 'Fictional sharing editor', :hash, 'editor', 'active', :created, :changed)")
+        ->execute(['id' => $editorId, 'hash' => password_hash('fictional sharing editor password', PASSWORD_DEFAULT), 'created' => $clock->now()->format('Y-m-d H:i:s.u'), 'changed' => $clock->now()->format('Y-m-d H:i:s.u')]);
+    $editor = $identity->login($identity->openSession(null, null), 'sharing-editor@example.test', 'fictional sharing editor password', 'sharing-editor');
+    assertTrueValue($editor->authenticated, 'an editor signs in');
+    $editorAuth = [IdentityService::SESSION_COOKIE => $editor->session->sessionToken, IdentityService::CSRF_COOKIE => $editor->session->csrfToken];
+    $editorShare = $app->handle(new Request('POST', $route, $headers, [...$form, 'note' => 'From the editor', '_csrf' => $editor->session->csrfToken], $editorAuth));
+    assertSameValue(200, $editorShare->status, 'editors share previews too');
+    assertSameValue(1, preg_match('#/shared-previews/([a-f0-9]{32})/\#[a-f0-9]{64}#', $editorShare->body, $editorLink), 'the editor response names the new link');
+    assertSameValue('From the editor', $findShare($editorLink[1])?->note, 'the editor link is stored with its note');
+    assertSameValue(303, $app->handle(new Request('POST', $route . '/preview/' . $editorLink[1] . '/stop', $headers, ['_csrf' => $editor->session->csrfToken], $editorAuth))->status, 'editors stop links');
     $auditId = $pdo->query('SELECT id FROM cms_audit_events ORDER BY id LIMIT 1')->fetchColumn();
     if (!is_string($auditId)) {
         throw new RuntimeException('Audit fixture is unavailable');
@@ -180,7 +207,7 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     $check->execute(['id' => $rollback->id]);
     assertSameValue(0, (int) $check->fetchColumn(), 'audit failure rolls back creation');
     try {
-        $repository->revoke($previewId, $share->id, $actor, $auditId, $clock->now());
+        $repository->revoke($share->id, $actor, $auditId, $clock->now());
         throw new RuntimeException('duplicate revoke audit unexpectedly committed');
     } catch (PDOException) {
     }
@@ -193,7 +220,7 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     $disable = $pdo->prepare('UPDATE cms_users SET status = :status WHERE id = :id');
     $disable->execute(['id' => $publisher, 'status' => 'disabled']);
     try {
-        foreach ([static fn() => $shares->create($previewId, $publisher, 1), static fn() => $shares->revoke($previewId, $share->id, $publisher)] as $mutation) {
+        foreach ([static fn() => $shares->create($previewId, $publisher, 1), static fn() => $shares->revoke($share->id, $publisher)] as $mutation) {
             try {
                 $mutation();
                 throw new RuntimeException('Disabled publisher mutated share authority');
@@ -251,12 +278,12 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     assertSameValue(404, $app->handle(new Request('GET', $fileBase, remoteAddress: 'file-share-expiry'))->status, 'share expiry closes isolated addresses');
     assertSameValue(404, $app->handle(new Request('GET', $base . 'artifact/index.html', cookies: $cookies, remoteAddress: 'expired'))->status, 'expiry closes existing cookies exactly at deadline');
     $clock->current = $share->createdAt;
-    assertSameValue(303, $app->handle(new Request('POST', $route . '/' . $share->id . '/revoke', $headers, ['_csrf' => $login->session->csrfToken], $auth))->status, 'publisher revokes link through native form');
+    assertSameValue(303, $app->handle(new Request('POST', $route . '/preview/' . $share->id . '/stop', $headers, ['_csrf' => $login->session->csrfToken], $auth))->status, 'publisher stops the link through the native form');
     assertSameValue(404, $app->handle(new Request('GET', $base . 'artifact/index.html', cookies: $cookies, remoteAddress: 'revoked'))->status, 'revocation closes existing cookies');
     assertSameValue(404, $app->handle(new Request('GET', $base . 'artifact/navigation-rules.json', cookies: $cookies, remoteAddress: 'revoked-rules'))->status, 'revocation also closes rules with the existing capability cookie');
     assertSameValue(404, $app->handle(new Request('GET', $fileBase, remoteAddress: 'file-revocation'))->status, 'revocation closes already issued file addresses');
     assertSameValue(false, $shares->renewFiles($share, $fileToken), 'revocation also blocks renewal');
-    $live = $shares->create($previewId, $actor, 24);
+    $live = $shares->create($previewId, $actor, 7);
     $deletedToken = $shares->createFiles($live['share']);
     $deletedBase = '/shared-preview-files/' . $live['share']->id . '/' . $deletedToken . '/';
     $previews->delete($previewId, $actor);
@@ -275,7 +302,7 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     assertSameValue(429, $app->handle(new Request('GET', $base . 'artifact/', remoteAddress: 'guesser'))->status, 'persistent throttle spans guessed link IDs');
     $audit = $pdo->query("SELECT event_type, metadata_json FROM cms_audit_events WHERE event_type LIKE 'preview.share.%'")->fetchAll(PDO::FETCH_ASSOC);
     $events = array_column($audit, 'event_type');
-    foreach (['preview.share.created', 'preview.share.used', 'preview.share.revoked'] as $event) {
+    foreach (['preview.share.created', 'preview.share.used', 'preview.share.extended', 'preview.share.revoked'] as $event) {
         assertTrueValue(in_array($event, $events, true), 'lifecycle audits include ' . $event);
     }
     $encoded = json_encode($audit, JSON_THROW_ON_ERROR);

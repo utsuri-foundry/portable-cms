@@ -5,6 +5,33 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.13.0
+
+- Previews reads as seeing the website as it would be published: one form
+  offers "Content marked ready" or "Everything, drafts included" with their
+  consequence and one button, "Preview the website"; previews are named by
+  their time in the site's zone, say who made them, tag drafts and languages in
+  preparation, and offer Open, Share and a quiet Delete; the pending notice
+  shows only when something is pending; bulk selection appears on request or
+  beyond one page; a preview's page is titled by its time. Identities and
+  hashes leave the page.
+- Sharing is one Share panel on every ready preview, for every account: what
+  the link shows (this preview, or always the newest preview), for how long
+  (1, 7 or 30 days, 7 by default) and who it is for (a note). The result is
+  the complete link with Copy and a sentence saying what it shows and until
+  when. "Shared links" lists each link by its note, what it shows, until when
+  in the site's time zone and by whom, with Copy, Extend and Stop; an expired
+  link keeps Extend and Remove. The viewer shows a thin bar, "Preview of
+  <site>, not public, shared by <name>", with the preview's languages. The one
+  hour option, link identities, UTC times, the separate newest links section
+  and the manifest address leave the administration; the bearer manifest route
+  is unchanged and documented.
+- Migration 0033 adds a note and a sealed copy of the secret to share and
+  newest links, so a link can be copied again; authorization still uses only
+  the hash. Links can be extended from today. Previews carry their creator.
+  Share secrets are sealed with AES-256-GCM under a key derived from the
+  installation's throttle secret.
+
 ## 0.12.13
 
 - Releases is redesigned around one publish form and plain language: an "On

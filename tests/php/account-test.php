@@ -182,7 +182,7 @@ $tests['account credentials preserve only the changing session and deactivation 
 $tests['editor route policy refuses every privileged surface and temporary sessions cannot bypass replacement'] = static function (): void {
     $session = new SessionContext('s', 'authenticated', str_repeat('1', 32), 'a@example.test', 'A', 'editor', 'token', 'csrf', new DateTimeImmutable('+1 day'), false);
     $profile = \Utsuri\PortableCms\Conventional\Content\ProfilePackage::load(dirname(__DIR__, 2) . '/profiles/reference-studio')->manifest;
-    foreach (['/accounts', '/exports', '/releases', '/releases/holding/' . str_repeat('a', 32) . '/artifact/', '/settings/design', '/settings/terminology', '/settings/publication', '/records/project/' . str_repeat('a', 32) . '/status', '/records/site-settings', '/previews/' . str_repeat('a', 32) . '/shares'] as $path) {
+    foreach (['/accounts', '/exports', '/releases', '/releases/holding/' . str_repeat('a', 32) . '/artifact/', '/settings/design', '/settings/terminology', '/settings/publication', '/records/project/' . str_repeat('a', 32) . '/status', '/records/site-settings'] as $path) {
         assertTrueValue(!AdministrationPermissions::allows($session, new Request('POST', $path), $profile), 'editor denied ' . $path);
     }
     foreach (['/', '/records/project', '/records/article/new', '/previews', '/releases', '/media', '/account', '/settings/theme', '/settings/language'] as $path) {

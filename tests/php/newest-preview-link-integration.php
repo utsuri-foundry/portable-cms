@@ -26,15 +26,16 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
     $origin = 'https://cms.example.test';
     $policy = new OriginPolicy($origin);
     $identity = new IdentityService($identities, $clock, $random, str_repeat('s', 32));
-    $http = new NewestPreviewHttp($links, $previews, $policy, $origin);
-    $app = new IdentityApplication($identity, $policy, $clock, $random, profile: $profile, previews: $previews, newestPreviews: $http);
+    $http = new NewestPreviewHttp($links, $previews, $policy, static fn(): string => 'Reference Studio', static fn(string $id): string => 'Montse', ['en' => 'English']);
+    $sharing = new \Utsuri\PortableCms\Conventional\Preview\PreviewSharingHttp(new \Utsuri\PortableCms\Conventional\Preview\PreviewShareService(new \Utsuri\PortableCms\Conventional\Preview\MariaDbPreviewShareRepository($pdo), $identities, $clock, $random, str_repeat('s', 32)), $links, $previews, $origin, new DateTimeZone('UTC'));
+    $app = new IdentityApplication($identity, $policy, $clock, $random, profile: $profile, previews: $previews, newestPreviews: $http, sharing: $sharing);
     $states = $pdo->query('SELECT id, status, build_kind FROM cms_previews')->fetchAll(PDO::FETCH_ASSOC);
     $status = $pdo->prepare('UPDATE cms_previews SET status = :status, build_kind = :kind WHERE id = :id');
     $set = static function (string $id, string $state, string $kind = 'website') use ($status): void {
         $status->execute(['id' => $id, 'status' => $state, 'kind' => $kind]);
     };
     try {
-        $created = $links->create($actor, 720);
+        $created = $links->create($actor, 30, 'Comparison tool');
         $link = $created['link'];
         $secret = $created['token'];
         $base = '/newest-previews/' . $link->id . '/';
@@ -105,8 +106,16 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
         assertTrueValue($loggedResolution !== null, 'diagnostic fixture resolves an actual preview');
         $loggedToken = $loggedLinks->createFiles($loggedResolution);
         $storedFile->execute(['hash' => hash('sha256', $loggedToken)]);
-        assertSameValue($loggedResolution->link->expiresAt->format('Y-m-d H:i:s.u'), $storedFile->fetch(PDO::FETCH_ASSOC)['expires_at'], 'a short-lived parent caps its browser file lease');
-        assertSameValue(null, $repository->files($logged['link']->id, hash('sha256', $loggedToken), $loggedResolution->link->expiresAt), 'browser address closes exactly with a short-lived parent');
+        assertTrueValue(is_array($storedFile->fetch(PDO::FETCH_ASSOC)), 'the diagnostic fixture holds a browser file lease');
+        $capped = $links->create($actor, 1);
+        $clock->current = $capped['link']->expiresAt->modify('-1 minute');
+        $cappedResolution = $links->authorize($capped['link']->id, $capped['token'], 'capped');
+        assertTrueValue($cappedResolution !== null, 'a link near its end still resolves');
+        $cappedToken = $links->createFiles($cappedResolution);
+        $storedFile->execute(['hash' => hash('sha256', $cappedToken)]);
+        assertSameValue($capped['link']->expiresAt->format('Y-m-d H:i:s.u'), $storedFile->fetch(PDO::FETCH_ASSOC)['expires_at'], 'a parent near its end caps its browser file lease');
+        assertSameValue(null, $repository->files($capped['link']->id, hash('sha256', $cappedToken), $capped['link']->expiresAt), 'browser address closes exactly with its parent');
+        $clock->current = $link->createdAt;
         $originalManifest = $pdo->prepare('SELECT manifest_json FROM cms_previews WHERE id = :id');
         $originalManifest->execute(['id' => $loggedResolution->previewId]);
         $savedManifest = $originalManifest->fetchColumn();
@@ -138,13 +147,14 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
         $viewer = $app->handle(new Request('GET', $base, cookies: $cookie));
         assertTrueValue(str_contains($viewer->body, '/assets/preview-vimeo.js'), 'newest viewers share the sibling player runtime');
         assertTrueValue(str_contains($viewer->headers()['content-security-policy'][0], "frame-src 'self' https://player.vimeo.com"), 'newest shell permits only its page and Vimeo provider');
-        assertTrueValue(str_contains($viewer->body, 'data-share-notice') && str_contains($viewer->body, 'sandbox="allow-scripts"'), 'viewer keeps the notice outside an opaque scripted frame');
+        assertTrueValue(str_contains($viewer->body, 'data-share-notice') && str_contains($viewer->body, 'sandbox="allow-scripts"'), 'viewer keeps the bar outside an opaque scripted frame');
+        assertTrueValue(str_contains($viewer->body, 'Preview of Reference Studio, not public, shared by Montse'), 'the bar names the site and who shared the newest link');
         assertSameValue(1, preg_match('#src="(/newest-preview-files/[a-f0-9]{32}/([a-f0-9]{64})/)"#', $viewer->body, $newFile), 'reload mints a new file address');
         $newFiles = $newFile[1];
         assertSameValue($newer, $links->authorizeFiles($link->id, $newFile[2], 'reloaded')?->previewId, 'reload follows the newer preview');
         assertTrueValue(str_contains($viewer->headers()['content-security-policy'][0], "frame-ancestors 'none'"), 'viewer cannot be embedded');
         assertSameValue(403, $app->handle(new Request('POST', $base . 'open', ['origin' => 'https://foreign.example'], ['token' => $secret]))->status, 'foreign fragment exchanges fail');
-        $other = $links->create($actor, 24);
+        $other = $links->create($actor, 7);
         assertSameValue(404, $app->handle(new Request('GET', str_replace($link->id, $other['link']->id, $firstFiles), remoteAddress: 'file-other-link'))->status, 'file capability cannot move to another link');
         assertSameValue(404, $app->handle(new Request('GET', str_replace($firstFileToken, $secret, $firstFiles), remoteAddress: 'file-wrong-purpose'))->status, 'bearer secret cannot substitute for a browser file token');
         assertSameValue(404, $app->handle(new Request('GET', $base . 'artifact/artifact.json', ['authorization' => 'Bearer ' . $firstFileToken], remoteAddress: 'file-as-bearer'))->status, 'file token cannot authenticate a tool download');
@@ -232,7 +242,7 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
         assertSameValue(429, $app->handle(new Request('GET', $base . 'artifact/artifact.json', $bearer, remoteAddress: 'bearer-guesser'))->status, 'bearer guessing is persistently rate limited across link IDs');
         verifyNewestPreviewManagement($pdo, $app, $identity, $repository, $links, $actor, $clock, $random, $origin);
         $audit = $pdo->query("SELECT event_type, metadata_json FROM cms_audit_events WHERE event_type LIKE 'preview.follow.%'")->fetchAll(PDO::FETCH_ASSOC);
-        foreach (['preview.follow.created', 'preview.follow.used', 'preview.follow.revoked'] as $event) {
+        foreach (['preview.follow.created', 'preview.follow.used', 'preview.follow.extended', 'preview.follow.revoked'] as $event) {
             assertTrueValue(in_array($event, array_column($audit, 'event_type'), true), 'lifecycle audit includes ' . $event);
         }
         $encoded = json_encode($audit, JSON_THROW_ON_ERROR);
@@ -255,16 +265,23 @@ function verifyNewestPreviewManagement(PDO $pdo, IdentityApplication $app, Ident
     $csrf = $login->session->csrfToken;
     $cookies = [IdentityService::SESSION_COOKIE => $login->session->sessionToken, IdentityService::CSRF_COOKIE => $csrf];
     $headers = ['origin' => $origin, 'sec-fetch-site' => 'same-origin'];
-    $route = '/previews/shares/newest';
-    assertSameValue(403, $app->handle(new Request('POST', $route, $headers, ['expiry_hours' => '24'], $cookies))->status, 'newest link creation requires CSRF');
-    assertSameValue(422, $app->handle(new Request('POST', $route, $headers, ['_csrf' => $csrf, 'expiry_hours' => '721'], $cookies))->status, 'native expiry is bounded to thirty days');
-    $created = $app->handle(new Request('POST', $route, $headers, ['_csrf' => $csrf, 'expiry_hours' => '720'], $cookies));
-    assertSameValue(200, $created->status, 'publisher creates newest link natively from the list');
-    assertTrueValue(str_contains($created->body, 'id="newest-share-link"') && str_contains($created->body, 'including drafts') && str_contains($created->body, 'id="newest-share-manifest"'), 'creation shows the once-only link, tool address and draft warning');
+    $route = '/previews/shares';
+    $form = ['kind' => 'newest', 'days' => '30', 'note' => 'Comparison tool'];
+    assertSameValue(403, $app->handle(new Request('POST', $route, $headers, $form, $cookies))->status, 'newest link creation requires CSRF');
+    assertSameValue(422, $app->handle(new Request('POST', $route, $headers, ['_csrf' => $csrf, ...$form, 'days' => '31'], $cookies))->status, 'the lifetime is one of the offered choices');
+    $created = $app->handle(new Request('POST', $route, $headers, ['_csrf' => $csrf, ...$form], $cookies));
+    assertSameValue(200, $created->status, 'the Share panel creates a newest link from the Previews page');
+    assertTrueValue(str_contains($created->body, 'data-share-created') && str_contains($created->body, 'Always shows the newest preview') && preg_match('#id="share-link" type="text" readonly value="' . preg_quote($origin, '#') . '/newest-previews/[a-f0-9]{32}/\#[a-f0-9]{64}"#', $created->body) === 1, 'creation shows the complete link and what it shows');
     $listed = $app->handle(new Request('GET', '/previews', cookies: $cookies));
-    assertTrueValue(str_contains($listed->body, 'id="newest-preview-links"') && !str_contains($listed->body, 'id="newest-share-link"'), 'active links stay on the list without recovering their secrets');
-    $active = $links->active()[0];
-    assertSameValue(303, $app->handle(new Request('POST', $route . '/' . $active->id . '/revoke', $headers, ['_csrf' => $csrf], $cookies))->status, 'publisher revokes natively');
+    assertTrueValue(str_contains($listed->body, 'id="shared-links"') && str_contains($listed->body, 'Comparison tool') && preg_match('#data-copy="' . preg_quote($origin, '#') . '/newest-previews/[a-f0-9]{32}/\#[a-f0-9]{64}"#', $listed->body) === 1, 'the list names the link by its note and can copy it again');
+    assertTrueValue(preg_match('#<section[^>]*id="shared-links".*?</section>#s', $listed->body, $sharedSection) === 1 && !str_contains($sharedSection[0], 'UTC') && !str_contains($sharedSection[0], 'artifact.json'), 'the list carries neither UTC nor tool addresses');
+    assertSameValue(1, preg_match('#/newest-previews/([a-f0-9]{32})/\#[a-f0-9]{64}#', $created->body, $createdLink), 'the response names the new link');
+    $activeId = $createdLink[1];
+    $find = static fn(string $id): ?NewestPreviewLink => array_values(array_filter($links->listed(), static fn(NewestPreviewLink $candidate): bool => $candidate->id === $id))[0] ?? null;
+    assertSameValue(303, $app->handle(new Request('POST', $route . '/newest/' . $activeId . '/extend', $headers, ['_csrf' => $csrf, 'days' => '1'], $cookies))->status, 'Extend returns to the list');
+    assertSameValue($clock->now()->modify('+1 day')->getTimestamp(), $find($activeId)?->expiresAt->getTimestamp(), 'Extend counts from today');
+    assertSameValue(303, $app->handle(new Request('POST', $route . '/newest/' . $activeId . '/stop', $headers, ['_csrf' => $csrf], $cookies))->status, 'Stop returns to the list');
+    assertSameValue(null, $find($activeId), 'a stopped link leaves the list');
     $audit = (string) $pdo->query('SELECT id FROM cms_audit_events LIMIT 1')->fetchColumn();
     $rollback = new NewestPreviewLink(bin2hex($random->bytes(16)), $clock->now(), $clock->now()->modify('+1 hour'));
     try {
@@ -294,15 +311,10 @@ function verifyNewestPreviewManagement(PDO $pdo, IdentityApplication $app, Ident
     $editor = $identity->login($identity->openSession(null, null), 'newest-editor@example.test', 'fictional editor password', 'newest-editor');
     assertTrueValue($editor->authenticated, 'ordinary editor signs in');
     $editorCookies = [IdentityService::SESSION_COOKIE => $editor->session->sessionToken, IdentityService::CSRF_COOKIE => $editor->session->csrfToken];
-    assertSameValue(403, $app->handle(new Request('POST', $route, $headers, ['_csrf' => $editor->session->csrfToken, 'expiry_hours' => '24'], $editorCookies))->status, 'ordinary editors have no publication capability');
-    assertTrueValue(!str_contains($app->handle(new Request('GET', '/previews', cookies: $editorCookies))->body, 'id="newest-preview-links"'), 'ordinary editor list omits capability controls');
-    foreach ([static fn() => $links->create($editorId, 1), static fn() => $links->revoke($protected['link']->id, $editorId)] as $mutation) {
-        try {
-            $mutation();
-            throw new RuntimeException('Repository accepted an editor without publication rights');
-        } catch (ShareUnavailable) {
-        }
-    }
+    assertSameValue(200, $app->handle(new Request('POST', $route, $headers, ['_csrf' => $editor->session->csrfToken, ...$form, 'note' => 'From the editor'], $editorCookies))->status, 'editors share the newest preview too');
+    assertTrueValue(str_contains($app->handle(new Request('GET', '/previews', cookies: $editorCookies))->body, 'From the editor'), 'editors see the shared links list');
+    $links->revoke($links->listed()[0]->id, $editorId);
+    $links->revoke($protected['link']->id, $editorId);
     try {
         $links->create(str_repeat('f', 32), 1);
         throw new RuntimeException('Missing publication actor mutated links');

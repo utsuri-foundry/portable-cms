@@ -17,11 +17,11 @@ final readonly class PreviewCleanupHttp
 {
     public function __construct(private PreviewCleanupService $cleanup, private PreviewService $previews) {}
 
-    public function listing(Request $request, string $actor, string $csrf, ?ProfileManifest $profile, AdminChrome $chrome, ?ContentService $content, ?\Utsuri\PortableCms\Conventional\View\TrustedHtml $newestLinks = null): Response
+    public function listing(Request $request, string $actor, string $csrf, ?ProfileManifest $profile, AdminChrome $chrome, ?ContentService $content, ?\Utsuri\PortableCms\Conventional\View\TrustedHtml $sharedLinks = null, ?\Closure $sharePanel = null, ?\Closure $actorName = null, ?\DateTimeZone $zone = null): Response
     {
         try {
             $page = $this->cleanup->page($request->queryValue('before'));
-            return new Response(200, Pages::previewList($csrf, $profile, [], $chrome, $this->previews->latestCheck(), $content === null ? [] : $this->previews->setup($content), $page, $this->cleanup->pageToken($page, $actor), $this->cleanup->recoveryToken($actor), $this->previews->preparationLanguages(), $content?->pendingPublicationCount() ?? 0, $newestLinks));
+            return new Response(200, Pages::previewList($csrf, $profile, [], $chrome, $this->previews->latestCheck(), $content === null ? [] : $this->previews->setup($content), $page, $this->cleanup->pageToken($page, $actor), $this->cleanup->recoveryToken($actor), $this->previews->preparationLanguages(), $content?->pendingPublicationCount() ?? 0, $sharedLinks, $sharePanel, $actorName, $zone, $request->queryValue('select') === '1'));
         } catch (PreviewSelectionInvalid) {
             return new Response(400, PreviewCleanupPageView::invalid($profile, $chrome));
         }

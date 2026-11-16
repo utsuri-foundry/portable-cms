@@ -437,7 +437,7 @@ try {
     editorialRunWorker($configPath, $repository);
     $previewStatus = $client->request('GET', '/previews/' . $previewId);
     editorialAssertStatus($previewStatus, 200, 'preview status');
-    assertTrueValue(str_contains($previewStatus->body, 'The exact preview is ready.'), 'preview should become ready');
+    assertTrueValue(str_contains($previewStatus->body, 'data-preview-state="ready"'), 'preview should become ready');
     $rootArtifact = $client->request('GET', '/previews/' . $previewId . '/artifact/');
     editorialAssertStatus($rootArtifact, 200, 'preview root artifact');
     assertTrueValue(str_contains($rootArtifact->body, 'Casa Àlber'), 'preview root should list the portfolio record');
