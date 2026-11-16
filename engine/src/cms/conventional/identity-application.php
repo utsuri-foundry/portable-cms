@@ -280,7 +280,7 @@ final class IdentityApplication
                     return $this->withSessionCookies(new Response(403, Pages::error(403, $correlationId, $t)), $session);
                 }
                 if ($this->publication === null) {
-                    return $this->withSessionCookies(new Response(501, View\PublicationPage::render($profile, $this->chrome($request, $session), null, $this->previews)), $session);
+                    return $this->withSessionCookies(new Response(501, View\PublicationPage::render($profile, $this->chrome($request, $session), null, $this->previews, null, $this->actorName())), $session);
                 }
                 $action = $request->formValue('action');
                 $id = $request->formValue('id');
@@ -290,7 +290,7 @@ final class IdentityApplication
                     || !in_array($request->formValue('timing'), ['', 'now', 'later'], true)
                     || (in_array($action, ['move_schedule', 'cancel_schedule'], true) && !is_int($scheduleRevision))
                     || ($previous !== '' && preg_match('/\A[a-f0-9]{32}\z/', $previous) !== 1) || (!in_array($action, ['wake', 'build_holding'], true) && $request->formValue('confirmed') !== '1')) {
-                    return $this->withSessionCookies(new Response(422, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, 'confirmation_required')), $session);
+                    return $this->withSessionCookies(new Response(422, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, 'confirmation_required', $this->actorName())), $session);
                 }
                 try {
                     match ($action) {
@@ -303,13 +303,13 @@ final class IdentityApplication
                         'delete_holding' => $this->publication->holding?->builds->delete($id, $session->userId),
                     };
                 } catch (Publication\PublicationConflict) {
-                    return $this->withSessionCookies(new Response(409, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, 'release_changed')), $session);
+                    return $this->withSessionCookies(new Response(409, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, 'release_changed', $this->actorName())), $session);
                 } catch (Publication\PublicationFailure|Preview\PreviewNotReleasable|Preview\PreviewNotDeletable|Preview\PreviewNotFound $error) {
-                    return $this->withSessionCookies(new Response(422, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, $error instanceof Publication\PublicationFailure ? $error->codeName : 'preview_not_releasable')), $session);
+                    return $this->withSessionCookies(new Response(422, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, $error instanceof Publication\PublicationFailure ? $error->codeName : 'preview_not_releasable', $this->actorName())), $session);
                 }
                 return $this->withSessionCookies(Response::redirect('/releases'), $session);
             }
-            $response = new Response(200, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews));
+            $response = new Response(200, View\PublicationPage::render($profile, $this->chrome($request, $session), $this->publication, $this->previews, null, $this->actorName()));
             if ($this->publication?->runnable() === true || array_filter($this->publication?->holding?->builds->list() ?? [], static fn($build): bool => in_array($build->status, ['queued', 'building'], true)) !== []) {
                 $response = $response->withHeader('refresh', '5; url=/releases');
             }
@@ -1057,6 +1057,13 @@ final class IdentityApplication
     {
         return $this->mediaLibrary === null || $this->websitePublication === null ? null
             : (new Media\AdministrationLogoDelivery($this->mediaLibrary))->resolve($this->websitePublication->load());
+    }
+
+    /** @return ?\Closure(string): ?string */
+    private function actorName(): ?\Closure
+    {
+        $accounts = $this->accounts;
+        return $accounts === null ? null : static fn(string $id): ?string => $accounts->name($id);
     }
 
     private static function holdingRevision(Request $request): int

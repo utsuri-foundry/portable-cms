@@ -5,6 +5,19 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.12.13
+
+- Releases is redesigned around one publish form and plain language: an "On
+  the website now" card with the time, the person and a link to the website;
+  a "Ready to publish" form that lists candidates by what they are and when
+  they were built, folds older coming soon builds, asks Now or a date, takes
+  one confirmation and one Publish button, and offers the coming soon build
+  as a secondary action; "Scheduled" with Move and Cancel; and "Earlier
+  releases" with dated rows, a readable status, Restore and a quiet Remove.
+  No identities, hashes or worker words remain; failures are a sentence with
+  the code folded for the agency. Releases now carry their creation and
+  update times. The publication model and scheduling rules are unchanged.
+
 ## 0.12.12
 
 - Explanations fold behind a small "i" control beside the label, legend or

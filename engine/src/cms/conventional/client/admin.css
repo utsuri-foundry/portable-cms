@@ -362,6 +362,28 @@ fieldset.admin-field > legend { display: flex; align-items: center; gap: 0.375re
 .admin-form__required { margin: 0; color: var(--admin-muted); font-size: var(--admin-text-xs); }
 .admin-legend__text { display: inline-flex; align-items: center; gap: 0.375rem; }
 
+/* ---------- Releases ---------- */
+.admin-release { display: grid; gap: var(--admin-space-3); }
+.admin-release > h2 { margin: 0; }
+.admin-release__now { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--admin-space-3); }
+.admin-release__now p { margin: 0; }
+.admin-release__form { display: grid; gap: var(--admin-space-4); }
+.admin-release__candidates { display: grid; gap: var(--admin-space-2); margin: 0; padding: 0; list-style: none; }
+.admin-release__candidate { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--admin-space-2) var(--admin-space-3); }
+.admin-release__when { display: flex; flex-wrap: wrap; gap: var(--admin-space-2) var(--admin-space-4); }
+.admin-release__date { display: grid; max-width: 20rem; }
+form:has([name="timing"][value="now"]:checked) .admin-release__date { display: none; }
+.admin-release__rows { display: grid; margin: 0; padding: 0; list-style: none; }
+.admin-release__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--admin-space-2) var(--admin-space-3); padding: var(--admin-space-3) 0; border-top: 1px solid var(--admin-border); }
+.admin-release__row:first-child { padding-top: 0; border-top: 0; }
+.admin-release__row:last-child { padding-bottom: 0; }
+.admin-release__row p { margin: 0; }
+.admin-release__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2); }
+.admin-release__action { display: grid; gap: var(--admin-space-2); }
+.admin-release__move { display: flex; flex-wrap: wrap; align-items: end; gap: var(--admin-space-2); }
+.admin-release__build { display: grid; gap: var(--admin-space-2); padding-top: var(--admin-space-3); border-top: 1px solid var(--admin-border); }
+.admin-release__build form { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2); }
+
 /* ---------- Help behind an "i" ---------- */
 .admin-help-control__toggle { display: inline-grid; place-items: center; width: 1.125rem; height: 1.125rem; min-width: 0; min-height: 0; margin: 0 0 0 0.375rem; padding: 0; border: 1px solid var(--admin-border-strong); border-radius: 50%; background: var(--admin-panel); color: var(--admin-muted); font-size: 0.6875rem; font-weight: 600; line-height: 1; box-shadow: none; vertical-align: middle; cursor: pointer; }
 .admin-help-control__toggle:hover, .admin-help-control__toggle[aria-expanded="true"] { border-color: var(--admin-text); background: var(--admin-panel); color: var(--admin-text); }

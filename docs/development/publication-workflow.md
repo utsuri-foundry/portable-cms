@@ -11,7 +11,7 @@ marking a record as ready changes nothing on the public website.
 1. Keep the edits and use **Mark as ready** or **Mark changes as ready** on the relevant records.
 2. Create a published-only exact preview and resolve its failed checks.
 3. Inspect the pages, languages, media and navigation.
-4. Open **Releases**, choose the preview and confirm **Now** or a scheduled time.
+4. Open **Releases**, choose what to publish, choose **Now** or a date and time, confirm and press **Publish**.
 5. Wait for completion. Approval queues work; it is not confirmation that the site
    is already live.
 
@@ -71,7 +71,7 @@ recovery action is scoped to the pending release and current active release.
 ### Scheduled releases
 
 In **Releases**, an owner or administrator selects an inspected exact preview,
-chooses **Now** or **At a date and time**, and confirms approval. Date inputs and
+chooses **Now** or **On a date and time**, and confirms with **Publish**. Date inputs and
 saved times use the named installation time zone, independently of the browser,
 PHP default zone and interface language. Operators set the private `timeZone`
 configuration to an IANA identifier, such as `Europe/Andorra`; existing

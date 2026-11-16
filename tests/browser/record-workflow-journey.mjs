@@ -230,15 +230,15 @@ try {
 	await ready(
 		"location.pathname==='/settings/publication' && document.querySelector('[name=_revision]')?.value==='1'",
 	);
-	await navigate("/releases", "select[name=id]");
+	await navigate("/releases", "input[name=id]");
 	await evaluate(`(() => {
-		const form=document.querySelector('select[name=id]').form;
+		const form=document.querySelector('input[name=id]').form;
 		form.elements.namedItem('id').value=${JSON.stringify(releasePreview.split("/").at(-1))};
 		form.elements.namedItem('confirmed').checked=true;
 		form.requestSubmit();
 	})()`);
 	await ready(
-		"location.pathname==='/releases' && document.querySelector('main').textContent.includes('in progress')",
+		"location.pathname==='/releases' && document.querySelector('main').textContent.includes('Publishing')",
 	);
 	execFileSync(
 		"php",
@@ -252,7 +252,9 @@ try {
 	);
 	await navigate("/releases", "main");
 	assert.ok(
-		(await evaluate("document.querySelector('main').textContent")).includes("Active"),
+		(await evaluate("document.querySelector('main').textContent")).includes(
+			"On the website now",
+		),
 	);
 	assert.equal(
 		await evaluate("document.querySelector('input[name=previous]').value.length"),

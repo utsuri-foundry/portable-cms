@@ -8,6 +8,12 @@ final readonly class AccountService
 {
     public function __construct(private AccountRepository $repository, private Clock $clock, private RandomSource $random) {}
 
+    /** The display name of an account, for attributions such as "published by"; null when unknown. */
+    public function name(string $id): ?string
+    {
+        return $this->repository->find($id)?->name;
+    }
+
     public function self(SessionContext $actor): Account
     {
         return $this->repository->transaction(fn(): Account => $this->actor($actor, allowTemporary: true));
