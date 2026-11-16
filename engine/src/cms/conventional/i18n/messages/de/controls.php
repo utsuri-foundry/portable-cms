@@ -32,7 +32,7 @@ return [
     'picker.all_types' => 'Alle erlaubten Typen',
     'picker.type_removed' => 'Dieser Typ ist nicht mehr erlaubt. Entfernen oder ersetzen Sie diese Auswahl.',
     'picker.target_missing' => 'Dieser Eintrag fehlt. Entfernen oder ersetzen Sie diese Auswahl.',
-    'picker.target_unpublished' => 'Nicht veröffentlicht. Klären Sie diesen Link vor der Veröffentlichung.',
+    'picker.target_unpublished' => 'Noch nicht bereit. Klären Sie diesen Link, bevor Sie den Eintrag als bereit markieren.',
     'picker.selected' => 'Ausgewählt: {field}',
     'picker.unavailable_image' => 'Nicht verfügbares Bild',
     'picker.unavailable_record' => 'Nicht verfügbarer Eintrag',

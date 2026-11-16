@@ -5,6 +5,15 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.12.11
+
+- A record's rail no longer says Publish. The action reads Mark as ready, a
+  ready record offers Back to draft as a confirmed native action, and the
+  states read Draft, Ready and Ready, with changes in every administration
+  language; Publish is the word of Releases and of the Previews' explanation
+  of what a release publishes. The stored states, the status route and the
+  publication model are unchanged.
+
 ## 0.12.10
 
 - The administration sidebar groups destinations by the editor's work: Content

@@ -151,7 +151,7 @@ $tests['native status forms enforce confirmation CSRF and saved revision authori
     assertSameValue(409, $stale->status, 'conflict re-render not redirect');
     assertTrueValue(str_contains($stale->body, 'value="archived" selected') && str_contains($stale->body, 'value="2"'), 'requested state preserved against fresh revision');
     $edit = $app->handle(new Request('GET', $path, cookies: $cookies));
-    assertTrueValue(str_contains($edit->body, 'form="record-status-form"') && str_contains($edit->body, 'Website releases take the published version'), 'distinct accessible saved-state controls explain publication semantics');
+    assertTrueValue(str_contains($edit->body, 'form="record-status-form"') && str_contains($edit->body, 'Releases take the ready version'), 'distinct accessible saved-state controls explain publication semantics');
     assertTrueValue(str_contains($edit->body, '>Save changes</button>'), 'ordinary saves on published records are not mislabeled as draft transitions');
     $save = ['_csrf' => $cookies[IdentityService::CSRF_COOKIE], '_revision' => '1', 'title' => 'Stale open form', 'summary' => 'Saved summary'];
     assertSameValue(409, $app->handle(new Request('POST', $path, contentMutationHeaders(), $save, $cookies))->status, 'content opened before the transition cannot silently overwrite it');
