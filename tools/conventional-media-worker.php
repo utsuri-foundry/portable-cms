@@ -64,7 +64,8 @@ if ($configPath === '' || !is_int($maximumJobs) || !is_int($maximumSeconds)) {
 
 try {
     $runtimeLease ??= \Utsuri\PortableCms\Conventional\Upgrade\RuntimeLease::guard($configPath, dirname(__DIR__));
-    $workerDeadline = microtime(true) + $maximumSeconds;
+    $seconds = static fn(): float => hrtime(true) / 1_000_000_000;
+    $workerDeadline = $seconds() + $maximumSeconds;
     $configuration = RuntimeConfiguration::load($configPath);
     $publication = ApplicationFactory::publicationRunner($configuration);
     $publicationFailed = false;
@@ -75,19 +76,16 @@ try {
     }
     (new \Utsuri\PortableCms\Conventional\Database\MariaDbSiteSequence($configuration->connect()))->prune(new DateTimeImmutable('now', new DateTimeZone('UTC')));
     $residentMemoryAtStart = \Utsuri\PortableCms\Conventional\Media\MediaJobRunner::currentResidentMemoryBytes();
-    $results = ApplicationFactory::mediaRunner($configuration)->runBounded(
-        $workerId,
-        $maximumJobs,
-        $maximumSeconds,
-    );
-    $remainingJobs = max(0, $maximumJobs - count($results));
-    $previewResults = $remainingJobs === 0
-        ? []
-        : ApplicationFactory::previewRunner($configuration)->runBounded(
-            $workerId,
-            $remainingJobs,
-            $maximumSeconds,
-        );
+    $mediaRunner = ApplicationFactory::mediaRunner($configuration);
+    $previewRunner = ApplicationFactory::previewRunner($configuration);
+    $pass = (new \Utsuri\PortableCms\Conventional\MediaPreviewWorker(
+        static fn() => $mediaRunner->runOne($workerId),
+        static fn() => $previewRunner->runOne($workerId),
+        $seconds,
+    ))->run($maximumJobs, $workerDeadline);
+    $results = $pass['media'];
+    $previewResults = $pass['preview'];
+    $queued = (new \Utsuri\PortableCms\Conventional\Database\MariaDbWorkerQueue($configuration->connect()))->queued();
     $completed = count(array_filter($results, static fn($result): bool => $result->completed));
     $failed = count($results) - $completed;
     $elapsedMilliseconds = array_sum(array_map(
@@ -113,6 +111,11 @@ try {
         'processed' => count($results),
         'completed' => $completed,
         'failed' => $failed,
+        'mediaProcessed' => count($results),
+        'mediaCompleted' => $completed,
+        'mediaFailed' => $failed,
+        'mediaQueued' => $queued['media'],
+        'previewQueued' => $queued['preview'],
         'previewProcessed' => count($previewResults),
         'previewCompleted' => count(array_filter(
             $previewResults,
@@ -151,7 +154,7 @@ try {
         static fn($result): bool => !$result->completed,
     ));
     if ($publication !== null && !$publicationFailed) {
-        for ($batch = 0; $batch < 32 && microtime(true) < $workerDeadline && ($batch === 0 || $publication->runnable()); ++$batch) {
+        for ($batch = 0; $batch < 32 && $seconds() < $workerDeadline && ($batch === 0 || $publication->runnable()); ++$batch) {
             try {
                 $publication->runBatch(8);
             } catch (Throwable) {

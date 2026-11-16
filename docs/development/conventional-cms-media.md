@@ -18,6 +18,32 @@ For worker setup, interruption handling and API details, see
 [media processing](media-processing.md). Profile authors can use the
 [rendering helpers](profile-media.md).
 
+## Scheduled worker budget
+
+On `cron_only` hosts, schedule `tools/conventional-media-worker.php` through the
+host's actual Cron PHP binary. Each pass attempts a runnable preview job first,
+so queued exact previews and coming-soon holding builds receive a slot even
+while uploads keep the media queue busy. With the default `--max-jobs=3`, a busy
+pass runs one preview and up to two media jobs. With `--max-jobs=1`, a runnable
+preview takes the sole slot. If either lane is empty, the other can use the
+remaining slots. Failed attempts count toward the same total job cap.
+
+Both lanes and publication batches share `--max-seconds`; a new job or batch
+starts only before that deadline. A job already started finishes under its own
+processing limits. Setup or a slow job can exhaust the pass, so this is a claim
+ordering guarantee, not a build completion deadline. Delayed retries and jobs
+leased by another worker wait until eligible. Web requests on `cron_only` hosts
+continue to queue work without processing it after the response.
+
+The private `worker-heartbeat.json` records `mediaProcessed`, `mediaCompleted`,
+`mediaFailed`, `previewProcessed`, `previewCompleted` and `previewFailed`.
+`mediaQueued` and `previewQueued` count waiting jobs after the two lanes run,
+including delayed retries, excluding running jobs and exhausted attempts.
+These are observations, not reservations against concurrent workers. Existing
+`processed`, `completed` and `failed` fields remain media-only, as do the elapsed
+and per-job memory measurements in heartbeat v2. For qualification and recovery,
+see [media processing](media-processing.md#cron-recovery-acceptance).
+
 ## Describing uploaded images
 
 Native library and record uploads lead directly to one description form for the accepted images,

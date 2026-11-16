@@ -212,6 +212,8 @@ require_once __DIR__ . '/preview/maria-db-preview-repository.php';
 require_once __DIR__ . '/preview/gate-zero-preview-compiler.php';
 require_once __DIR__ . '/preview/filesystem-preview-store.php';
 require_once __DIR__ . '/preview/preview-job-runner.php';
+require_once __DIR__ . '/media-preview-worker.php';
+require_once __DIR__ . '/database/maria-db-worker-queue.php';
 require_once __DIR__ . '/publication/release-artifact.php';
 require_once __DIR__ . '/publication/publication-repository.php';
 require_once __DIR__ . '/publication/release-time.php';

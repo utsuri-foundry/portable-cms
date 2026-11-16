@@ -154,13 +154,45 @@ try {
     $publication = ApplicationFactory::publication($configuration, $package->manifest, $previews, $pdo);
     assertTrueValue($publication !== null, 'explicit dedicated target enables publication');
     $settingsService = $publication->holding->settings;
+    // Keep uploads queued across two Cron passes, each with a different build kind.
+    ApplicationFactory::mediaRunner($configuration)->runBounded('drain-widths', 10, 60);
+    $uploadOwner = $videoContent->find('project', $savedVideo->id);
+    for ($index = 0; $index < 6; ++$index) {
+        $upload = $uploads->create('project', $uploadOwner->id, $uploadOwner->revisionNumber, 'Queued film.mp4', 'video/mp4', strlen($videoBytes), 'worker-budget-' . $index, $actorId);
+        $stream = RequestBody::fromString($videoBytes)->open();
+        try {
+            $uploads->uploadPart($upload->id, 1, strlen($videoBytes), $stream, $actorId);
+        } finally {
+            fclose($stream);
+        }
+        $uploads->complete($upload->id, $actorId);
+    }
+    $holdingBuild = $publication->holding->create($actorId, 0);
+    $queuedBuild = $publication->holding->create($actorId, 0);
+    $runBudgetedWorker = static function (int $mediaQueued, int $previewQueued) use ($root, $state, $configuration): void {
+        publicationTestTool($root . '/tools/conventional-media-worker.php', [
+            '--config=' . $state . '/cms.json', '--max-jobs=3', '--max-seconds=60', '--worker-id=preview-budget',
+        ]);
+        $heartbeat = json_decode((string) file_get_contents($configuration->mediaRoot . '/worker-heartbeat.json'), true, 32, JSON_THROW_ON_ERROR);
+        foreach (['mediaProcessed' => 2, 'mediaCompleted' => 2, 'mediaFailed' => 0, 'previewProcessed' => 1, 'previewCompleted' => 1, 'previewFailed' => 0, 'mediaQueued' => $mediaQueued, 'previewQueued' => $previewQueued] as $key => $expected) {
+            assertSameValue($expected, $heartbeat[$key] ?? null, 'bounded worker heartbeat: ' . $key);
+        }
+        assertSameValue($heartbeat['mediaProcessed'], $heartbeat['processed'], 'legacy media count remains compatible');
+    };
+    $runBudgetedWorker(4, 1);
+    assertSameValue('ready', $publication->holding->builds->find($holdingBuild->id)?->status, 'holding build completes despite a media backlog');
+    // Finish the extra queued holding build so the next pass exercises an exact preview.
+    assertSameValue(true, ApplicationFactory::previewRunner($configuration)->runOne('queued-holding')->completed, 'the waiting build retains its lease contract');
+    assertSameValue('ready', $publication->holding->builds->find($queuedBuild->id)?->status, 'queued count represented a real waiting build');
     $settingsService->save([...$settingsService->load()->document(), 'mode' => 'live', 'revision' => 1], 0, $actor, false);
     try {
         $first = $previews->create($actorId);
     } catch (\Utsuri\PortableCms\Conventional\Preview\PreviewPreflightFailure $failure) {
         throw new RuntimeException(implode('; ', array_map(\Utsuri\PortableCms\Conventional\I18n\Translator::english()->message(...), $failure->issues)), previous: $failure);
     }
-    assertSameValue(true, ApplicationFactory::previewRunner($configuration)->runOne('publication-preview')->completed, 'first exact preview builds');
+    $runBudgetedWorker(2, 0);
+    assertSameValue('ready', $previews->find($first->id)?->status, 'exact preview completes while media remains queued');
+    ApplicationFactory::mediaRunner($configuration)->runBounded('drain-budget-uploads', 10, 60);
     $frozenManifest = $previews->find($first->id)?->manifest;
     $frozenHome = $previews->artifact($first->id, 'en/index.html')?->contents;
     $historyRecord = $videoContent->find('project', $savedVideo->id);
