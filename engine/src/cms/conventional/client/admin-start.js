@@ -12,6 +12,8 @@
 	};
 	// Older/limited browsers keep their native controls until the modules mount.
 	if (!window.fetch || !window.crypto?.getRandomValues) return;
+	// Explanations fold behind their "i" as soon as a capable browser is known.
+	root.setAttribute("data-admin-help", "folded");
 	update();
 	// Keep pre-handoff edits out of the keeper's initial saved baseline. Values
 	// stay in their native fields; the ordinary keeper owns the eventual save.

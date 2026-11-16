@@ -79,7 +79,7 @@ $tests['wording page and validation summary use interface names and escape label
     $profile = (new EditorialTerminology($package->manifest->id, 0, []))->present($package->manifest, 'ca', $package->administrationLabels);
     $http = new SiteWordingHttp(siteWordingService(new MemorySiteWording()), $profile, new AdminChrome(str_repeat('c', 32), 'Editor', translator: Translator::load('ca')));
     $page = $http->handle(new Request('GET', '/settings/wording'), siteLanguagesActor('editor'));
-    assertTrueValue(str_contains($page->body, '<legend>Etiqueta de l’any</legend>') && str_contains($page->body, 'L’etiqueta de l’any d’un projecte.'), 'both label and purpose use the Catalan interface');
+    assertTrueValue(str_contains($page->body, 'id="wording-metadata-year-label">Etiqueta de l’any</span>') && str_contains($page->body, 'L’etiqueta de l’any d’un projecte.'), 'both label and purpose use the Catalan interface');
     assertTrueValue(str_contains($page->body, 'lang="en" maxlength="40" value="Year"'), 'English website text stays English in a Catalan interface');
     $invalid = $http->handle(new Request('POST', '/settings/wording', form: ['_revision' => '0', SiteWording::field('address.about', 'ca') => 'Invalid']), siteLanguagesActor('editor'));
     assertSameValue(422, $invalid->status, 'invalid wording is refused');

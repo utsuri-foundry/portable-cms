@@ -53,7 +53,7 @@ final class MediaDescriptionsForm
      */
     public static function form(array $items, ProfileManifest $profile, Translator $t, string $csrf, array $submitted = [], array $errors = [], array $saved = []): string
     {
-        $markup = '<p class="admin-help">' . $t->html('media.text.help', ['locale' => $profile->defaultLocale]) . '</p><form class="admin-form" method="post" action="/media/descriptions" data-media-descriptions-form><input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '">';
+        $markup = '<form class="admin-form" method="post" action="/media/descriptions" data-media-descriptions-form><input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '">';
         foreach ($items as $item) {
             $markup .= self::card($item, $profile, $t, submitted: $submitted[$item->id] ?? null, error: $errors[$item->id] ?? null, saved: in_array($item->id, $saved, true));
         }
@@ -70,8 +70,8 @@ final class MediaDescriptionsForm
             $cards .= self::card($item['media'], $profile, $t, $form, jobId: $item['jobId']);
         }
         return '<template data-media-description-template>' . self::card($media, $profile, $t, $form) . '</template>'
-            . '<section data-upload-descriptions data-descriptions-form="' . Html::attribute($form) . '"' . ($items === [] ? ' hidden' : '') . ' data-messages="' . Html::attribute(json_encode($messages, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)) . '"><h3>' . $t->html('media.descriptions.title') . '</h3>'
-            . ($instructions ? '<p class="admin-help">' . $t->html('media.text.help', ['locale' => $profile->defaultLocale]) . '</p><noscript><p class="admin-help">' . $t->html('media.descriptions.keep_record') . '</p></noscript>' : '')
+            . '<section data-upload-descriptions data-descriptions-form="' . Html::attribute($form) . '"' . ($items === [] ? ' hidden' : '') . ' data-messages="' . Html::attribute(json_encode($messages, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)) . '">' . ($instructions ? FieldHelp::heading('<h3>' . $t->html('media.descriptions.title') . '</h3>', $form . '-text-help', $t->text('media.descriptions.title'), $t) : '<h3>' . $t->html('media.descriptions.title') . '</h3>')
+            . ($instructions ? FieldHelp::text($form . '-text-help', $t->html('media.text.help', ['locale' => $profile->defaultLocale])) . '<noscript><p class="admin-help">' . $t->html('media.descriptions.keep_record') . '</p></noscript>' : '')
             . '<div data-description-cards>' . $cards . '</div><button type="submit" form="' . Html::attribute($form) . '">' . $t->html('media.descriptions.save') . '</button>'
             . '<p role="status" data-descriptions-status></p></section>';
     }

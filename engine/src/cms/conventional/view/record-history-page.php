@@ -35,8 +35,8 @@ final class RecordHistoryPage
                 . '<label><input type="checkbox" name="confirmed" value="1" required>' . $t->html('history.accept') . '</label>'
                 . '<button type="submit" class="admin-button--danger">' . $t->html('history.apply') . '</button><a href="/settings/history">' . $t->html('history.cancel') . '</a>';
         } else {
-            $body .= '<label for="history-limit">' . $t->html('history.limit') . '</label><input id="history-limit" name="limit" type="number" min="10" max="500" required value="' . $limit . '" aria-describedby="history-policy">'
-                . '<p id="history-policy" class="admin-help">' . $t->html('history.policy') . '</p><button type="submit">' . $t->html('history.save') . '</button>';
+            $body .= '<div class="admin-field"><label for="history-limit">' . $t->html('history.limit') . '</label>' . FieldHelp::toggle('history-policy', $t->text('history.limit'), $t) . FieldHelp::text('history-policy', $t->html('history.policy'))
+                . '<input id="history-limit" name="limit" type="number" min="10" max="500" required value="' . $limit . '" aria-describedby="history-policy"></div><button type="submit">' . $t->html('history.save') . '</button>';
         }
         return AdminShell::application($t->text('history.title'), TrustedHtml::fromEngineMarkup($body . '</form>'), $profile, 'history', 'standard', $chrome);
     }

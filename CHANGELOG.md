@@ -5,6 +5,16 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.12.12
+
+- Explanations fold behind a small "i" control beside the label, legend or
+  heading they belong to: profile field hints, group purposes on Wording, the
+  design groups, the media detail and the other pages that printed help under
+  a control. The text stays in the page for assistive technology and shows
+  inline without scripts. Required fields carry a star after the label with
+  one "* required fields" line per record form, and the words Required and
+  optional leave the labels. Stylesheet and shell scripts are versioned.
+
 ## 0.12.11
 
 - A record's rail no longer says Publish. The action reads Mark as ready, a

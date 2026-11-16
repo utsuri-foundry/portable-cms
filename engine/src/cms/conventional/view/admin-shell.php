@@ -78,9 +78,9 @@ final readonly class AdminChrome
 
 final class AdminShell
 {
-    public const STYLESHEET_VERSION = '20';
+    public const STYLESHEET_VERSION = '21';
     public const GROUP_STYLESHEET_VERSION = '3';
-    public const SCRIPT_VERSION = '4';
+    public const SCRIPT_VERSION = '5';
 
     public static function translator(?AdminChrome $chrome): Translator
     {
@@ -222,7 +222,7 @@ final class AdminShell
             . '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
             . '<meta name="color-scheme" content="light dark">'
             . '<title>' . Html::text($title) . '</title>'
-            . ($bodyClass === 'admin-application' ? '<script src="/assets/admin-start.js?v=1"></script>' : '')
+            . ($bodyClass === 'admin-application' ? '<script src="/assets/admin-start.js?v=2"></script>' : '')
             . '<link rel="stylesheet" href="'
             . Html::url('/assets/admin.css?v=' . self::STYLESHEET_VERSION) . '">'
             . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=1">' : '')

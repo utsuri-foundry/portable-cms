@@ -177,9 +177,9 @@ final class RecordPages
             $values,
             $errors,
             static fn(FieldDefinition $field, mixed $value, ?string $error): string => match (true) {
-                $uploads && $field->type === 'video_reference' && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision)), $field),
-                in_array($field->id, $tileFields, true) && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision, $uploadDescriptions[$field->id] ?? [])), $field),
-                $field->type === 'group' && isset($field->settings['searchSharing']) && $referenceControls !== null => FieldHint::render($referenceControls->searchSharing($type, $field, $values, $error, static fn(FieldDefinition $child, mixed $childValue): string => self::field($child, $childValue, null, $profile, [], $referenceControls, null, $t)), $field),
+                $uploads && $field->type === 'video_reference' && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision)), $field, $t),
+                in_array($field->id, $tileFields, true) && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision, $uploadDescriptions[$field->id] ?? [])), $field, $t),
+                $field->type === 'group' && isset($field->settings['searchSharing']) && $referenceControls !== null => FieldHint::render($referenceControls->searchSharing($type, $field, $values, $error, static fn(FieldDefinition $child, mixed $childValue): string => self::field($child, $childValue, null, $profile, [], $referenceControls, null, $t)), $field, $t),
                 default => self::field($field, $value, $error, $profile, $choices[$field->id] ?? [], $referenceControls, $compositionEditor, $t, $field->id === 'slug' && $type->route !== null ? '…/' . $type->route . '/' : '', $errors),
             },
             $technicalData,
@@ -263,7 +263,7 @@ final class RecordPages
             . ($mediaNotice === null ? '' : '<p class="admin-notice" role="status" data-media-upload-result>' . Html::text($t->message($mediaNotice)) . '</p>')
             . '<form class="admin-form" data-editorial-form data-autosave="true" data-saved-at="' . ($record === null ? '' : Html::attribute($record->updatedAt->format(DATE_ATOM))) . '" data-messages="' . $t->bundleAttribute('client') . '" data-pending-input="' . ($errors !== [] || $conflict !== null || $pendingControls || $structureChanged ? 'true' : 'false') . '" method="post" action="' . Html::url($action) . '">'
             . '<input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">' . $revision
-            . '<div class="admin-editor"><div class="admin-editor__main">' . $parts['sections'] . $assistancePanel . '</div>' . $rail . '</div>'
+            . '<div class="admin-editor"><div class="admin-editor__main">' . (array_filter($type->fields, static fn(FieldDefinition $field): bool => $field->required) === [] ? '' : FieldHelp::requiredLegend($t)) . $parts['sections'] . $assistancePanel . '</div>' . $rail . '</div>'
             . '<input type="hidden" name="_editorial_end" value="1"></form>'
             . ($exact ? '<form id="record-exact-preview-form" method="post" action="' . Html::url('/records/' . $type->id . '/' . ($record->id ?? 'new') . '/exact-preview') . '" target="_blank" rel="noopener"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_exact_locale" value="' . Html::attribute($profile->defaultLocale) . '"></form>' : '')
             . ($live ? self::livePane($liveEndpoint, $profile, $t) : '') . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::form($record, $csrfToken)) . $upload
@@ -321,7 +321,7 @@ final class RecordPages
         string $addressPrefix = '',
         array $errors = [],
     ): string {
-        return self::languageVisibility(FieldHint::render(self::control($field, $value, $error, $profile, $choices, $referenceControls, $compositionEditor, $translator, $addressPrefix, $errors), $field), $profile);
+        return self::languageVisibility(FieldHint::render(self::control($field, $value, $error, $profile, $choices, $referenceControls, $compositionEditor, $translator, $addressPrefix, $errors), $field, $translator), $profile);
     }
 
     /** @param list<RecordSnapshot> $choices
@@ -374,7 +374,7 @@ final class RecordPages
         $required = $field->required ? ' required' : '';
         $invalid = $error !== null ? ' aria-invalid="true" aria-describedby="error-' . Html::attribute($field->id) . '"' : '';
         $errorMarkup = $error !== null ? '<p class="admin-field__error" id="error-' . Html::attribute($field->id) . '">' . Html::text($error) . '</p>' : '';
-        $label = Html::text($field->label) . ($field->required ? ' <span class="admin-field__required">' . $t->html('field.required') . '</span>' : '');
+        $label = Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '');
 
         if ($field->localized && in_array($field->type, ['localized_short_text', 'multiline_text'], true)) {
             $localized = is_array($value) ? $value : [];
@@ -407,11 +407,12 @@ final class RecordPages
                 $options .= '<option value="' . Html::attribute($choice->id) . '"' . (isset($selected[$choice->id]) ? ' selected' : '') . '>'
                     . Html::text(RecordLabels::label($choice, $profile)) . '</option>';
             }
-            return '<div class="admin-field"><label for="' . Html::attribute($fieldId) . '">' . $label . '</label>'
-                . ($multiple ? '<span class="admin-field__hint">' . $t->html('field.select_many') . '</span>' : '')
+            $markup = '<div class="admin-field"><label for="' . Html::attribute($fieldId) . '">' . $label . '</label>'
+                . ($multiple ? FieldHelp::toggle($fieldId . '-help', $field->label, $t) . FieldHelp::text($fieldId . '-help', $t->html('field.select_many')) : '')
                 . '<select id="' . Html::attribute($fieldId) . '" name="' . Html::attribute($field->id . ($multiple ? '[]' : '')) . '"'
                 . ($multiple ? ' multiple size="' . max(2, min(8, count($choices))) . '"' : '') . $required . $invalid . '>'
                 . $options . '</select>' . $errorMarkup . '</div>';
+            return $multiple ? FieldHint::describe($markup, $fieldId . '-help') : $markup;
         }
 
         if ($field->type === 'boolean') {

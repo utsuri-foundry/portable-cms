@@ -61,10 +61,12 @@ $tests['site and engine versions have distinct translated labels without public 
         assertTrueValue(str_contains($brand, '>' . $label . ' ' . $profile->version . '</span>'), 'site version is labelled in ' . $language);
         $page = InstallationPage::render($profile, $chrome, str_repeat('f', 64));
         foreach (['installation.website_name', 'installation.profile_id', 'installation.profile_version', 'installation.engine_version', 'installation.release_id'] as $key) {
-            assertTrueValue(str_contains($page, '<dt>' . $t->html($key) . '</dt>'), 'separate translated detail: ' . $key);
+            // The release fact carries the help control for its explanation; the others end with their label.
+            assertTrueValue(str_contains($page, '<dt>' . $t->html($key) . ($key === 'installation.release_id' ? '<button' : '</dt>')), 'separate translated detail: ' . $key);
         }
         foreach (['Named studio', $profile->id, $profile->version, ProfileManifest::ENGINE_VERSION, str_repeat('f', 64)] as $fact) {
-            assertTrueValue(str_contains($page, '<dd>' . $fact . '</dd>'), 'exact installed fact is shown');
+            // The release value is followed by its folded explanation inside the same definition.
+            assertTrueValue(str_contains($page, '<dd>' . $fact . '</dd>') || str_contains($page, '<dd>' . $fact . '<p class="admin-help-control__text"'), 'exact installed fact is shown');
         }
         $login = Pages::login('csrf', profile: $profile, translator: $t, identity: $chrome->websiteIdentity);
         assertTrueValue(str_contains($login, '<p class="admin-auth__footer">Portable CMS · ' . $label . ' ' . $profile->version . '</p>'), 'login has only the product and translated site version in small print');

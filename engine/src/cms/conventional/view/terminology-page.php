@@ -64,8 +64,8 @@ final class TerminologyPage
         }
         return AdminShell::application($t->text('names.title'), TrustedHtml::fromEngineMarkup(
             AdminShell::breadcrumbs([[$t->text('shell.group.website'), null], [$t->text('names.title'), null]], $t)
-            . AdminShell::header($t->text('names.title'), '<p class="admin-lede">' . $t->html('names.lede') . '</p>'
-                . '<p class="admin-help">' . $t->html('names.help') . '</p>')
+            . AdminShell::header($t->text('names.title'), '<p class="admin-lede">' . $t->html('names.lede') . ' ' . FieldHelp::toggle('names-help', $t->text('names.title'), $t) . '</p>'
+                . FieldHelp::text('names-help', $t->html('names.help')))
             . $messages . '<form class="admin-form" method="post" action="/settings/terminology">'
             . '<input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '">'
             . '<input type="hidden" name="_revision" value="' . $saved->revision . '"><div class="admin-names">' . $fields . '</div>'

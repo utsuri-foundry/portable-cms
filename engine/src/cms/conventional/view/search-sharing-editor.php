@@ -114,8 +114,8 @@ final class SearchSharingEditor
             }
             $differentText = trim((string) ($item['sharingTitle'] ?? '')) !== '' || trim((string) ($item['sharingDescription'] ?? '')) !== '';
             $panel = '<div class="admin-seo__grid"><section class="admin-seo__block" aria-labelledby="' . Html::attribute($prefix . '-search') . '"><h3 id="' . Html::attribute($prefix . '-search') . '">' . $t->html('seo.search_result') . '</h3>'
-                . $search . $control('excludeFromSearch', 'seo.label.exclude')
-                . '<p class="admin-help">' . $t->html($fixedExcluded ? 'seo.indexing.excluded' : 'seo.exclude_help') . '</p></section>'
+                . $search . '<div class="admin-help-row">' . $control('excludeFromSearch', 'seo.label.exclude') . FieldHelp::toggle($prefix . '-exclude-help', $t->text('seo.label.exclude'), $t) . '</div>'
+                . FieldHelp::text($prefix . '-exclude-help', $t->html($fixedExcluded ? 'seo.indexing.excluded' : 'seo.exclude_help')) . '</section>'
                 . self::searchPreview($effective, $type, $values, $locale, $t) . '</div>'
                 . '<div class="admin-seo__grid"><section class="admin-seo__block" aria-labelledby="' . Html::attribute($prefix . '-social') . '"><h3 id="' . Html::attribute($prefix . '-social') . '">' . $t->html('seo.social_card') . '</h3>'
                 . $control('sharingImage', 'seo.label.sharing_image')

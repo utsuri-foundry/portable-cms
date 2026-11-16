@@ -51,6 +51,43 @@ export function mountThemeForm(form, window = form.ownerDocument.defaultView) {
 	};
 }
 
+/** Opens or folds one explanation; the text stays in the page for assistive technology either way. */
+export function toggleHelp(
+	toggle,
+	text,
+	open = toggle.getAttribute("aria-expanded") !== "true",
+) {
+	toggle.setAttribute("aria-expanded", String(open));
+	if (open) text.setAttribute("data-open", "");
+	else text.removeAttribute("data-open");
+	return open;
+}
+
+/** Works every help control in the document: click or Enter opens, Escape folds. */
+export function mountHelpControls(root) {
+	const control = (target) => {
+		const toggle = target.closest?.("[data-help-toggle]");
+		const text = toggle && root.getElementById(toggle.getAttribute("aria-controls"));
+		return text ? [toggle, text] : null;
+	};
+	const click = (event) => {
+		const found = control(event.target);
+		if (found) toggleHelp(...found);
+	};
+	const key = (event) => {
+		if (event.key !== "Escape") return;
+		const found = control(event.target);
+		if (found && found[0].getAttribute("aria-expanded") === "true")
+			toggleHelp(...found, false);
+	};
+	root.addEventListener("click", click);
+	root.addEventListener("keydown", key);
+	return () => {
+		root.removeEventListener("click", click);
+		root.removeEventListener("keydown", key);
+	};
+}
+
 /** Keeps the account panel visible when it opens at the bottom of a scrolling rail. */
 export function mountAccountMenu(details) {
 	const reveal = () => {
@@ -68,5 +105,6 @@ if (typeof document !== "undefined") {
 		mountThemeForm(form);
 	for (const details of document.querySelectorAll(".admin-account"))
 		mountAccountMenu(details);
+	mountHelpControls(document);
 	document.dispatchEvent(new CustomEvent("admin-enhanced", { detail: "shell" }));
 }
