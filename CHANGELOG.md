@@ -5,6 +5,13 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.12.9
+
+- Reserve the first scheduled worker slot for exact previews and holding builds,
+  sharing the remaining job and time budget with media. Empty lanes lend their
+  slots to the other lane. Heartbeats include explicit per-lane processing and
+  queued counts. No profile API, migration or export format changes.
+
 ## 0.12.8
 
 - Upgrade and migration HTTPS clients send `Content-Type: application/json`

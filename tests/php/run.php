@@ -619,6 +619,7 @@ require dirname(__DIR__) . '/php/portable-transfer-test.php';
 require dirname(__DIR__) . '/php/host-io-test.php';
 require dirname(__DIR__) . '/php/install-config-test.php';
 require dirname(__DIR__) . '/php/media-text-test.php';
+require dirname(__DIR__) . '/php/media-preview-worker-test.php';
 require dirname(__DIR__) . '/php/media-descriptions-test.php';
 require dirname(__DIR__) . '/php/focal-point-test.php';
 require dirname(__DIR__) . '/php/speculation-rules-test.php';

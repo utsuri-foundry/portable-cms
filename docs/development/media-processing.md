@@ -103,7 +103,10 @@ The CLI worker must run through the host's actual cron PHP binary and account, n
    verify cron completes the durable job without a web wake.
 4. Review counts, elapsed time, PHP peak and resident-process peak memory. Heartbeat
    v2 also records up to ten per-job measurements and retained memory growth.
-5. Restore the selected operating strategy after testing.
+5. Queue an exact preview or holding build while uploads keep media queued.
+   Confirm that the next pass attempts a preview first, and inspect both lanes'
+   processed and queued counts using the [per-pass budget](conventional-cms-media.md#scheduled-worker-budget).
+6. Restore the selected operating strategy after testing.
 
 Do not infer native-memory use from PHP's allocator counter. Test sustained work
 and every enabled image width on the actual host.
