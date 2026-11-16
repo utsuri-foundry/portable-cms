@@ -362,6 +362,15 @@ with mode 0600. The endpoint requires HTTPS POST, a 256-bit token header and a
 maximum 512-byte request; filesystem paths and commands come exclusively from
 private intent. The one-hour gate closes after a successful operation and
 removes its token hash. TLS verification stays enabled and redirects are refused.
+
+The upgrade client sends `Content-Type: application/json` with an empty POST
+body. Some shared-host front servers return `403 Forbidden` for a POST without
+a content type before PHP runs, leaving no entry in the private upgrade journal.
+Use the current client, or include this header when making the request yourself;
+the operation still comes from the private intent, not the request body. The
+migration client uses the same header, while the installer declares its form
+body as `application/x-www-form-urlencoded`.
+
 Remove the temporary endpoint, gate and token when finished. A browser reload
 or client timeout does not establish failure: inspect/recover the journal first.
 If the host's PHP request limit cannot accommodate the measured bounded work,

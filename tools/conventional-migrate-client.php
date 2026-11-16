@@ -41,7 +41,7 @@ try {
     $context = stream_context_create([
         'http' => [
             'method' => 'POST',
-            'header' => 'X-CMS-Migration-Token: ' . $token,
+            'header' => "Content-Type: application/json\r\nX-CMS-Migration-Token: " . $token,
             'content' => '',
             'ignore_errors' => true,
             'follow_location' => 0,

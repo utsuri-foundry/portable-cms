@@ -63,6 +63,9 @@ Configure the web SAPI environment variable `CMS_PROBE_CONFIG` with the absolute
 - an unexpired configuration whose expiry is no more than 24 hours away;
 - a configuration file outside the document root and without group/world permissions.
 
+Send `Content-Type: application/json` even when the POST body is empty. Some
+shared-host front servers reject a POST without a content type before PHP runs.
+
 An invalid request receives only `404 not_found`. An authenticated report returns `200` when compatible or `422` when it contains blockers. Save the JSON to private operator storage as the web report.
 
 `CMS_PROBE_ALLOW_INSECURE_LOOPBACK=true` exists only for the repository integration test and works only from a loopback client. Never configure it on shared hosting.

@@ -360,7 +360,7 @@ $tests['installation clients report unavailable HTTPS without exposing credentia
     }
 };
 
-$tests['installation clients retain verified HTTPS response headers across warning scopes'] = static function (): void {
+$tests['operator clients send explicit content types and retain verified HTTPS response headers'] = static function (): void {
     $root = hostIoFixture();
     $process = null;
     try {
@@ -393,14 +393,22 @@ $tests['installation clients retain verified HTTPS response headers across warni
         $install = runHostIoTool('conventional-install-client.php', ['--endpoint=' . $origin . '/install', '--token-file=' . $root . '/token', '--password-file=' . $root . '/password', '--login=owner@example.test', '--display-name=Owner'], $root . '/ca.pem');
         assertSameValue(0, $install['status'], 'Verified TLS installation succeeds with retained 200 headers: ' . $install['stderr']);
         assertSameValue('', $install['stderr'], 'No hidden warning accompanies success');
+        $installRequest = json_decode((string) fgets($pipes[1]), true, flags: JSON_THROW_ON_ERROR);
+        assertSameValue('POST /install HTTP/1.1', $installRequest['request'], 'Installer uses POST');
+        assertSameValue(['application/x-www-form-urlencoded'], $installRequest['contentTypes'], 'Installer declares its form body');
+        assertTrueValue($installRequest['bodyBytes'] > 0, 'Installer keeps its nonempty form body');
         $migrate = runHostIoTool('conventional-migrate-client.php', ['--endpoint=' . $origin . '/migrate', '--token-file=' . $root . '/token'], $root . '/ca.pem');
         assertSameValue(0, $migrate['status'], 'Verified TLS migration succeeds with retained 200 headers: ' . $migrate['stderr']);
         assertTrueValue(str_contains($migrate['stdout'], '1 applied; 2 already complete'), 'Native response parsing retains counts');
         assertSameValue('', $migrate['stderr'], 'No hidden warning accompanies migration');
+        $migrateRequest = json_decode((string) fgets($pipes[1]), true, flags: JSON_THROW_ON_ERROR);
+        assertSameValue(['request' => 'POST /migrate HTTP/1.1', 'contentTypes' => ['application/json'], 'bodyBytes' => 0], $migrateRequest, 'Migration declares a content type while keeping its body empty');
         $upgrade = runHostIoTool('conventional-upgrade-client.php', ['--endpoint=' . $origin . '/upgrade', '--token-file=' . $root . '/token'], $root . '/ca.pem');
         assertSameValue(0, $upgrade['status'], 'Upgrade client retains verified TLS response: ' . $upgrade['stderr']);
         assertTrueValue(str_contains($upgrade['stdout'], 'verified-fixture'), 'Upgrade response remains observable');
         assertSameValue('', $upgrade['stderr'], 'No hidden warning accompanies upgrade');
+        $upgradeRequest = json_decode((string) fgets($pipes[1]), true, flags: JSON_THROW_ON_ERROR);
+        assertSameValue(['request' => 'POST /upgrade HTTP/1.1', 'contentTypes' => ['application/json'], 'bodyBytes' => 0], $upgradeRequest, 'Upgrade declares a content type while keeping its body empty');
         fclose($pipes[1]);
         assertSameValue(0, proc_close($process), 'Loopback server served the three bounded requests');
         $process = null;
