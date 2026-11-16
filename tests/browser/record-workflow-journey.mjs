@@ -223,12 +223,12 @@ try {
 	);
 	// The native release form approves only one saved, published-only preview.
 	const releasePreview = await preview(false, false);
-	await navigate("/settings/publication", "select[name=mode]");
+	await navigate("/settings/publication", "input[name=mode]");
 	await evaluate(
-		"document.querySelector('[name=mode]').value='live';document.querySelector('[name=mode]').form.requestSubmit()",
+		"const form=document.querySelector('input[name=mode]').form;form.elements.namedItem('mode').value='live';form.requestSubmit()",
 	);
 	await ready(
-		"location.pathname==='/settings/publication' && document.querySelector('[name=_revision]')?.value==='1'",
+		"location.pathname==='/settings/publication' && document.querySelector('[data-settings-saved]') && document.querySelector('[name=_revision]')?.value==='1'",
 	);
 	await navigate("/releases", "input[name=id]");
 	await evaluate(`(() => {

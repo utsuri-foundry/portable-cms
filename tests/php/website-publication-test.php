@@ -136,7 +136,7 @@ $tests['holding settings native form escapes content and explains that saving is
     $settings = WebsitePublication::defaults($profile->id, $profile->locales);
     $html = WebsitePublicationPage::render($profile, $chrome, $settings, ['websiteName' => '" onfocus="alert(1)']);
     assertTrueValue(str_contains($html, '&quot; onfocus=&quot;'), 'attribute context is escaped');
-    assertTrueValue(str_contains($html, 'Saving does not change the public website'), 'intent and activation remain distinct');
+    assertTrueValue(str_contains($html, 'changes nothing on the public website until a release is published'), 'intent and activation remain distinct');
     assertTrueValue(str_contains($html, 'name="_complete"'), 'truncated native forms cannot save partially');
 };
 

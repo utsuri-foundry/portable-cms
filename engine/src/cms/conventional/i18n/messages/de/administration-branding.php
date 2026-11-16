@@ -3,12 +3,17 @@
 declare(strict_types=1);
 
 return [
-    'branding.title' => 'Logo der Verwaltung',
-    'branding.logo' => 'Standardlogo',
-    'branding.dark_logo' => 'Variante für das dunkle Design',
-    'branding.help' => 'Wählen Sie vorbereitete PNG-, WebP- oder JPEG-Bilder. Quadratische, hohe und breite Logos werden zentriert und proportional verkleinert, ohne Beschnitt, Verzerrung oder Vergrößerung. Zusätzliche Ränder sind nicht nötig. Jede vorbereitete Datei darf höchstens 960 × 960 Pixel und 1 MiB groß sein. Vor der Anmeldung sind nur die gewählten vorbereiteten Bilder sichtbar, niemals Originale. Ohne Logo wird das Website-Symbol verwendet, danach die Initialen. Diese Einstellungen ändern die öffentliche Website nicht. Ohne dunkle Variante behält das Logo einen hellen Hintergrund.',
+    'branding.title' => 'Aussehen der Verwaltung',
+    'branding.help' => 'Das Logo auf der Anmeldeseite und in der Seitenleiste. Ohne Logo wird das Website-Symbol verwendet, danach die Initialen. Die öffentliche Website ändert sich dadurch nicht.',
+    'branding.logo' => 'Logo',
+    'branding.logo_help' => 'Ein PNG, WebP oder JPEG mit höchstens 960 × 960 Pixeln. Quadratische, hohe und breite Logos passen: Das Bild wird zentriert und verkleinert, nie beschnitten oder verzerrt.',
+    'branding.dark_logo' => 'Logo für den dunklen Modus',
+    'branding.dark_help' => 'Wird statt des Logos gezeigt, wenn die Verwaltung im dunklen Modus ist. Ohne dieses Logo behält das Logo einen hellen Hintergrund.',
+    'branding.none' => 'Keines',
+    'branding.choose' => 'Anderes Bild wählen',
+    'branding.empty' => 'In der Mediathek ist noch kein vorbereitetes Bild mit höchstens 960 × 960 Pixeln.',
     'branding.unavailable' => 'Die Medienbibliothek ist nicht verfügbar. Ihre gespeicherte Auswahl bleibt erhalten.',
-    'branding.error.administration_logo_invalid' => 'Wählen Sie gültige Bilder aus der Medienbibliothek.',
-    'branding.error.administration_logo_required' => 'Wählen Sie zuerst ein Standardlogo, bevor Sie die dunkle Variante hinzufügen.',
-    'branding.error.administration_logo_not_ready' => 'Ein Logo ist nicht verfügbar oder überschreitet die Grenzen. Wählen Sie ein vorbereitetes Bild mit einer WebP-Version von höchstens 960 × 960 Pixeln und 1 MiB.',
+    'branding.error.administration_logo_invalid' => 'Wählen Sie die Logos aus der Medienbibliothek.',
+    'branding.error.administration_logo_required' => 'Wählen Sie zuerst ein Logo, bevor Sie eines für den dunklen Modus hinzufügen.',
+    'branding.error.administration_logo_not_ready' => 'Ein gewähltes Logo ist nicht verfügbar oder größer als 960 × 960 Pixel. Wählen Sie ein vorbereitetes Bild innerhalb dieser Größe.',
 ];

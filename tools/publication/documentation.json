@@ -14,6 +14,7 @@
   "docs/architecture/decisions/0010-apache-2-publication.md": "contribute",
   "docs/architecture/decisions/0011-ci-cadence.md": "contribute",
   "docs/architecture/decisions/0012-isolated-lighthouse-measurements.md": "contribute",
+  "docs/architecture/decisions/0013-website-settings.md": "contribute",
   "docs/architecture/decisions/README.md": "contribute",
   "docs/architecture/editorial-experience-roadmap.md": "private",
   "docs/architecture/live-preview.md": "private",

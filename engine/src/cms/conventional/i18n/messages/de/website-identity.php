@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'holding.identity_kept_website' => 'Das Upgrade hat Namen und Symbol der Website-Einstellungen beibehalten. Frühere Profilwerte bleiben unten erhalten.',
-    'holding.identity_kept_profile' => 'Das Upgrade hat den früheren Profilnamen und das Symbol in die Website-Einstellungen übernommen. Frühere Werte bleiben unten erhalten.',
-    'holding.identity_previous' => 'Frühere Profilwerte',
+    'holding.identity_kept_website' => 'Der hier gespeicherte Name und das Symbol wurden beibehalten, als die Seiten der Website sie nicht mehr trugen.',
+    'holding.identity_kept_profile' => 'Name und Symbol wurden von den Seiten der Website hierher übernommen.',
 ];

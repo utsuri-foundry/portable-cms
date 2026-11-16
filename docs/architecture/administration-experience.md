@@ -535,6 +535,23 @@ preview states use stable text and status semantics. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
 
+### Website settings
+
+Website settings reads in the order of an editor's tasks, with the agency's
+part last (decision [0013](decisions/0013-website-settings.md)). The lede says
+what the page holds and that saving changes nothing on the public website until
+a release is published; one quiet line under the heading says what the public
+website shows now. "Website" holds the name, with where it appears, and the
+icon: its rule first, the chosen image previewed at the 32, 180 and 512 pixel
+sizes it becomes, and a chooser that lists only images that qualify. "Before
+launch" asks what the next release publishes as two explained choices, then the
+message and contact per public language, headed by the language's name; the
+confirmation for going back to the coming soon page appears only when the
+website is the saved choice. "Administration appearance" comes last with the
+logo and its dark mode variant on their backings. One Save; afterwards the page
+says it saved and names Releases as the next step. Every failure is a sentence.
+Editors read the page without its controls; owners and administrators change it.
+
 ### Previews
 
 Previews is seeing the website as it would be published, in the editor's words.

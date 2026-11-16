@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'holding.identity_kept_website' => 'La actualización ha conservado el nombre y el icono de Configuración del sitio. Los valores anteriores del perfil se conservan a continuación.',
-    'holding.identity_kept_profile' => 'La actualización ha trasladado el nombre y el icono anteriores del perfil a Configuración del sitio. Los valores anteriores se conservan a continuación.',
-    'holding.identity_previous' => 'Valores anteriores del perfil',
+    'holding.identity_kept_website' => 'El nombre y el icono guardados aquí se conservaron cuando las páginas del sitio dejaron de llevarlos.',
+    'holding.identity_kept_profile' => 'El nombre y el icono se trasladaron aquí desde las páginas del sitio.',
 ];

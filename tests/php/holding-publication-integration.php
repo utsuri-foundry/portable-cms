@@ -140,7 +140,7 @@ try {
     assertSameValue(303, $request('POST', '/settings/publication', $settingsForm)->status, 'native settings use POST redirect GET');
     $conflict = $request('POST', '/settings/publication', [...$settingsForm, 'websiteName' => 'Preserved editor input']);
     assertSameValue(409, $conflict->status, 'stale native settings re-render rather than overwrite');
-    assertTrueValue(str_contains($conflict->body, 'Preserved editor input') && str_contains($conflict->body, 'Current saved mode'), 'conflict shows current values and preserves editor input');
+    assertTrueValue(str_contains($conflict->body, 'Preserved editor input') && str_contains($conflict->body, 'Someone else saved these settings'), 'a conflict explains itself and preserves editor input');
     assertSameValue($active->id, $publication->head()->activeId, 'saving Live intent leaves the public holding release untouched');
     $languagesForm = ['_csrf' => $cookies[IdentityService::CSRF_COOKIE], '_revision' => '2', 'primary' => $package->manifest->defaultLocale];
     foreach ($package->manifest->locales as $index => $locale) {
