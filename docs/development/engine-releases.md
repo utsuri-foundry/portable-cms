@@ -15,6 +15,10 @@ During 0.x development:
   a different released engine. Several changes released together share one bump.
 - Documentation, tests and developer-only tooling changes need no engine bump
   when installed behavior and profile contracts remain unchanged.
+- Every raised engine version is tagged `v<version>` with an annotated tag on
+  the commit that lands it on `main`, and the tag is pushed. The tag runs the
+  complete qualification in CI and is the address installations and clients
+  refer to; merges that raise no version get no tag.
 
 The policy is about engine compatibility; profile versions and schema
 `formatVersion` values have their own identities. A minor engine bump does not
