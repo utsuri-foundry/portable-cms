@@ -57,6 +57,40 @@ try {
 		);
 	}
 	await navigate("/settings/wording", `[name=${field}]`);
+	// Texts sit in folded groups by where they appear; the first is open and a search narrows the page without script.
+	assert.deepEqual(
+		await evaluate(
+			"[...document.querySelectorAll('[data-wording-group]')].map(d=>[d.querySelector('h2').textContent,d.open])",
+		),
+		[
+			["Across the site", true],
+			["Page titles and links", false],
+			["Project details", false],
+			["Page addresses", false],
+		],
+		"groups follow the labels with the first open",
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelectorAll('.admin-wording__group > .admin-meta').length",
+		),
+		1,
+		"the address warning is stated once",
+	);
+	await evaluate(
+		"document.querySelector('#wording-query').value='year';document.querySelector('#wording-query').form.requestSubmit()",
+	);
+	await ready(
+		"location.search==='?q=year' && document.querySelector('[data-wording-group]')",
+	);
+	assert.deepEqual(
+		await evaluate(
+			"[...document.querySelectorAll('[data-wording-key]')].map(e=>e.dataset.wordingKey)",
+		),
+		["metadata.year"],
+		"a search keeps only the matching texts",
+	);
+	await navigate("/settings/wording", `[name=${field}]`);
 	const previous = await evaluate(
 		"({choice:document.querySelector('#admin-language').value,language:document.documentElement.lang})",
 	);
@@ -65,6 +99,9 @@ try {
 	);
 	await ready(
 		"document.readyState==='complete' && document.documentElement.lang==='ca' && document.querySelector('#admin-language')?.value==='ca'",
+	);
+	await evaluate(
+		"document.querySelector('[data-wording-key=\"metadata.year\"]').closest('details').open=true",
 	);
 	assert.deepEqual(
 		await evaluate(
@@ -176,7 +213,7 @@ try {
 	);
 	assert.deepEqual(browserErrors, []);
 	console.log(
-		"PASS site wording: Catalan administration labels and purposes, native caption correction, live preview and language preference restoration",
+		"PASS site wording: folded groups and search, Catalan administration labels and purposes, native caption correction, live preview and language preference restoration",
 	);
 } finally {
 	await browser.close();

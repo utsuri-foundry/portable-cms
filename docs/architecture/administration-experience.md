@@ -565,6 +565,22 @@ Save, and "Used in" listing the pages that use the file. Every explanation sits
 behind the help control. States are only said when they are not the normal
 one; a ready file carries no state word anywhere.
 
+### Wording
+
+The fixed texts of the website, titled Wording, with a search box at the top
+that narrows the page to the texts whose name, explanation or words contain
+the query, without script. Entries sit in folded groups by where the text
+appears, as the profile's administration labels name them (see
+[profile languages](../development/profile-languages.md#site-wording)), each
+with a count, the first group open and the others opening on demand, or all of
+them while a search is on or when a group holds an error. Each entry is one
+row: its name with the explanation behind the help control, a field per
+language the editor works in, by language name, the profile text beside a
+changed field, and a quiet "Use the profile text" once it differs. Page
+address segments form their own group with the warning about moving pages
+stated once. The save bar says that changes reach the website with the next
+release; no revision number is shown.
+
 ### Website settings
 
 Website settings reads in the order of an editor's tasks, with the agency's

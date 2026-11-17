@@ -5,6 +5,22 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.0
+
+- The Wording page is folded by where each text appears. A search box at the
+  top narrows the page without script. Entries sit in groups the profile's
+  administration labels name through a new optional `group` per wording label,
+  each group with a count, the first open and the rest opening on demand;
+  texts without a group share "Other texts" and page address segments always
+  form "Page addresses", with the warning about moving pages stated once.
+  Each entry is one row: name, explanation behind the help control, a field per
+  language by language name, and a quiet way back to the profile text. The save
+  bar says that changes reach the website with the next release instead of a
+  revision number. The administration labels schema gains the optional `group`,
+  hence the minor version. The reference profile labels its texts into three groups in
+  every administration language. Wording entries, their validation and how the
+  compiler reads them are unchanged.
+
 ## 0.13.3
 
 - The Media page and the media item page are quietened. Upload is the primary

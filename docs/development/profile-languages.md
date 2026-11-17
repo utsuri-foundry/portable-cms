@@ -50,7 +50,7 @@ language always finds its prefix free.
 
 Declare every fixed text your pages show, such as navigation links, page
 titles, labels, captions and the segments of page addresses, in the manifest's
-`wording` list. Editors write and correct it per language in **Site wording**
+`wording` list. Editors write and correct it per language in **Wording**
 at `/settings/wording`, and the snapshot carries it to the build, so a new
 language or a typo needs no profile release
 ([0009: Site languages chosen in the CMS](../architecture/decisions/0009-site-languages.md)).
@@ -105,10 +105,18 @@ In `administration-labels.json`, each language may provide a `wording` map:
 
 Each key must be declared by the installed manifest. A translation provides both
 `label` (up to 100 characters) and `purpose` (up to 300), as nonblank single-line
-plain text. Unknown keys, extra properties and invalid text fail validation.
+plain text, and may add `group` (up to 100 characters): where the text appears,
+such as "Page titles and links" or "Film page". The Wording page folds entries
+by group, in the order the profile first names each group, with the first group
+open and a count on each. Entries without a group share "Other texts"; page
+address segments always form the last group, "Page addresses", with the warning
+about moving pages stated once, whatever group they declare. Name groups by
+where an editor would look ("Home menu", "Film page", "Footer"), six or so for a
+site of forty texts. Unknown keys, extra properties and invalid text fail
+validation.
 Languages are the administration's `ca`, `es`, `en`, `fr` and `de`, independently
 of the website's languages. Omitted keys or languages fall back to the manifest's
-label and purpose. The native Site wording page and its validation summary use
+label and purpose. The native Wording page and its validation summary use
 these names; missing-wording preview reports resolve stable keys when read, so
 another editor sees the saved report in their own interface language. Older
 reports with display names remain readable. Administration labels remain outside

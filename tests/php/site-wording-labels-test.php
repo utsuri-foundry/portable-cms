@@ -36,8 +36,19 @@ $tests['wording administration labels cover every reference key and preserve pub
         }
         assertSameValue(SiteWording::defaults($profile)->entries($profile, $profile->locales), SiteWording::defaults($presented)->entries($presented, $presented->locales), 'administration labels never enter frozen wording');
     }
-    $partial = AdministrationLabels::fromDocument(labelsDocument(['ca' => ['wording' => ['page.home' => ['label' => 'Inici', 'purpose' => 'Enllaç a la portada.']]]]), $profile);
-    assertSameValue('Inici', $terminology->present($profile, 'ca', $partial)->wording('page.home')?->label, 'a partial translation names its key');
+    $partial = AdministrationLabels::fromDocument(labelsDocument(['ca' => ['wording' => ['page.home' => ['label' => 'Inici', 'purpose' => 'Enllaç a la portada.', 'group' => 'Menú']]]]), $profile);
+    assertSameValue(['Inici', 'Menú'], [$terminology->present($profile, 'ca', $partial)->wording('page.home')?->label, $terminology->present($profile, 'ca', $partial)->wording('page.home')?->group], 'a partial translation names its key and may place it in a group');
+    assertSameValue(null, $terminology->present($profile, 'ca', $partial)->wording('metadata.year')?->group, 'a label without a group leaves the entry in the default group');
+    foreach (['en', 'ca', 'es', 'de', 'fr'] as $language) {
+        $groups = [];
+        foreach ($terminology->present($profile, $language, $package->administrationLabels)->wording as $definition) {
+            if ($definition->kind === 'text') {
+                $groups[$definition->group ?? ''] = true;
+            }
+        }
+        assertSameValue(3, count($groups), $language . ' reference labels place every text in one of three groups');
+        assertTrueValue(!isset($groups['']), $language . ' reference labels leave no text without a group');
+    }
     foreach ([$terminology->present($profile, 'de', $partial), $terminology->present($profile, 'ca', AdministrationLabels::none()), $terminology->present($profile, null, $partial)] as $fallback) {
         assertSameValue($profile->wording, $fallback->wording, 'an absent file, language or language choice retains manifest names and purposes');
     }
@@ -59,6 +70,7 @@ $tests['wording administration labels refuse undeclared identities and invalid b
         ['label' => str_repeat('a', 101), 'purpose' => 'Any'], ['label' => ' ', 'purpose' => 'Any'],
         ['label' => "Any\n", 'purpose' => 'Any'], ['label' => 'Any', 'purpose' => "Any\n"],
         ['label' => 'Any', 'purpose' => str_repeat('à', 301)], ['label' => 'Any', 'purpose' => '   '],
+        [...$valid, 'group' => ' '], [...$valid, 'group' => str_repeat('a', 101)], [...$valid, 'group' => "Fitxa\n"], [...$valid, 'group' => 7],
     ] as $invalid) {
         $document = labelsDocument(['ca' => ['wording' => ['metadata.year' => $invalid]]]);
         try {

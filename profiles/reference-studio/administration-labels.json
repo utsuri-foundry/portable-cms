@@ -181,83 +181,103 @@
             "wording": {
                 "interface.skipToContent": {
                     "label": "Enllaç per saltar al contingut",
-                    "purpose": "El primer enllaç de cada pàgina, que permet saltar la navegació amb el teclat."
+                    "purpose": "El primer enllaç de cada pàgina, que permet saltar la navegació amb el teclat.",
+                    "group": "A tot el web"
                 },
                 "interface.primaryNavigation": {
                     "label": "Nom de la navegació",
-                    "purpose": "El nom de la navegació principal que anuncien els lectors de pantalla."
+                    "purpose": "El nom de la navegació principal que anuncien els lectors de pantalla.",
+                    "group": "A tot el web"
                 },
                 "interface.searchLabel": {
                     "label": "Etiqueta del camp de cerca",
-                    "purpose": "L’etiqueta del camp de cerca a les pàgines d’inici i de cerca."
+                    "purpose": "L’etiqueta del camp de cerca a les pàgines d’inici i de cerca.",
+                    "group": "A tot el web"
                 },
                 "interface.searchPlaceholder": {
                     "label": "Exemple del camp de cerca",
-                    "purpose": "L’exemple que es mostra quan el camp de cerca és buit."
+                    "purpose": "L’exemple que es mostra quan el camp de cerca és buit.",
+                    "group": "A tot el web"
                 },
                 "interface.resultSingular": {
                     "label": "Un resultat",
-                    "purpose": "La paraula que segueix el nombre de resultats de cerca quan només n’hi ha un."
+                    "purpose": "La paraula que segueix el nombre de resultats de cerca quan només n’hi ha un.",
+                    "group": "A tot el web"
                 },
                 "interface.resultPlural": {
                     "label": "Diversos resultats",
-                    "purpose": "La paraula que segueix el nombre de resultats de cerca quan n’hi ha més d’un."
+                    "purpose": "La paraula que segueix el nombre de resultats de cerca quan n’hi ha més d’un.",
+                    "group": "A tot el web"
                 },
                 "interface.compositionLabel": {
                     "label": "Nom de la composició d’imatges",
-                    "purpose": "El nom de la composició d’imatges d’una pàgina que anuncien els lectors de pantalla."
+                    "purpose": "El nom de la composició d’imatges d’una pàgina que anuncien els lectors de pantalla.",
+                    "group": "A tot el web"
                 },
                 "page.home": {
                     "label": "Enllaç a l’inici",
-                    "purpose": "L’enllaç de navegació a la pàgina d’inici."
+                    "purpose": "L’enllaç de navegació a la pàgina d’inici.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.projects": {
                     "label": "Títol de projectes",
-                    "purpose": "El títol de la pàgina de projectes i el seu enllaç de navegació."
+                    "purpose": "El títol de la pàgina de projectes i el seu enllaç de navegació.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.articles": {
                     "label": "Títol del quadern",
-                    "purpose": "El títol de la pàgina del quadern i el seu enllaç de navegació."
+                    "purpose": "El títol de la pàgina del quadern i el seu enllaç de navegació.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.people": {
                     "label": "Títol de persones",
-                    "purpose": "El títol de la pàgina de persones i el seu enllaç de navegació."
+                    "purpose": "El títol de la pàgina de persones i el seu enllaç de navegació.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.about": {
                     "label": "Títol de l’estudi",
-                    "purpose": "El títol de la pàgina de l’estudi i el seu enllaç de navegació."
+                    "purpose": "El títol de la pàgina de l’estudi i el seu enllaç de navegació.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.search": {
                     "label": "Títol de cerca",
-                    "purpose": "El títol de la pàgina de cerca i el seu enllaç de navegació."
+                    "purpose": "El títol de la pàgina de cerca i el seu enllaç de navegació.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.disciplines": {
                     "label": "Títol de disciplines",
-                    "purpose": "El títol de la pàgina que enumera les disciplines."
+                    "purpose": "El títol de la pàgina que enumera les disciplines.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.sectors": {
                     "label": "Títol d’àmbits",
-                    "purpose": "El títol de la pàgina que enumera els àmbits."
+                    "purpose": "El títol de la pàgina que enumera els àmbits.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "page.settings": {
                     "label": "Títol de configuració",
-                    "purpose": "El títol de la pàgina que mostra la configuració del web."
+                    "purpose": "El títol de la pàgina que mostra la configuració del web.",
+                    "group": "Títols i enllaços de pàgina"
                 },
                 "metadata.year": {
                     "label": "Etiqueta de l’any",
-                    "purpose": "L’etiqueta de l’any d’un projecte."
+                    "purpose": "L’etiqueta de l’any d’un projecte.",
+                    "group": "Detalls del projecte"
                 },
                 "metadata.status": {
                     "label": "Etiqueta de l’estat",
-                    "purpose": "L’etiqueta de l’estat d’un projecte."
+                    "purpose": "L’etiqueta de l’estat d’un projecte.",
+                    "group": "Detalls del projecte"
                 },
                 "status.complete": {
                     "label": "Estat completat",
-                    "purpose": "L’estat d’un projecte quan s’ha completat."
+                    "purpose": "L’estat d’un projecte quan s’ha completat.",
+                    "group": "Detalls del projecte"
                 },
                 "status.ongoing": {
                     "label": "Estat en curs",
-                    "purpose": "L’estat d’un projecte mentre continua en curs."
+                    "purpose": "L’estat d’un projecte mentre continua en curs.",
+                    "group": "Detalls del projecte"
                 },
                 "address.projects": {
                     "label": "Adreça de projectes",
@@ -472,83 +492,103 @@
             "wording": {
                 "interface.skipToContent": {
                     "label": "Enlace para saltar al contenido",
-                    "purpose": "El primer enlace de cada página, que permite saltar la navegación con el teclado."
+                    "purpose": "El primer enlace de cada página, que permite saltar la navegación con el teclado.",
+                    "group": "En todo el sitio"
                 },
                 "interface.primaryNavigation": {
                     "label": "Nombre de la navegación",
-                    "purpose": "El nombre de la navegación principal que anuncian los lectores de pantalla."
+                    "purpose": "El nombre de la navegación principal que anuncian los lectores de pantalla.",
+                    "group": "En todo el sitio"
                 },
                 "interface.searchLabel": {
                     "label": "Etiqueta del campo de búsqueda",
-                    "purpose": "La etiqueta del campo de búsqueda en las páginas de inicio y de búsqueda."
+                    "purpose": "La etiqueta del campo de búsqueda en las páginas de inicio y de búsqueda.",
+                    "group": "En todo el sitio"
                 },
                 "interface.searchPlaceholder": {
                     "label": "Ejemplo del campo de búsqueda",
-                    "purpose": "El ejemplo que se muestra cuando el campo de búsqueda está vacío."
+                    "purpose": "El ejemplo que se muestra cuando el campo de búsqueda está vacío.",
+                    "group": "En todo el sitio"
                 },
                 "interface.resultSingular": {
                     "label": "Un resultado",
-                    "purpose": "La palabra que sigue al número de resultados de búsqueda cuando solo hay uno."
+                    "purpose": "La palabra que sigue al número de resultados de búsqueda cuando solo hay uno.",
+                    "group": "En todo el sitio"
                 },
                 "interface.resultPlural": {
                     "label": "Varios resultados",
-                    "purpose": "La palabra que sigue al número de resultados de búsqueda cuando hay más de uno."
+                    "purpose": "La palabra que sigue al número de resultados de búsqueda cuando hay más de uno.",
+                    "group": "En todo el sitio"
                 },
                 "interface.compositionLabel": {
                     "label": "Nombre de la composición de imágenes",
-                    "purpose": "El nombre de la composición de imágenes de una página que anuncian los lectores de pantalla."
+                    "purpose": "El nombre de la composición de imágenes de una página que anuncian los lectores de pantalla.",
+                    "group": "En todo el sitio"
                 },
                 "page.home": {
                     "label": "Enlace al inicio",
-                    "purpose": "El enlace de navegación a la página de inicio."
+                    "purpose": "El enlace de navegación a la página de inicio.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.projects": {
                     "label": "Título de proyectos",
-                    "purpose": "El título de la página de proyectos y su enlace de navegación."
+                    "purpose": "El título de la página de proyectos y su enlace de navegación.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.articles": {
                     "label": "Título del cuaderno",
-                    "purpose": "El título de la página del cuaderno y su enlace de navegación."
+                    "purpose": "El título de la página del cuaderno y su enlace de navegación.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.people": {
                     "label": "Título de personas",
-                    "purpose": "El título de la página de personas y su enlace de navegación."
+                    "purpose": "El título de la página de personas y su enlace de navegación.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.about": {
                     "label": "Título del estudio",
-                    "purpose": "El título de la página del estudio y su enlace de navegación."
+                    "purpose": "El título de la página del estudio y su enlace de navegación.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.search": {
                     "label": "Título de búsqueda",
-                    "purpose": "El título de la página de búsqueda y su enlace de navegación."
+                    "purpose": "El título de la página de búsqueda y su enlace de navegación.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.disciplines": {
                     "label": "Título de disciplinas",
-                    "purpose": "El título de la página que enumera las disciplinas."
+                    "purpose": "El título de la página que enumera las disciplinas.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.sectors": {
                     "label": "Título de ámbitos",
-                    "purpose": "El título de la página que enumera los ámbitos."
+                    "purpose": "El título de la página que enumera los ámbitos.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "page.settings": {
                     "label": "Título de configuración",
-                    "purpose": "El título de la página que muestra la configuración del sitio web."
+                    "purpose": "El título de la página que muestra la configuración del sitio web.",
+                    "group": "Títulos y enlaces de página"
                 },
                 "metadata.year": {
                     "label": "Etiqueta del año",
-                    "purpose": "La etiqueta del año de un proyecto."
+                    "purpose": "La etiqueta del año de un proyecto.",
+                    "group": "Detalles del proyecto"
                 },
                 "metadata.status": {
                     "label": "Etiqueta del estado",
-                    "purpose": "La etiqueta del estado de un proyecto."
+                    "purpose": "La etiqueta del estado de un proyecto.",
+                    "group": "Detalles del proyecto"
                 },
                 "status.complete": {
                     "label": "Estado completado",
-                    "purpose": "El estado de un proyecto cuando se ha completado."
+                    "purpose": "El estado de un proyecto cuando se ha completado.",
+                    "group": "Detalles del proyecto"
                 },
                 "status.ongoing": {
                     "label": "Estado en curso",
-                    "purpose": "El estado de un proyecto mientras sigue en curso."
+                    "purpose": "El estado de un proyecto mientras sigue en curso.",
+                    "group": "Detalles del proyecto"
                 },
                 "address.projects": {
                     "label": "Dirección de proyectos",
@@ -763,83 +803,103 @@
             "wording": {
                 "interface.skipToContent": {
                     "label": "Skip link",
-                    "purpose": "The first link of every page, which lets keyboard users skip the navigation."
+                    "purpose": "The first link of every page, which lets keyboard users skip the navigation.",
+                    "group": "Across the site"
                 },
                 "interface.primaryNavigation": {
                     "label": "Navigation name",
-                    "purpose": "The name screen readers give the main navigation."
+                    "purpose": "The name screen readers give the main navigation.",
+                    "group": "Across the site"
                 },
                 "interface.searchLabel": {
                     "label": "Search field label",
-                    "purpose": "The label of the search field on the home and search pages."
+                    "purpose": "The label of the search field on the home and search pages.",
+                    "group": "Across the site"
                 },
                 "interface.searchPlaceholder": {
                     "label": "Search field example",
-                    "purpose": "The example shown in the empty search field."
+                    "purpose": "The example shown in the empty search field.",
+                    "group": "Across the site"
                 },
                 "interface.resultSingular": {
                     "label": "One result",
-                    "purpose": "The word after the number of search results when there is one."
+                    "purpose": "The word after the number of search results when there is one.",
+                    "group": "Across the site"
                 },
                 "interface.resultPlural": {
                     "label": "Several results",
-                    "purpose": "The word after the number of search results when there are several."
+                    "purpose": "The word after the number of search results when there are several.",
+                    "group": "Across the site"
                 },
                 "interface.compositionLabel": {
                     "label": "Image layout name",
-                    "purpose": "The name screen readers give the image layout of a page."
+                    "purpose": "The name screen readers give the image layout of a page.",
+                    "group": "Across the site"
                 },
                 "page.home": {
                     "label": "Home link",
-                    "purpose": "The navigation link to the home page."
+                    "purpose": "The navigation link to the home page.",
+                    "group": "Page titles and links"
                 },
                 "page.projects": {
                     "label": "Projects title",
-                    "purpose": "The title of the projects page and its navigation link."
+                    "purpose": "The title of the projects page and its navigation link.",
+                    "group": "Page titles and links"
                 },
                 "page.articles": {
                     "label": "Journal title",
-                    "purpose": "The title of the journal page and its navigation link."
+                    "purpose": "The title of the journal page and its navigation link.",
+                    "group": "Page titles and links"
                 },
                 "page.people": {
                     "label": "People title",
-                    "purpose": "The title of the people page and its navigation link."
+                    "purpose": "The title of the people page and its navigation link.",
+                    "group": "Page titles and links"
                 },
                 "page.about": {
                     "label": "Studio title",
-                    "purpose": "The title of the studio page and its navigation link."
+                    "purpose": "The title of the studio page and its navigation link.",
+                    "group": "Page titles and links"
                 },
                 "page.search": {
                     "label": "Search title",
-                    "purpose": "The title of the search page and its navigation link."
+                    "purpose": "The title of the search page and its navigation link.",
+                    "group": "Page titles and links"
                 },
                 "page.disciplines": {
                     "label": "Disciplines title",
-                    "purpose": "The title of the page that lists the disciplines."
+                    "purpose": "The title of the page that lists the disciplines.",
+                    "group": "Page titles and links"
                 },
                 "page.sectors": {
                     "label": "Sectors title",
-                    "purpose": "The title of the page that lists the sectors."
+                    "purpose": "The title of the page that lists the sectors.",
+                    "group": "Page titles and links"
                 },
                 "page.settings": {
                     "label": "Settings title",
-                    "purpose": "The title of the page that shows the website settings."
+                    "purpose": "The title of the page that shows the website settings.",
+                    "group": "Page titles and links"
                 },
                 "metadata.year": {
                     "label": "Year label",
-                    "purpose": "The label of a project’s year."
+                    "purpose": "The label of a project’s year.",
+                    "group": "Project details"
                 },
                 "metadata.status": {
                     "label": "Status label",
-                    "purpose": "The label of a project’s status."
+                    "purpose": "The label of a project’s status.",
+                    "group": "Project details"
                 },
                 "status.complete": {
                     "label": "Complete status",
-                    "purpose": "A project’s status once it is complete."
+                    "purpose": "A project’s status once it is complete.",
+                    "group": "Project details"
                 },
                 "status.ongoing": {
                     "label": "Ongoing status",
-                    "purpose": "A project’s status while it continues."
+                    "purpose": "A project’s status while it continues.",
+                    "group": "Project details"
                 },
                 "address.projects": {
                     "label": "Projects address",
@@ -1054,83 +1114,103 @@
             "wording": {
                 "interface.skipToContent": {
                     "label": "Lien d’accès au contenu",
-                    "purpose": "Le premier lien de chaque page, qui permet de passer la navigation au clavier."
+                    "purpose": "Le premier lien de chaque page, qui permet de passer la navigation au clavier.",
+                    "group": "Sur tout le site"
                 },
                 "interface.primaryNavigation": {
                     "label": "Nom de la navigation",
-                    "purpose": "Le nom de la navigation principale annoncé par les lecteurs d’écran."
+                    "purpose": "Le nom de la navigation principale annoncé par les lecteurs d’écran.",
+                    "group": "Sur tout le site"
                 },
                 "interface.searchLabel": {
                     "label": "Libellé du champ de recherche",
-                    "purpose": "Le libellé du champ de recherche sur les pages d’accueil et de recherche."
+                    "purpose": "Le libellé du champ de recherche sur les pages d’accueil et de recherche.",
+                    "group": "Sur tout le site"
                 },
                 "interface.searchPlaceholder": {
                     "label": "Exemple du champ de recherche",
-                    "purpose": "L’exemple affiché lorsque le champ de recherche est vide."
+                    "purpose": "L’exemple affiché lorsque le champ de recherche est vide.",
+                    "group": "Sur tout le site"
                 },
                 "interface.resultSingular": {
                     "label": "Un résultat",
-                    "purpose": "Le mot qui suit le nombre de résultats de recherche lorsqu’il n’y en a qu’un."
+                    "purpose": "Le mot qui suit le nombre de résultats de recherche lorsqu’il n’y en a qu’un.",
+                    "group": "Sur tout le site"
                 },
                 "interface.resultPlural": {
                     "label": "Plusieurs résultats",
-                    "purpose": "Le mot qui suit le nombre de résultats de recherche lorsqu’il y en a plusieurs."
+                    "purpose": "Le mot qui suit le nombre de résultats de recherche lorsqu’il y en a plusieurs.",
+                    "group": "Sur tout le site"
                 },
                 "interface.compositionLabel": {
                     "label": "Nom de la composition d’images",
-                    "purpose": "Le nom de la composition d’images d’une page annoncé par les lecteurs d’écran."
+                    "purpose": "Le nom de la composition d’images d’une page annoncé par les lecteurs d’écran.",
+                    "group": "Sur tout le site"
                 },
                 "page.home": {
                     "label": "Lien vers l’accueil",
-                    "purpose": "Le lien de navigation vers la page d’accueil."
+                    "purpose": "Le lien de navigation vers la page d’accueil.",
+                    "group": "Titres et liens de page"
                 },
                 "page.projects": {
                     "label": "Titre des projets",
-                    "purpose": "Le titre de la page des projets et son lien de navigation."
+                    "purpose": "Le titre de la page des projets et son lien de navigation.",
+                    "group": "Titres et liens de page"
                 },
                 "page.articles": {
                     "label": "Titre du journal",
-                    "purpose": "Le titre de la page du journal et son lien de navigation."
+                    "purpose": "Le titre de la page du journal et son lien de navigation.",
+                    "group": "Titres et liens de page"
                 },
                 "page.people": {
                     "label": "Titre des personnes",
-                    "purpose": "Le titre de la page des personnes et son lien de navigation."
+                    "purpose": "Le titre de la page des personnes et son lien de navigation.",
+                    "group": "Titres et liens de page"
                 },
                 "page.about": {
                     "label": "Titre du studio",
-                    "purpose": "Le titre de la page du studio et son lien de navigation."
+                    "purpose": "Le titre de la page du studio et son lien de navigation.",
+                    "group": "Titres et liens de page"
                 },
                 "page.search": {
                     "label": "Titre de la recherche",
-                    "purpose": "Le titre de la page de recherche et son lien de navigation."
+                    "purpose": "Le titre de la page de recherche et son lien de navigation.",
+                    "group": "Titres et liens de page"
                 },
                 "page.disciplines": {
                     "label": "Titre des disciplines",
-                    "purpose": "Le titre de la page qui répertorie les disciplines."
+                    "purpose": "Le titre de la page qui répertorie les disciplines.",
+                    "group": "Titres et liens de page"
                 },
                 "page.sectors": {
                     "label": "Titre des secteurs",
-                    "purpose": "Le titre de la page qui répertorie les secteurs."
+                    "purpose": "Le titre de la page qui répertorie les secteurs.",
+                    "group": "Titres et liens de page"
                 },
                 "page.settings": {
                     "label": "Titre des réglages",
-                    "purpose": "Le titre de la page qui présente les réglages du site web."
+                    "purpose": "Le titre de la page qui présente les réglages du site web.",
+                    "group": "Titres et liens de page"
                 },
                 "metadata.year": {
                     "label": "Libellé de l’année",
-                    "purpose": "Le libellé de l’année d’un projet."
+                    "purpose": "Le libellé de l’année d’un projet.",
+                    "group": "Détails du projet"
                 },
                 "metadata.status": {
                     "label": "Libellé du statut",
-                    "purpose": "Le libellé du statut d’un projet."
+                    "purpose": "Le libellé du statut d’un projet.",
+                    "group": "Détails du projet"
                 },
                 "status.complete": {
                     "label": "Statut terminé",
-                    "purpose": "Le statut d’un projet une fois terminé."
+                    "purpose": "Le statut d’un projet une fois terminé.",
+                    "group": "Détails du projet"
                 },
                 "status.ongoing": {
                     "label": "Statut en cours",
-                    "purpose": "Le statut d’un projet pendant sa réalisation."
+                    "purpose": "Le statut d’un projet pendant sa réalisation.",
+                    "group": "Détails du projet"
                 },
                 "address.projects": {
                     "label": "Adresse des projets",
@@ -1345,83 +1425,103 @@
             "wording": {
                 "interface.skipToContent": {
                     "label": "Link zum Inhalt",
-                    "purpose": "Der erste Link jeder Seite, mit dem die Navigation per Tastatur übersprungen werden kann."
+                    "purpose": "Der erste Link jeder Seite, mit dem die Navigation per Tastatur übersprungen werden kann.",
+                    "group": "Auf der ganzen Website"
                 },
                 "interface.primaryNavigation": {
                     "label": "Name der Navigation",
-                    "purpose": "Der Name der Hauptnavigation, den Screenreader ansagen."
+                    "purpose": "Der Name der Hauptnavigation, den Screenreader ansagen.",
+                    "group": "Auf der ganzen Website"
                 },
                 "interface.searchLabel": {
                     "label": "Beschriftung des Suchfelds",
-                    "purpose": "Die Beschriftung des Suchfelds auf der Startseite und der Suchseite."
+                    "purpose": "Die Beschriftung des Suchfelds auf der Startseite und der Suchseite.",
+                    "group": "Auf der ganzen Website"
                 },
                 "interface.searchPlaceholder": {
                     "label": "Beispiel im Suchfeld",
-                    "purpose": "Das Beispiel, das im leeren Suchfeld angezeigt wird."
+                    "purpose": "Das Beispiel, das im leeren Suchfeld angezeigt wird.",
+                    "group": "Auf der ganzen Website"
                 },
                 "interface.resultSingular": {
                     "label": "Ein Ergebnis",
-                    "purpose": "Das Wort nach der Anzahl der Suchergebnisse, wenn es genau eines gibt."
+                    "purpose": "Das Wort nach der Anzahl der Suchergebnisse, wenn es genau eines gibt.",
+                    "group": "Auf der ganzen Website"
                 },
                 "interface.resultPlural": {
                     "label": "Mehrere Ergebnisse",
-                    "purpose": "Das Wort nach der Anzahl der Suchergebnisse, wenn es mehrere gibt."
+                    "purpose": "Das Wort nach der Anzahl der Suchergebnisse, wenn es mehrere gibt.",
+                    "group": "Auf der ganzen Website"
                 },
                 "interface.compositionLabel": {
                     "label": "Name der Bildkomposition",
-                    "purpose": "Der Name der Bildkomposition einer Seite, den Screenreader ansagen."
+                    "purpose": "Der Name der Bildkomposition einer Seite, den Screenreader ansagen.",
+                    "group": "Auf der ganzen Website"
                 },
                 "page.home": {
                     "label": "Link zur Startseite",
-                    "purpose": "Der Navigationslink zur Startseite."
+                    "purpose": "Der Navigationslink zur Startseite.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.projects": {
                     "label": "Titel der Projekte",
-                    "purpose": "Der Titel der Projektseite und ihr Navigationslink."
+                    "purpose": "Der Titel der Projektseite und ihr Navigationslink.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.articles": {
                     "label": "Titel des Journals",
-                    "purpose": "Der Titel der Journalseite und ihr Navigationslink."
+                    "purpose": "Der Titel der Journalseite und ihr Navigationslink.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.people": {
                     "label": "Titel der Personen",
-                    "purpose": "Der Titel der Personenseite und ihr Navigationslink."
+                    "purpose": "Der Titel der Personenseite und ihr Navigationslink.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.about": {
                     "label": "Titel des Studios",
-                    "purpose": "Der Titel der Studioseite und ihr Navigationslink."
+                    "purpose": "Der Titel der Studioseite und ihr Navigationslink.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.search": {
                     "label": "Titel der Suche",
-                    "purpose": "Der Titel der Suchseite und ihr Navigationslink."
+                    "purpose": "Der Titel der Suchseite und ihr Navigationslink.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.disciplines": {
                     "label": "Titel der Disziplinen",
-                    "purpose": "Der Titel der Seite, die die Disziplinen auflistet."
+                    "purpose": "Der Titel der Seite, die die Disziplinen auflistet.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.sectors": {
                     "label": "Titel der Bereiche",
-                    "purpose": "Der Titel der Seite, die die Bereiche auflistet."
+                    "purpose": "Der Titel der Seite, die die Bereiche auflistet.",
+                    "group": "Seitentitel und Links"
                 },
                 "page.settings": {
                     "label": "Titel der Einstellungen",
-                    "purpose": "Der Titel der Seite mit den Website-Einstellungen."
+                    "purpose": "Der Titel der Seite mit den Website-Einstellungen.",
+                    "group": "Seitentitel und Links"
                 },
                 "metadata.year": {
                     "label": "Beschriftung des Jahres",
-                    "purpose": "Die Beschriftung des Jahres eines Projekts."
+                    "purpose": "Die Beschriftung des Jahres eines Projekts.",
+                    "group": "Projektangaben"
                 },
                 "metadata.status": {
                     "label": "Beschriftung des Status",
-                    "purpose": "Die Beschriftung des Status eines Projekts."
+                    "purpose": "Die Beschriftung des Status eines Projekts.",
+                    "group": "Projektangaben"
                 },
                 "status.complete": {
                     "label": "Status abgeschlossen",
-                    "purpose": "Der Status eines abgeschlossenen Projekts."
+                    "purpose": "Der Status eines abgeschlossenen Projekts.",
+                    "group": "Projektangaben"
                 },
                 "status.ongoing": {
                     "label": "Status in Arbeit",
-                    "purpose": "Der Status eines Projekts während seiner Bearbeitung."
+                    "purpose": "Der Status eines Projekts während seiner Bearbeitung.",
+                    "group": "Projektangaben"
                 },
                 "address.projects": {
                     "label": "Adresse der Projekte",
