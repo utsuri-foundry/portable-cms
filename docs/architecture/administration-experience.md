@@ -271,6 +271,14 @@ Uploads preserve unsaved record input and do not save it. Removing a selection
 keeps the library image. See the [media control contract](../development/editorial-controls.md#bounds-and-media-integrity)
 for receipts, conflicts and separate description forms.
 
+Video fields state the rule in one line (format, size and the field's limits,
+and that a poster image goes with the video), show the player, then the video
+and the poster image as two named rows with a link to each media page and a
+quiet remove control. Each choice has one disclosure, **Choose video** or
+**Choose poster image** (**Change** once chosen), holding the library search
+and paging; the upload sits under the video one. The poster appears once, on
+the player. Nothing is drawn over a row's name.
+
 One header switch selects the language for every localized field. It supports
 arrow, Home and End keys. Fields carry a language tag, or share one on a wholly
 localized section. The switch and rail identify missing translations. Before

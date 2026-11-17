@@ -27,6 +27,26 @@ async function submitNative(expression) {
 		"document.readyState==='complete' && !document.querySelector('[data-video-submission]') && document.querySelector('[data-editorial-form] [name=_editorial_end]')?.value==='1'",
 	);
 }
+// Each row's name is the topmost thing at its own position: no badge or card is drawn over it.
+async function rowsReadPlainly(width) {
+	const rows = await evaluate(
+		`[...document.querySelectorAll('#field-trailer [data-video-row]')].map(row => {const kind=row.querySelector('.admin-video-row__kind');const box=kind.getBoundingClientRect();kind.scrollIntoView({block:'center'});const after=kind.getBoundingClientRect();const top=document.elementFromPoint(after.left+4,after.top+after.height/2);return {text:kind.textContent,before:getComputedStyle(row,'::before').content,visible:box.width>0&&box.height>0,covered:!(top===kind||kind.contains(top))}})`,
+	);
+	assert.deepEqual(
+		rows.map((row) => row.text),
+		["Video", "Poster image"],
+		`rows are plainly named at ${width}px`,
+	);
+	for (const row of rows) {
+		assert.equal(
+			row.before,
+			"none",
+			`no badge is drawn before ${row.text} at ${width}px`,
+		);
+		assert.equal(row.visible, true, `${row.text} is visible at ${width}px`);
+		assert.equal(row.covered, false, `nothing covers ${row.text} at ${width}px`);
+	}
+}
 function worker() {
 	execFileSync(
 		"php",
@@ -96,6 +116,7 @@ try {
 		"Object.fromEntries([...document.querySelectorAll('#field-trailer [data-video-choose=video]')].map(o=>[o.dataset.mediaName,o.dataset.mediaId]))",
 	);
 	assert.ok(media["prepared.mp4"] && media["prepared.webm"]);
+	await rowsReadPlainly(await evaluate("innerWidth"));
 	// Native picker actions update the transient form without saving its revision.
 	const nativeRevision = await evaluate(
 		"document.querySelector('[name=_revision]').value",
@@ -199,6 +220,7 @@ try {
 		await evaluate("document.documentElement.scrollWidth<=innerWidth"),
 		true,
 	);
+	await rowsReadPlainly(360);
 	const savedRevision = await evaluate(
 		"document.querySelector('[name=_revision]').value",
 	);
@@ -266,8 +288,15 @@ try {
 	);
 	assert.equal(await evaluate("location.href"), beforeChoice);
 	assert.equal(videoRequests.length, 0, "candidate selection must not fetch video");
+	assert.equal(
+		await evaluate(
+			"document.querySelector('#field-trailer [data-video-browse=video] > summary').textContent",
+		),
+		"Change video",
+		"a chosen video turns its disclosure into a change",
+	);
 	await evaluate(
-		`document.querySelectorAll('#field-trailer details')[1].open=true;document.querySelector('[value="select-poster:trailer:${poster}"]').click()`,
+		`document.querySelector('#field-trailer [data-video-browse=poster]').open=true;document.querySelector('[value="select-poster:trailer:${poster}"]').click()`,
 	);
 	assert.match(
 		await evaluate("document.querySelector('#field-trailer video').poster"),
@@ -379,7 +408,7 @@ try {
 	);
 	assert.deepEqual(browserErrors, []);
 	console.log(
-		"PASS prepared video: no-script uploads, MP4/WebM names and separate poster, saved references, private native playback, validation/conflict recovery, persisted fixture restoration and narrow layout.",
+		"PASS prepared video: no-script uploads, MP4/WebM names and separate poster, plainly named rows at desktop and phone widths, saved references, private native playback, validation/conflict recovery, persisted fixture restoration and narrow layout.",
 	);
 } finally {
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
