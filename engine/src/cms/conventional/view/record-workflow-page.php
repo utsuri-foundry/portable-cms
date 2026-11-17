@@ -21,8 +21,9 @@ final class RecordWorkflowPage
         }
         $publish = $record->workflowState !== 'archived'
             ? '<button type="submit" form="record-publish-form" data-publish-changes' . ($record->workflowState === 'published' && !$record->hasUnpublishedChanges() ? ' hidden' : '') . '>' . $t->html($record->workflowState === 'published' ? 'workflow.publish_changes' : 'workflow.publish') . '</button>' : '';
+        $draft = $record->workflowState === 'published' ? '<button type="submit" form="record-draft-form" data-back-to-draft>' . $t->html('workflow.unpublish') . '</button>' : '';
         $discard = $record->workflowState === 'published' ? '<details class="admin-rail-card" data-keep-discard' . ($record->hasUnpublishedChanges() ? '' : ' hidden') . '><summary>' . $t->html('workflow.discard') . '</summary><p>' . $t->html('workflow.discard_help') . '</p><label><input type="checkbox" form="record-discard-form" name="_confirmed" value="1" required> ' . $t->html('workflow.discard_confirm') . '</label><button form="record-discard-form" type="submit">' . $t->html('workflow.discard') . '</button></details>' : '';
-        return $publish . $discard . '<details class="admin-rail-card"' . ($selected === null ? '' : ' open') . '><summary>' . $t->html('workflow.change') . '</summary><p class="admin-meta">' . $t->html('workflow.help') . '</p>'
+        return $publish . $draft . $discard . '<details class="admin-rail-card"' . ($selected === null ? '' : ' open') . '><summary>' . $t->html('workflow.change') . '</summary><p class="admin-meta">' . $t->html('workflow.help') . '</p>'
             . '<label>' . $t->html('workflow.state') . '<select form="record-status-form" name="_workflow_state">' . $options . '</select></label>'
             . '<label><input form="record-status-form" type="checkbox" name="_confirmed" value="1" required> ' . $t->html('workflow.confirm') . '</label>'
             . '<button form="record-status-form" type="submit">' . $t->html('workflow.submit') . '</button></details>'
@@ -31,11 +32,13 @@ final class RecordWorkflowPage
 
     public static function form(RecordSnapshot $record, string $csrf): string
     {
-        $intent = '<input type="hidden" name="_edit_sequence" value="' . $record->editSequence . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '"><input type="hidden" name="_revision" value="' . $record->revisionNumber . '"><input type="hidden" name="_workflow_state" value="published">';
+        $saved = '<input type="hidden" name="_edit_sequence" value="' . $record->editSequence . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '"><input type="hidden" name="_revision" value="' . $record->revisionNumber . '">';
+        $intent = $saved . '<input type="hidden" name="_workflow_state" value="published">';
         $path = '/records/' . $record->typeId . '/' . $record->id . '/status';
         $publish = $record->workflowState !== 'archived' ? '<form id="record-publish-form" method="post" action="' . Html::url($path) . '">' . $intent . '<input type="hidden" name="_confirmed" value="1"></form>' : '';
+        $draft = $record->workflowState === 'published' ? '<form id="record-draft-form" method="post" action="' . Html::url($path) . '">' . $saved . '<input type="hidden" name="_workflow_state" value="draft"><input type="hidden" name="_confirmed" value="1"></form>' : '';
         $discard = $record->workflowState === 'published' ? '<form id="record-discard-form" method="post" action="' . Html::url($path) . '">' . $intent . '<input type="hidden" name="_workflow_action" value="discard"></form>' : '';
-        return $publish . $discard . '<form id="record-status-form" method="post" action="' . Html::url('/records/' . $record->typeId . '/' . $record->id . '/status') . '">'
+        return $publish . $draft . $discard . '<form id="record-status-form" method="post" action="' . Html::url('/records/' . $record->typeId . '/' . $record->id . '/status') . '">'
             . '<input type="hidden" name="_edit_sequence" value="' . $record->editSequence . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '"><input type="hidden" name="_revision" value="' . $record->revisionNumber . '"></form>'
             . ($record->workflowState === 'archived' ? '<form id="record-delete-form" method="post" action="' . Html::url('/records/' . $record->typeId . '/' . $record->id . '/status') . '"><input type="hidden" name="_edit_sequence" value="' . $record->editSequence . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrf) . '"><input type="hidden" name="_revision" value="' . $record->revisionNumber . '"><input type="hidden" name="_workflow_action" value="delete"><input type="hidden" name="_workflow_state" value="archived"></form>' : '');
     }

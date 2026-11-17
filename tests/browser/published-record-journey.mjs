@@ -77,7 +77,7 @@ try {
 	);
 	assert.match(
 		await evaluate("document.querySelector('main').textContent"),
-		/Published, with changes/,
+		/Ready, with changes/,
 	);
 	await command("Page.navigate", {
 		url: `${origin}/records/article?status=published_changes`,

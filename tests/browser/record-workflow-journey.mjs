@@ -57,7 +57,7 @@ async function status(path, state) {
 	);
 	assert.match(
 		await evaluate("document.querySelector('main').textContent"),
-		/Website releases take the published version/,
+		/Releases take the ready version/,
 	);
 }
 

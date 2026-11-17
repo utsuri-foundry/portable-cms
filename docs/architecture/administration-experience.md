@@ -113,6 +113,10 @@ The persistent shell groups ordinary editing and publication work as follows:
      time, and can move or cancel it before worker start. Scheduled membership
      is visible on record and exact-preview pages; later edits leave approved
      bytes unchanged. See [scheduled releases](../development/publication-workflow.md#scheduled-releases).
+     The word Publish belongs to this group: in the administration it means the
+     public website changes. A record's own states are Draft, Ready (stored as
+     `published`) and Archived; the rail's actions are Mark as ready and Back to
+     draft, and no record control says Publish.
    - Website contains Settings (the website name, icon and coming soon page),
      Languages and Wording for everyone who may open them, and for owners and
      administrators also Content names, Design and Accounts. Editors see

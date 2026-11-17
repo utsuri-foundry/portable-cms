@@ -20,7 +20,7 @@ not alter a link already showing a frozen version.
 ## Current delivery boundary
 
 Private exact previews compile the saved website. Editors select versions for
-the next release with Publish or Publish changes. Published-only previews read
+the next release with Mark as ready or Mark changes as ready. Published-only previews read
 each selected published revision; review previews may include current edits and
 saved drafts. Release activation, rollback and retention
 use the [publication workflow](publication-workflow.md). Changing a record's

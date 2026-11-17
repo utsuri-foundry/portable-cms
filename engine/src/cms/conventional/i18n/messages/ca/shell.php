@@ -34,7 +34,7 @@ return [
     'shell.theme.dark' => 'Fosc',
     'shell.theme.apply' => 'Aplicar',
     'state.draft' => 'Esborrany',
-    'state.published' => 'Publicat',
+    'state.published' => 'A punt',
     'state.archived' => 'Arxivat',
     'state.queued' => 'A la cua',
     'state.running' => 'En execució',

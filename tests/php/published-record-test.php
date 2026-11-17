@@ -102,9 +102,11 @@ $tests['normalized exports validate both record heads and their independent rela
 $tests['published controls name the pinned version and require confirmation before discarding'] = static function (): void {
     $record = new RecordSnapshot(str_repeat('a', 32), 'project', 'published', str_repeat('c', 32), 3, ['title' => 'New'], new DateTimeImmutable('2026-10-30T12:00:00Z'), str_repeat('b', 32), 2, new DateTimeImmutable('2026-10-29T12:00:00Z'));
     $controls = RecordWorkflowPage::controls($record, Translator::english());
-    assertTrueValue(str_contains($controls, 'Publish changes') && str_contains($controls, 'Discard changes'), 'explicit actions exist without changing saved content');
+    assertTrueValue(str_contains($controls, 'Mark changes as ready') && str_contains($controls, 'Back to draft') && str_contains($controls, 'Discard changes'), 'explicit actions exist without changing saved content');
+    assertTrueValue(!str_contains($controls, 'Publish'), 'Publish is a word for Releases, not for a record');
     assertTrueValue(str_contains($controls, 'form="record-discard-form" name="_confirmed" value="1" required'), 'discard has a real native confirmation');
     $form = RecordWorkflowPage::form($record, 'safe');
     assertTrueValue(str_contains($form, 'name="_revision" value="3"') && str_contains($form, 'name="_workflow_action" value="discard"'), 'each action binds the saved revision');
-    assertSameValue('Published, with changes', \Utsuri\PortableCms\Conventional\View\AdminShell::stateLabel('published_changes', Translator::english()), 'status has a distinct readable label');
+    assertTrueValue(str_contains($form, 'id="record-draft-form"') && str_contains($form, 'name="_workflow_state" value="draft"'), 'Back to draft is a confirmed native status change');
+    assertSameValue('Ready, with changes', \Utsuri\PortableCms\Conventional\View\AdminShell::stateLabel('published_changes', Translator::english()), 'status has a distinct readable label');
 };

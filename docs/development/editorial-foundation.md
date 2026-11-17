@@ -33,13 +33,13 @@ save still advances the site-wide sequence, which is the form's concurrency
 token even while the revision number stays the same. A stale tab stops keeping
 and opens the existing conflict view with its complete input preserved.
 
-Incomplete required fields and translations can be kept; Publish retains its
+Incomplete required fields and translations can be kept; Mark as ready retains its
 full requirements. Unstorable values stay visible with field errors while other
 fields are committed and the invalid field's previous server value is retained.
 Uploaded selections waiting for media preparation remain in the page and retry
 automatically; ordinary invalid values wait for correction or Retry. Further
 uploads can continue after the other fields have been acknowledged.
-Publish and preview actions wait for pending values and stop on saving errors.
+Mark as ready and preview actions wait for pending values and stop on saving errors.
 
 Migration 0031 adds private editing-session metadata to records. It travels with
 full database backups but is deliberately absent from normalized exports. Restore
@@ -50,11 +50,13 @@ revisions are never changed by a later automatic save.
 
 ## Saved-record status
 
-Every saved record has Draft, Published or Archived status. **Releases take the
+Every saved record has Draft, Ready or Archived status (stored as `draft`,
+`published` and `archived`). **Releases take the
 record's published version, not its latest edit.** Ordinary saving preserves
-both the status and the selected published revision. Publish or Publish changes
-validates and selects saved edits; it does not immediately change the live site.
-Pending edits appear as Published, with changes. Confirmed Discard copies the
+both the status and the selected published revision. Mark as ready or Mark changes as ready
+validates and selects saved edits; nothing changes on the live site until a
+release. Pending edits appear as Ready, with changes. Back to draft and archiving
+are explicit confirmed actions as well. Confirmed Discard copies the
 published content into a new clean revision and keeps the earlier history.
 Record lists show and filter status before database pagination, with totals
 for the entire collection rather than just the displayed page.
@@ -66,7 +68,7 @@ permission, same-origin CSRF, the saved `_revision` and `_edit_sequence`, an all
 keep an open form first; scripted actions wait for pending edits. No script is
 needed. Text is localized in all five interface languages.
 
-`Content\RecordWorkflowService` owns transitions. Publishing revalidates the
+`Content\RecordWorkflowService` owns transitions. Marking as ready revalidates the
 canonical body, every required-on-publish field and locale, referenced records
 and ready raster sources, including nested media and composition. Unsupported
 video is not silently published. Unpublishing or archiving never rewrites other

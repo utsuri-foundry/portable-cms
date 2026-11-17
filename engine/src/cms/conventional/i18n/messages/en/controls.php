@@ -32,7 +32,7 @@ return [
     'picker.all_types' => 'All allowed types',
     'picker.type_removed' => 'This type is no longer allowed. Remove or replace this selection.',
     'picker.target_missing' => 'This record is missing. Remove or replace this selection.',
-    'picker.target_unpublished' => 'Not published. This link must be resolved before publishing.',
+    'picker.target_unpublished' => 'Not ready yet. Resolve this link before marking the record as ready.',
     'picker.selected' => 'Selected {field}',
     'picker.unavailable_image' => 'Unavailable image',
     'picker.unavailable_record' => 'Unavailable record',

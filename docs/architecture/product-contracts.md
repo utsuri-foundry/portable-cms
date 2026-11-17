@@ -133,13 +133,13 @@ A current record projection points to its current revision; an automatic editing
 
 The initial workflow states are `draft`, `published`, and `archived`. A service owns legal transitions, authorization, audit attribution, and optimistic revision checks. Adapters must not update workflow state directly.
 
-Published selects one saved revision for the next static release; it does not mean
+The `published` state, shown as Ready, selects one saved revision for the next static release; it does not mean
 the current website is live with that record. The record's current revision may
-advance independently. Publish changes validates and selects it; ordinary saving
+advance independently. Mark changes as ready validates and selects it; ordinary saving
 preserves the published pointer. Relationship projections retain both heads.
 Transitions preserve the body,
 advance the revision used for optimistic authority and retain earlier history.
-Publish validation checks publication-required fields, related records and
+Validation for the ready state checks publication-required fields, related records and
 ready supported media. Actual website activation is a separate release service.
 Confirmed discard appends a clean revision containing the published body; Draft
 and Archived states have no published pointer. Normalized exports retain both
