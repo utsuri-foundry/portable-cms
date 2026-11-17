@@ -231,7 +231,7 @@ final class AdminShell
             . ($bodyClass === 'admin-application' ? '<script src="/assets/admin-start.js?v=2"></script>' : '')
             . '<link rel="stylesheet" href="'
             . Html::url('/assets/admin.css?v=' . self::STYLESHEET_VERSION) . '">'
-            . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=1">' : '')
+            . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=2">' : '')
             . ($stylesheet === null ? '' : '<link rel="stylesheet" href="' . Html::url($stylesheet) . '">')
             . '</head><body class="' . Html::attribute($bodyClass) . '">'
             . $content . '</body></html>';

@@ -52,8 +52,9 @@ $tests['quiet record with five image and two video fields has native choices and
         $html = Pages::recordForm('csrf', $f['profile'], $type, [], $f['record'], mediaUploadEnabled: true, referenceControls: $controls);
         $xpath = quietEditorDom($html);
         assertSameValue(5, $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Add images"]')->length, 'one Add images control per image field');
-        assertSameValue(5, $xpath->query('//details[@class="admin-picker__upload" and not(@open)]')->length, 'upload choices start collapsed without requiring scripts');
-        assertSameValue(5, $xpath->query('//details[@class="admin-picker__library" and not(@open)]')->length, 'library selection is the other native choice');
+        assertSameValue(7, $xpath->query('//details[@class="admin-picker__upload" and not(@open)]')->length, 'upload choices start collapsed without requiring scripts, in video fields too');
+        assertSameValue(7, $xpath->query('//details[@class="admin-picker__library" and not(@open)]')->length, 'library selection is the other native choice');
+        assertSameValue(2, $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Choose video"]')->length + $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Choose poster image"]')->length - 2, 'one Choose video and one Choose poster image control per video field');
         foreach (['loop' => 6, 'trailer' => 18] as $id => $limit) {
             $upload = quietEditorElement($xpath, '//*[@data-upload-field="' . $id . '"]');
             assertSameValue((string) ($limit * 1048576), $upload->getAttribute('data-video-max-bytes'), 'the upload island receives this field limit');

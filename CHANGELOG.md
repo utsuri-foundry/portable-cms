@@ -5,6 +5,18 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.13.2
+
+- Video fields are tidied. The eligibility rule is one sentence stated once.
+  The chosen video and poster image are two plainly named rows with a link to
+  each media page and a quiet remove control; no numbered badges are drawn over
+  their names any more. Each choice has one disclosure, "Choose video" or
+  "Choose poster image" ("Change" once chosen), that holds the library search
+  and paging, and the upload sits under the video one as in image fields. The
+  poster appears once, on the player. Every changed string is in each
+  administration language. Video limits, upload rules, the player, image fields
+  and Vimeo fields are unchanged.
+
 ## 0.13.1
 
 - Website settings is redesigned in the order of an editor's tasks. One line

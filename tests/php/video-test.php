@@ -168,9 +168,22 @@ $tests['native video and poster forms preserve named selections and authoritativ
             $videoId => new LibraryMedia($videoId, str_repeat('1', 32), 'Prepared studio film', 'ready', 'video/mp4', strlen($bytes), 160, 90, 1, null, $processed->derivative),
             $posterId => new LibraryMedia($posterId, str_repeat('1', 32), 'Separate poster', 'ready', 'image/webp', 512, 960, 540, 1, null, new \Utsuri\PortableCms\Conventional\Media\MediaDerivative($posterId, '960-webp', 'derivatives/' . $posterId . '/' . $posterId . '-960-webp.webp', $posterId . '-960-webp.webp', 'image/webp', 960, 540, 512, str_repeat('a', 64), 'fixture', '1', 1, [])),
         ];
+        $empty = VideoReferenceControl::field($field, null, null, $profile, new Request('GET', '/'), $fixture['library'], Translator::english());
+        assertSameValue(1, substr_count($empty, 'An MP4 or WebM video up to 40 MiB, and a poster image.'), 'the rule is one sentence stated once');
+        assertSameValue(2, substr_count($empty, '>Not chosen yet</span>'), 'both rows say nothing is chosen');
+        assertTrueValue(str_contains($empty, '>Choose video<') && str_contains($empty, '>Choose poster image<'), 'empty choices invite a choice');
+        assertTrueValue(!str_contains($empty, '>Change ') && !str_contains($empty, 'data-video-limit-error'), 'nothing to change or to warn about');
+        assertSameValue(2, preg_match_all('/data-video-clear="(?:video|poster)" aria-label="Remove the (?:video|poster image)" hidden>/', $empty), 'remove controls wait hidden until a choice exists');
+        assertTrueValue(!str_contains($empty, 'admin-picker--media') && !str_contains($empty, 'admin-selection"'), 'no numbered image card is drawn over a row');
+        assertSameValue(1, substr_count($empty, 'name="_query_trailer__video"') + substr_count($empty, 'name="_query_trailer__poster"') - 1, 'each disclosure has its own search');
         $selection = ['mediaId' => $videoId, 'posterId' => $posterId];
         $html = VideoReferenceControl::field($field, $selection, null, $profile, new Request('GET', '/'), $fixture['library'], Translator::english());
         assertTrueValue(str_contains($html, 'Prepared studio film') && str_contains($html, 'Separate poster'), 'asset names are visible');
+        assertTrueValue(str_contains($html, 'data-video-link="video" href="/media/' . $videoId . '">Open</a>') && str_contains($html, 'data-video-link="poster" href="/media/' . $posterId . '">Open</a>'), 'each row links to its media page');
+        assertTrueValue(str_contains($html, '>Change video<') && str_contains($html, '>Change poster image<') && !str_contains($html, '>Choose '), 'chosen choices offer a change');
+        assertSameValue(2, preg_match_all('/data-video-clear="(?:video|poster)" aria-label="Remove the (?:video|poster image)">×</', $html), 'each row has a compact remove control');
+        assertTrueValue(str_contains($html, ' poster="/media/' . $posterId . '/thumbnail"') && preg_match('/data-video-poster-preview[^>]* hidden>/', $html) === 1, 'the poster appears once, on the player');
+        assertSameValue(1, substr_count($html, 'data-video-limit-error') + 1, 'a fitting video raises no limit warning');
         assertTrueValue(!str_contains($html, 'textarea') && !str_contains($html, 'type="text"'), 'editors never type identities or JSON');
         $form = ['_editorial_end' => '1', '_present_trailer' => '1', 'trailer__video' => $videoId, 'trailer__poster' => $posterId];
         $input = EditorialForm::input(new Request('POST', '/', form: $form), $type, $profile, null);

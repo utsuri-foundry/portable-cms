@@ -83,13 +83,19 @@ $tests['video field limits reject each measured violation in pickers saves publi
             $service = new ContentService($repository, $profile, $clock, new IdentityTestRandom(), $library);
             $html = VideoReferenceControl::field($field, $reference, null, $profile, new Request('GET', '/'), $library, Translator::english());
             $saved = $service->create('project', ['title' => array_fill_keys($profile->locales, 'Loop'), 'trailer' => json_encode($reference, JSON_THROW_ON_ERROR)], str_repeat('a', 32));
+            preg_match('/data-video-rule>(.*?)<\/p>/', $html, $rule);
+            assertSameValue('An MP4 or WebM video up to 10 MiB, up to 15 seconds, at most 1920 by 1080 pixels, without sound, and a poster image.', $rule[1] ?? '', 'the field states every limit in one sentence');
+            assertSameValue(1, substr_count($html, 'data-video-rule'), 'the rule is stated once');
             if ($variant === 'fitting') {
                 assertTrueValue($saved instanceof RecordSnapshot, 'fitting silent clip saves');
                 $fittingBody = $saved->body;
-                assertTrueValue(!str_contains($html, ' disabled'), 'fitting option is available');
+                assertTrueValue(!str_contains($html, ' disabled') && !str_contains($html, 'data-video-limit-error'), 'fitting option is available and raises no warning');
             } else {
                 assertTrueValue($saved instanceof ValidationFailure && isset($saved->errors['trailer']), 'save refuses ' . $variant);
-                assertTrueValue(str_contains($html, ' disabled aria-label='), 'picker disables ' . $variant);
+                assertTrueValue(str_contains($html, 'data-video-limit-error'), 'a chosen clip outside the limits is explained under its row for ' . $variant);
+                assertTrueValue(str_contains($html, 'data-video-link="video" href="/media/' . $video . '">Open</a>'), 'the row still links to the media page');
+                assertTrueValue(str_contains($html, 'picker.selected_state') || str_contains($html, '>Selected<'), 'the chosen clip is marked in the library list');
+                assertTrueValue(!str_contains($html, 'data-video-choose="video"') || str_contains($html, ' disabled aria-label='), 'picker disables ' . $variant);
                 assertTrueValue(str_contains($html, '_retained_trailer__video'), 'native form preserves the invalid ID');
                 $text = Translator::english()->message($saved->errors['trailer']);
                 assertTrueValue(str_contains($text, $variant === 'sound' ? 'audio track' : 'maximum'), 'measured rule is named: ' . $text);
