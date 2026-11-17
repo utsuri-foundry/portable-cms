@@ -50,6 +50,28 @@ try {
 	);
 	await command("Emulation.setScriptExecutionDisabled", { value: true });
 	await navigate("/media", ".admin-media-grid");
+	// Upload is the primary action, filters sit beside the search, cards carry no state word, and the foot describes the selection.
+	assert.equal(
+		await evaluate(
+			"document.querySelector('.admin-media-upload > summary').textContent",
+		),
+		"Upload",
+	);
+	assert.deepEqual(
+		(
+			await evaluate(
+				"[...document.querySelectorAll('[data-media-filter]')].map(a=>a.dataset.mediaFilter)",
+			)
+		).slice(0, 2),
+		["all", "images"],
+	);
+	assert.equal(await evaluate("document.body.textContent.includes('· ready')"), false);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('.admin-media-grid__foot button[name=_mode]').textContent",
+		),
+		"Describe selected",
+	);
 	await evaluate(
 		`for(const id of ${JSON.stringify(ids)})document.querySelector('[name="media_ids[]"][value="'+id+'"]').checked=true`,
 	);

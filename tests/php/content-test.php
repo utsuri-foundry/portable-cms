@@ -953,7 +953,7 @@ $tests['authenticated JSON upload routes preserve security and resumable semanti
         assertSameValue('queued', $jobValue['job']['status'] ?? null, 'polling should expose bounded job state');
         $dashboard = $app->handle(new Request('GET', '/', cookies: $cookies));
         assertTrueValue(
-            str_contains($dashboard->body, 'The latest image is queued and waiting to process.'),
+            str_contains($dashboard->body, 'The latest upload is queued and waiting to process.'),
             'overview should make the latest media state visible',
         );
         $wake = $app->handle(new Request(

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'website_media.owner' => 'Website (images)',
     'website_media.upload_help' => 'Adds an image from your computer to the library. Once it is prepared, choose it here.',
     'website_media.file' => 'New image',
     'website_media.upload' => 'Upload',

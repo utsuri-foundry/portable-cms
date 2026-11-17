@@ -56,10 +56,14 @@ Description requests have a fifteen-second bound. A failed request retains the
 entered text; a retry checks the library revision again, including after a save
 completed on the server but its response was lost.
 
-In the library, select up to eight images and choose **Describe images** to edit
-their alternatives, captions, credits and decorative flags on one page. Every
-active site language has its own text inputs. Empty fields use the existing
+In the library, tick up to eight images and choose **Describe selected** to edit
+their descriptions, captions, credits and decorative flags on one page. Every
+active site language has its own inputs, headed by the language's name, with
+caption and credit folded until they hold text. Empty fields use the existing
 authored default-language fallback; text in languages currently off is retained.
+The library's **Need a description** filter lists the ready images that still
+lack a description in some website language and shows their count; files still
+being prepared, and files that failed, are not counted until they are ready.
 The decorative flag applies to the image across languages, as in media details.
 Names and focal points stay unchanged.
 
@@ -81,9 +85,9 @@ existing detail controls; separate image posters can be described here.
 
 ## Image focal points
 
-In Library → Media → image details, mark the point that should stay visible when a renderer crops the image to fill a box. The centre is the default. Horizontal percentages run from the left (0) to the right (100); vertical percentages run from the top (0) to the bottom (100). The point is measured on the processed, orientation-corrected image. Whole percentages keep the stored contract bounded and portable.
+On a media item page (Content → Media → the image), mark the important point that should stay visible when a renderer crops the image to fill a box. The centre is the default. Horizontal percentages run from the left (0) to the right (100); vertical percentages run from the top (0) to the bottom (100). The point is measured on the processed, orientation-corrected image. Whole percentages keep the stored contract bounded and portable.
 
-With scripts available, point on the full image or use its arrow keys (Home centres it). Percentage fields remain the native keyboard and no-script path. The marker and example crop show the current choice; without scripts they update after Save media details. “Reset to centre when saving” clears the selection to 50/50. Names, descriptions and the point save together under the same metadata revision. A conflict preserves the submitted values; review them before saving against the latest revision.
+With scripts available, point on the full image or use its arrow keys (Home centres it). The square example crop beside the image shows what a tight crop keeps. The percentage fields, folded under "As numbers", remain the native keyboard and no-script path; without scripts the marker and crop update after Save. "Reset to centre when saving" clears the selection to 50/50. Names, descriptions and the point save together under the same metadata revision. A conflict preserves the submitted values; review them before saving against the latest revision.
 
 Changes affect the next exact preview and approved publication wherever the image is used. Existing frozen previews and publications keep their previous position. Focal edits do not change originals, derivatives or processor recipes and do not enqueue image work. They apply to images, not prepared video. The point does not create a separate art-directed crop, detect faces or change which image is selected.
 
@@ -91,8 +95,9 @@ Migration `0016-media-focal-point.sql` adds bounded centre-default coordinates t
 
 ## Website ownership
 
-In **Library → Media**, choose **Website (images)** to upload JPEG, PNG or WebP
-images independently of any collection entry. Website settings also offer a
+In **Content → Media**, open **Upload** and choose **The website** under
+"Belongs to" to upload JPEG, PNG or WebP images independently of any collection
+entry. Website settings also offer a
 native upload beside the website icon and both administration logo pickers.
 These uploads preserve pending settings and do not save or select an image.
 After the normal worker prepares it, search the picker, choose it and save the

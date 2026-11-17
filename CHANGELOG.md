@@ -5,6 +5,32 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.13.3
+
+- The Media page and the media item page are quietened. Upload is the primary
+  action, a disclosure that opens the native form in place with the size rule
+  in one line. Filters All, Images, Videos and "Need a description" with its
+  count sit beside the search; the videos filter appears only where the
+  profile accepts video and the count only while it is above zero. Cards show
+  thumbnail and name; a line appears only where there is something to do or to
+  wait for: a file being prepared says when it will be ready, a failed file
+  says to upload it again, and an image without a description names the
+  languages it needs. "Describe selected" at the foot opens the batch page. The
+  item page is one form: the image with its important point and a square crop
+  beside it, or the video player, the size facts once, Name, a Description per
+  language by language name with caption and credit folded, the decorative
+  choice, Save and "Used in". Every explanation sits behind the help control
+  and a ready file carries no state word anywhere.
+- The Overview opens on two facts, when the content last changed and what the
+  website shows now with a link to open it. The account line and the language
+  count are gone. Editors no longer see a System card; owners see a "For the
+  agency" card only while an upload is queued, retrying or stuck, or previews
+  are not available, and Export is reached from the navigation alone.
+- The library repository filters by kind and lists image descriptions so the
+  "Need a description" count comes from stored text, not from a page. Every
+  changed string is in each administration language. Upload rules, image
+  processing and the batch description flow are unchanged.
+
 ## 0.13.2
 
 - Video fields are tidied. The eligibility rule is one sentence stated once.

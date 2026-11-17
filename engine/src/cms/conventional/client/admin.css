@@ -561,16 +561,35 @@ details > summary { cursor: pointer; }
 .admin-picker__results .admin-thumbnail { width: 2.75rem; height: 2.25rem; }
 .admin-picker__results button, .admin-picker__pagination button, .admin-picker__search button { min-height: var(--admin-control-small); padding: 0 0.5rem; font-size: var(--admin-text-xs); }
 .admin-picker__pagination { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2); font-size: var(--admin-text-xs); }
+.admin-media-toolbar { align-items: flex-start; }
+.admin-media-toolbar__search { display: flex; flex: 1 1 14rem; gap: var(--admin-space-2); }
+.admin-media-toolbar__search input[type="search"] { flex: 1 1 10rem; width: auto; max-width: 20rem; }
+.admin-media-upload > summary { display: inline-flex; list-style: none; }
+.admin-media-upload > summary::-webkit-details-marker { display: none; }
+.admin-media-upload[open] { flex-basis: 100%; }
+.admin-media-upload > form { max-width: 40rem; margin-top: var(--admin-space-3); }
 .admin-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--admin-space-3); }
-.admin-media-grid .admin-card { display: grid; min-width: 0; gap: var(--admin-space-1); padding: var(--admin-space-2); }
-.admin-media-grid .admin-checkbox > span { min-width: 0; overflow-wrap: anywhere; }
+.admin-media-grid .admin-card { position: relative; display: grid; min-width: 0; gap: var(--admin-space-1); padding: var(--admin-space-2); }
 .admin-media-grid .admin-card > * { margin: 0; }
 .admin-media-grid a { display: grid; gap: var(--admin-space-2); text-decoration: none; }
 .admin-media-grid .admin-thumbnail { width: 100%; height: auto; aspect-ratio: 4 / 3; }
 .admin-media-grid strong { overflow: hidden; font-size: var(--admin-text-sm); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.admin-media-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; gap: var(--admin-space-4); }
-.admin-media-detail__side { display: grid; align-content: start; gap: var(--admin-space-4); }
+.admin-media-grid .admin-field__error, .admin-media-grid .admin-meta { font-size: var(--admin-text-xs); }
+.admin-media-card .admin-checkbox { position: absolute; top: var(--admin-space-3); left: var(--admin-space-3); min-height: 0; }
+.admin-media-card .admin-checkbox input { width: 1.125rem; height: 1.125rem; border-radius: var(--admin-radius-small); background: var(--admin-panel); box-shadow: 0 0 0 2px var(--admin-panel); }
+.admin-media-grid__foot { margin-top: var(--admin-space-3); }
+.admin-media-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: var(--admin-space-5); }
+.admin-media-detail__picture, .admin-media-detail__side { display: grid; align-content: start; gap: var(--admin-space-3); min-width: 0; }
+.admin-media-detail__picture > * { margin: 0; }
 .admin-media-detail .admin-thumbnail { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; }
+.admin-media-detail .admin-video-player { width: 100%; height: auto; }
+.admin-media-text { display: grid; gap: var(--admin-space-2); margin: 0; padding: 0; border: 0; }
+.admin-media-text > legend { padding: 0; font-size: var(--admin-text-sm); font-weight: 600; }
+.admin-media-text__more { justify-self: start; min-width: min(100%, 24rem); }
+.admin-optional.admin-optional--quiet { padding: 0; border: 0; }
+.admin-optional.admin-optional--quiet > summary > span:first-child { color: var(--admin-muted); font-size: var(--admin-text-sm); font-weight: 500; }
+.admin-optional.admin-optional--quiet[open] > summary > span:first-child { color: var(--admin-text); }
+.admin-media-usage h2 { margin: 0; font-size: var(--admin-text-md); }
 
 /* ---------- Composition ---------- */
 .admin-composition { min-width: 0; width: 100%; overflow-wrap: anywhere; container-type: inline-size; }
@@ -710,6 +729,7 @@ details > summary { cursor: pointer; }
   .admin-list__item { align-items: flex-start; flex-direction: column; }
   .admin-names fieldset { grid-template-columns: minmax(0, 1fr); }
   .admin-media-detail { grid-template-columns: minmax(0, 1fr); }
+  .admin-media-toolbar__search { flex-basis: 100%; }
 }
 
 @media (forced-colors: active) {

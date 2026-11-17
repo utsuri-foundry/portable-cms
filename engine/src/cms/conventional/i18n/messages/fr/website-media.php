@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 return [
-    'website_media.owner' => 'Site web (images)',
     'website_media.upload_help' => 'Ajoutez une image de votre ordinateur à la bibliothèque. Une fois préparée, choisissez-la ici.',
     'website_media.file' => 'Nouvelle image',
     'website_media.upload' => 'Importer',

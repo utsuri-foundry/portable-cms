@@ -58,6 +58,7 @@ return [
     'picker.term.help' => 'Der neue Begriff wird in der gemeinsamen Bibliothek gespeichert. Prüfe die Änderungen dieses Eintrags vor der Veröffentlichung.',
     'picker.term.submit' => 'Erstellen und auswählen',
     'media.size' => '{megabytes, number,#,##0.0} MB',
+    'media.size_small' => '{kilobytes} KB',
     'media.state.ready' => 'bereit',
     'media.state.processing' => 'wird verarbeitet',
     'media.state.queued' => 'in Warteschlange',

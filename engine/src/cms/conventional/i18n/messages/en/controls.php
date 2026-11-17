@@ -58,6 +58,7 @@ return [
     'picker.term.help' => 'The new term is kept in the shared library. Review this record’s changes before publishing.',
     'picker.term.submit' => 'Create and select',
     'media.size' => '{megabytes, number,#,##0.0} MB',
+    'media.size_small' => '{kilobytes} KB',
     'media.state.ready' => 'ready',
     'media.state.processing' => 'processing',
     'media.state.queued' => 'queued',

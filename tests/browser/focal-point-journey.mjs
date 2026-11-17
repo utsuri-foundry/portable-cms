@@ -72,8 +72,15 @@ try {
 	const crop = await evaluate(
 		"(()=>{const i=document.querySelector('[data-focal-crop]');return {x:Number(i.getAttribute('x')),y:Number(i.getAttribute('y')),w:Number(i.getAttribute('width')),h:Number(i.getAttribute('height'))}})()",
 	);
-	assert.ok(Math.abs(crop.x - (400 - crop.w) * 0.26) < 0.001);
+	assert.ok(Math.abs(crop.x - (240 - crop.w) * 0.26) < 0.001);
 	assert.ok(Math.abs(crop.y - (240 - crop.h) * 0.8) < 0.001);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('.admin-focal__crop').getAttribute('viewBox')",
+		),
+		"0 0 240 240",
+		"the example crop is square",
+	);
 	const revision = await evaluate("document.querySelector('[name=_revision]').value");
 	await evaluate("document.querySelector('.admin-form').requestSubmit()");
 	await ready(

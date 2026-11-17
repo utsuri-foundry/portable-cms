@@ -591,6 +591,7 @@ require dirname(__DIR__) . '/php/interface-language-test.php';
 require dirname(__DIR__) . '/php/administration-labels-test.php';
 require dirname(__DIR__) . '/php/editorial-foundation-test.php';
 require dirname(__DIR__) . '/php/editorial-controls-test.php';
+require dirname(__DIR__) . '/php/media-overview-test.php';
 require dirname(__DIR__) . '/php/edited-field-upload-test.php';
 require dirname(__DIR__) . '/php/group-rows-test.php';
 require dirname(__DIR__) . '/php/static-site-compiler-test.php';

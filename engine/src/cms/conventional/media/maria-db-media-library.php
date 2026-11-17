@@ -10,13 +10,13 @@ final class MariaDbMediaLibrary implements MediaLibraryRepository
 {
     public function __construct(private readonly PDO $pdo) {}
 
-    public function search(string $query, int $page): MediaPage
+    public function search(string $query, int $page, string $kind = 'all'): MediaPage
     {
         $page = max(1, min(1000, $page));
         $offset = ($page - 1) * 20;
         $query = mb_substr(trim($query), 0, 100);
-        $statement = $this->pdo->prepare("SELECT id FROM cms_media WHERE original_name LIKE :query ESCAPE '!' ORDER BY created_at DESC, id ASC LIMIT 21 OFFSET {$offset}");
-        $statement->execute(['query' => '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $query) . '%']);
+        $statement = $this->pdo->prepare("SELECT id FROM cms_media WHERE original_name LIKE :query ESCAPE '!'" . self::kindClause($kind) . " ORDER BY created_at DESC, id ASC LIMIT 21 OFFSET {$offset}");
+        $statement->execute(['query' => self::pattern($query)]);
         $ids = $statement->fetchAll(PDO::FETCH_COLUMN);
         $items = [];
         foreach (array_slice($ids, 0, 20) as $id) {
@@ -25,7 +25,33 @@ final class MariaDbMediaLibrary implements MediaLibraryRepository
                 $items[] = $media;
             }
         }
-        return new MediaPage($items, count($ids) > 20, $page, $query);
+        return new MediaPage($items, count($ids) > 20, $page, $query, MediaPage::filter($kind));
+    }
+
+    public function imageTexts(string $query): array
+    {
+        $statement = $this->pdo->prepare("SELECT id, status, text_json FROM cms_media WHERE original_name LIKE :query ESCAPE '!'" . self::kindClause('images') . ' ORDER BY created_at DESC, id ASC LIMIT 5000');
+        $statement->execute(['query' => self::pattern(mb_substr(trim($query), 0, 100))]);
+        $images = [];
+        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $images[] = ['id' => (string) $row['id'], 'status' => (string) $row['status'], 'text' => $row['text_json'] === null ? null : MediaText::from(json_decode((string) $row['text_json'], true, 16, JSON_THROW_ON_ERROR))];
+        }
+        return $images;
+    }
+
+    private static function pattern(string $query): string
+    {
+        return '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $query) . '%';
+    }
+
+    /** The declared type stands in until processing detects one. */
+    private static function kindClause(string $kind): string
+    {
+        return match ($kind) {
+            'images' => " AND COALESCE(detected_type, declared_type) LIKE 'image/%'",
+            'videos' => " AND COALESCE(detected_type, declared_type) LIKE 'video/%'",
+            default => '',
+        };
     }
 
     public function find(string $id): ?LibraryMedia

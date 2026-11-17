@@ -32,16 +32,24 @@ final class MediaTextForm
             $translations[$item['locale']] = $item;
         }
         $association = $form === '' ? '' : ' form="' . Html::attribute($form) . '"';
-        $html = '<input type="hidden" name="' . Html::attribute($prefix . '_media_text') . '" value="1"' . $association . '>' . ($instructions ? FieldHelp::heading('<span class="admin-field__label">' . $t->html('media.descriptions.title') . '</span>', $prefix . 'media-text-help', $t->text('media.descriptions.title'), $t) . FieldHelp::text($prefix . 'media-text-help', $t->html('media.text.help', ['locale' => $profile->defaultLocale])) : '')
-            . '<label><input type="checkbox" name="' . Html::attribute($prefix . 'decorative') . '" value="1"' . $association . ($document['decorative'] ? ' checked' : '') . '> ' . $t->html('media.text.decorative') . '</label>';
-        foreach ($profile->locales as $locale) {
-            $html .= '<fieldset class="admin-section"><legend>' . Html::text(strtoupper($locale)) . '</legend>';
-            foreach (['alternativeText' => 'media.text.alternative', 'caption' => 'media.text.caption', 'credit' => 'media.text.credit'] as $field => $key) {
-                $id = $prefix . $field . '__' . $locale;
-                $html .= '<div class="admin-field"><label for="' . Html::attribute($id) . '">' . $t->html($key) . '</label><input type="text" id="' . Html::attribute($id) . '" name="' . Html::attribute($id) . '" maxlength="500"' . $association . ' value="' . Html::attribute($translations[$locale][$field] ?? '') . '"></div>';
-            }
-            $html .= '</fieldset>';
+        $labels = [];
+        foreach ($profile->localeDefinitions as $definition) {
+            $labels[$definition->id] = $definition->label;
         }
-        return $html;
+        $html = '<input type="hidden" name="' . Html::attribute($prefix . '_media_text') . '" value="1"' . $association . '>' . ($instructions ? FieldHelp::heading('<span class="admin-field__label">' . $t->html('media.text.title') . '</span>', $prefix . 'media-text-help', $t->text('media.text.title'), $t) . FieldHelp::text($prefix . 'media-text-help', $t->html('media.text.help', ['locale' => $labels[$profile->defaultLocale] ?? $profile->defaultLocale])) : '');
+        // One language at a time, by its name; caption and credit fold away until they hold text.
+        foreach ($profile->locales as $locale) {
+            $field = static fn(string $name): string => $prefix . $name . '__' . $locale;
+            $input = static fn(string $name): string => '<input type="text" id="' . Html::attribute($field($name)) . '" name="' . Html::attribute($field($name)) . '" maxlength="500"' . $association . ' value="' . Html::attribute($translations[$locale][$name] ?? '') . '">';
+            $more = ($translations[$locale]['caption'] ?? '') !== '' || ($translations[$locale]['credit'] ?? '') !== '';
+            $html .= '<fieldset class="admin-media-text"><legend>' . Html::text($labels[$locale] ?? strtoupper($locale)) . '</legend>'
+                . '<div class="admin-field"><label class="admin-visually-hidden" for="' . Html::attribute($field('alternativeText')) . '">' . $t->html('media.text.alternative') . '</label>' . $input('alternativeText') . '</div>'
+                . '<details class="admin-optional admin-optional--quiet admin-media-text__more"' . ($more ? ' open' : '') . '><summary><span>' . $t->html('media.text.more') . '</span></summary>'
+                . '<div class="admin-field"><label for="' . Html::attribute($field('caption')) . '">' . $t->html('media.text.caption') . '</label>' . $input('caption') . '</div>'
+                . '<div class="admin-field"><label for="' . Html::attribute($field('credit')) . '">' . $t->html('media.text.credit') . '</label>' . $input('credit') . '</div></details></fieldset>';
+        }
+        // The decorative choice explains itself once, on the item page; batch cards repeat the control, not the help.
+        return $html . '<div class="admin-help-row"><label class="admin-checkbox"><input type="checkbox" name="' . Html::attribute($prefix . 'decorative') . '" value="1"' . $association . ($document['decorative'] ? ' checked' : '') . '><span>' . $t->html('media.text.decorative') . '</span></label>'
+            . ($instructions ? FieldHelp::toggle($prefix . 'media-decorative-help', $t->text('media.text.decorative'), $t) : '') . '</div>' . ($instructions ? FieldHelp::text($prefix . 'media-decorative-help', $t->html('media.text.decorative_help')) : '');
     }
 }

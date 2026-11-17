@@ -58,6 +58,7 @@ return [
     'picker.term.help' => 'Le nouveau terme est enregistré dans la bibliothèque partagée. Vérifiez les modifications de cette fiche avant de publier.',
     'picker.term.submit' => 'Créer et sélectionner',
     'media.size' => '{megabytes, number,#,##0.0} Mo',
+    'media.size_small' => '{kilobytes} Ko',
     'media.state.ready' => 'prête',
     'media.state.processing' => 'en traitement',
     'media.state.queued' => 'en file d’attente',

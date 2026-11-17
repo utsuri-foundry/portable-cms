@@ -54,7 +54,7 @@ $tests['video preview cache is bounded private idempotent and never writes conte
         $page = $app->handle(new Request('GET', '/media/' . $f['id'], cookies: $cookies));
         assertSameValue(200, $page->status, 'detail is accessible');
         assertTrueValue(str_contains($page->body, 'controls muted preload="metadata"'), 'detail has a native metadata-only player');
-        assertTrueValue(str_contains($page->body, 'H.264') && str_contains($page->body, '0:01') && str_contains($page->body, '160 × 90'), 'detail exposes stored facts');
+        assertTrueValue(str_contains($page->body, '0:01') && str_contains($page->body, '160 × 90') && !str_contains($page->body, 'H.264'), 'detail states duration and size, not the codec');
         $csrf = $cookies[\Utsuri\PortableCms\Conventional\Identity\IdentityService::CSRF_COOKIE];
         $form = ['_csrf' => $csrf, 'source' => $f['source'], 'frame' => base64_encode($f['frame'])];
         assertSameValue(403, $app->handle(new Request('POST', $url, contentMutationHeaders(), [...$form, '_csrf' => 'bad'], $cookies))->status, 'frame creation requires CSRF');

@@ -97,8 +97,9 @@ The persistent shell groups ordinary editing and publication work as follows:
    the profile version as the site's version (for example, "Site 0.7.1") when no
    logo is selected, not the Portable CMS engine version. Profiles supply no
    administration markup or assets.
-2. Overview: work to continue, items needing attention, content totals, and
-   system status.
+2. Overview: when the content last changed and what the website shows, work to
+   continue, items needing attention and content totals; installation problems
+   appear to owners only while they exist.
 3. Navigation groups, each omitted when empty, in the order of the work:
    - Content contains every record type the profile lists, in its order
      (collections with record counts, singleton pages, taxonomies and the
@@ -230,13 +231,17 @@ media.
 
 ### Overview
 
-The overview answers three questions: what was I working on, what needs
-attention, and is the installation healthy. Continue editing lists recently
-updated records. Needs attention is derived from existing state such as missing
-translations and media failures. Content shows totals per collection and
-taxonomy, and System shows media processing, preview availability, and Export.
-The media recovery control appears inside System only while a job is queued,
-retrying, or needs attention.
+The overview answers two questions for an editor: what was I working on, and
+what needs attention. One line under the heading states the facts an editor
+acts on: when the content last changed and what the website shows now, with a
+link to open it. Continue editing lists recently updated records. Needs
+attention is derived from existing state such as missing translations and a
+file that could not be prepared, each as a link to the place that fixes it.
+Content shows totals per collection and taxonomy. There is no card about the
+installation for editors. Owners see a "For the agency" card only while
+something is wrong: an upload queued, retrying or stuck, with its recovery
+control, or previews not available. A healthy installation shows no such card,
+and Export is reached from the navigation alone.
 
 ### Record lists
 
@@ -542,6 +547,23 @@ Upload progress uses native `progress` and a polite live status. Processing and
 preview states use stable text and status semantics. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
+
+The Media page lists thumbnails and names. Upload is the primary action, a
+disclosure that opens the native upload form in place with the size rule in
+one line. A search box and the filters All, Images, Videos and "Need a
+description" (with its count, shown only while it is above zero) narrow the
+grid; the Videos filter exists only when the profile accepts video. A card
+carries a line only where the editor has something to do or to wait for: a
+file being prepared says when it will be ready, a file that failed says to
+upload it again, and a ready image without a description names the languages
+it still needs. Images carry a tick, and "Describe selected" at the foot opens
+the batch description page. The media item page is one form: the image with
+its important point and a square example crop beside it (or the video player),
+the size facts once, then Name, a Description per language by language name
+with caption and credit folded until they hold text, the decorative choice,
+Save, and "Used in" listing the pages that use the file. Every explanation sits
+behind the help control. States are only said when they are not the normal
+one; a ready file carries no state word anywhere.
 
 ### Website settings
 
