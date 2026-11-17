@@ -5,8 +5,6 @@ declare(strict_types=1);
 return [
     'video.upload_limits' => 'MP4, WebM · bis zu {limit} MiB.',
     'video.native_upload_limit' => 'Ohne Skripte: {limit} MiB.',
-    'video.video' => 'Video',
-    'video.poster' => 'Posterbild',
     'video.unavailable' => 'Dieses Profil oder dieser Server unterstützt keine vorbereiteten Videos.',
     'video.missing' => 'Datei nicht verfügbar',
     'video.selection_invalid' => 'Wählen Sie ein vorbereitetes Video und ein separates vorbereitetes Posterbild.',
@@ -32,7 +30,7 @@ return [
     'video.codec_unknown' => 'Unbekannter Codec',
     'video.frame_invalid' => 'Die Videovorschau muss ein kleines WebP-Bild mit den erwarteten Abmessungen sein.',
     'video.none' => 'Noch nicht gewählt',
-    'video.open' => 'Öffnen',
+    'video.details' => 'Videodetails',
     'video.remove_video' => 'Video entfernen',
     'video.remove_poster' => 'Posterbild entfernen',
     'video.change_video' => 'Video ändern',

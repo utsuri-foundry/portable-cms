@@ -45,7 +45,9 @@ the profile's hint. The administration language selects the hint independently
 of the record's content language. Profiles without hints keep their existing
 field markup. Hint-only changes are presentation changes during upgrades.
 
-Image fields offer one **Add images** disclosure with library and upload choices.
+Image fields show each image as a row and offer one **Add images** disclosure
+(**Choose image** when `maximumItems` is 1) with library and upload choices
+until the field is full.
 Upload controls show their actual formats and limits. Completed images retain
 upload order and overflow remains in the library; uploading never saves the
 record. See [media](conventional-cms-media.md) for resumable uploads and host

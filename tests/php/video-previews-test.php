@@ -101,9 +101,9 @@ $tests['video preview visual choices work through native actions and leave playe
         assertSameValue(['mediaId' => $f['id'], 'posterId' => ''], $input['trailer'], 'native choice updates only its reference');
         $html = VideoReferenceControl::field($field, $input['trailer'], null, $profile, new Request('GET', '/'), $f['library'], Translator::english());
         assertTrueValue(!str_contains($html, '<select'), 'video uses visual cards');
-        assertTrueValue(str_contains($html, 'controls muted preload="none"'), 'record player fetches nothing before play');
+        assertTrueValue(!str_contains($html, 'data-video-player') && str_contains($html, 'data-video-thumb="video"><span class="admin-thumbnail admin-video-thumbnail"'), 'the record draws no player; the row thumbnail stands for the clip');
         assertTrueValue(!str_contains($html, 'data-video-capture="auto"'), 'record pickers never prefetch candidate clips');
-        assertTrueValue(str_contains($html, 'aria-label="Film &lt;studio&gt;.mp4"'), 'native player has an escaped filename label');
+        assertTrueValue(str_contains($html, 'data-video-name="video">Film &lt;studio&gt;.mp4</span>'), 'the row names the file, escaped');
         assertTrueValue(str_contains($html, '>Selected<') && !str_contains($html, 'data-video-choose="video"'), 'the chosen clip is marked in the library list instead of offered again');
         $open = VideoReferenceControl::field($field, null, null, $profile, new Request('GET', '/'), $f['library'], Translator::english());
         assertTrueValue(str_contains($open, 'data-video-choose="video"'), 'native candidates also support the island');

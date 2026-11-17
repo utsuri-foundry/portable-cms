@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'live.toggle' => 'Previsualització en directe',
+    'live.toggle' => 'Previsualitza mentre edites',
     'live.fallback' => 'Previsualitza els canvis',
     'live.region' => 'Previsualització en directe',
     'live.page.label' => 'Pàgina',

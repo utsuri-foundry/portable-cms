@@ -11,7 +11,6 @@ return [
     'media.text.more' => 'Caption and credit',
     'media.text.caption' => 'Caption',
     'media.text.credit' => 'Credit',
-    'media.text.edit' => 'Edit image details',
     'media.text.invalid' => 'Use plain text of at most 500 characters for each description, caption and credit.',
     'media.upload.title' => 'Upload',
     'media.upload.rule' => 'Images up to {limit} MB.',

@@ -11,7 +11,6 @@ return [
     'media.text.more' => 'Pie y crédito',
     'media.text.caption' => 'Pie',
     'media.text.credit' => 'Crédito',
-    'media.text.edit' => 'Editar detalles de la imagen',
     'media.text.invalid' => 'Usa texto plano de hasta 500 caracteres para cada descripción, pie y crédito.',
     'media.upload.title' => 'Subir',
     'media.upload.rule' => 'Imágenes de hasta {limit} MB.',

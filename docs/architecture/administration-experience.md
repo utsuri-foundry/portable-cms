@@ -256,9 +256,13 @@ state and keeps the create action available.
 
 ### Record forms
 
-The header shows the record name, workflow state, revision and saved time.
-At wide widths, a sticky rail shows save state, section links, issue/change counts
-and language completeness. Scripted forms show automatic-keeping status; native
+The header shows the record name, workflow state and saved time; revision
+numbers appear nowhere on the page. At wide widths, a sticky rail shows one card
+with the save state, the record's state with one sentence on what it means and
+Mark as ready as the primary action (Change status folded quietly beneath), one
+card with **Preview while editing** and **Preview the website**, then section
+links with issue/change counts and language completeness. Scripted forms show
+automatic-keeping status; native
 forms retain Save. Below 52rem, section links become chips and save state moves
 to a sticky bottom bar.
 
@@ -269,24 +273,31 @@ only when every field is optional, empty and error-free; validation must never
 focus a hidden required control. Profiles may select the bounded
 `editorialSection` value, but cannot supply section markup.
 
-Image fields provide one **Add images** disclosure for library selection and
-uploads. Show the field's actual limits. Completed uploads append in file order
-up to the field maximum; overflow remains in the library with an announced count.
-Uploads preserve unsaved record input and do not save it. Removing a selection
-keeps the library image. See the [media control contract](../development/editorial-controls.md#bounds-and-media-integrity)
+Image fields show each image as one row: thumbnail, name, **Image details**
+and a quiet remove control, never a numbered card. One **Add images**
+disclosure (**Choose image** on a field that holds one) offers library
+selection and uploads; a full field offers nothing more, and removing a row is
+the way to change it. Show the field's actual limits. Completed uploads append
+in file order up to the field maximum; overflow remains in the library with an
+announced count. Uploads preserve unsaved record input and do not save it.
+Removing a selection keeps the library image. See the
+[media control contract](../development/editorial-controls.md#bounds-and-media-integrity)
 for receipts, conflicts and separate description forms.
 
-Video fields state the rule in one line (format, size and the field's limits,
-and that a poster image goes with the video), show the player, then the video
-and the poster image as two named rows with a link to each media page and a
-quiet remove control. Each choice has one disclosure, **Choose video** or
-**Choose poster image** (**Change** once chosen), holding the library search
-and paging; the upload sits under the video one. The poster appears once, on
-the player. Nothing is drawn over a row's name.
+Video fields draw the same rows for the video and its poster image, each with
+its thumbnail, name, **Video details** or **Image details** and a quiet remove
+control; an empty row waits hidden and no player is drawn. Each choice has one
+disclosure, **Choose video** or **Choose poster image** (**Change** once
+chosen), side by side, holding the rule in one line (format, size and the
+field's limits, and that a poster image goes with the video), the library
+search and paging; the upload sits under the video one, and the poster choice
+appears once there is a video. A Vimeo field carries one help control, its
+poster as the same row and its search inside **Choose poster image**.
 
 One header switch selects the language for every localized field. It supports
-arrow, Home and End keys. Fields carry a language tag, or share one on a wholly
-localized section. The switch and rail identify missing translations. Before
+arrow, Home and End keys. Fields carry the language's name as part of their
+label ("Title · Català"), or share one on a wholly localized section. The
+switch and rail identify missing translations. Before
 native validation focuses a field, the island reveals its panel.
 
 Without JavaScript, show every active language in profile order with its own
@@ -320,7 +331,7 @@ must pass the same allowlist as the server. Without JavaScript the ordered
 native block rows remain the complete editing path. Localized groups follow the
 record language. References render as removable chips with one add
 action whose search opens on demand, and taxonomy term creation lives in the
-same panel; media references render as a numbered thumbnail grid. Booleans are native checkbox
+same panel; media references render as rows. Booleans are native checkbox
 switches. Lengths attach their unit to the value.
 
 The record shows a Layout summary card; Edit layout opens the workspace, which

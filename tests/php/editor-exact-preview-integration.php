@@ -86,7 +86,7 @@ try {
     assertSameValue(202, $request('POST', '/previews', ['_csrf' => $form['_csrf']])->status, 'ordinary published-only capture is available first');
     assertSameValue(true, ApplicationFactory::previewRunner($configuration)->runOne('editor-exact-published')->completed, 'published-only website builds through the real worker');
     $draftEditor = $request('GET', '/records/project/10000000000000000000000000000002');
-    assertTrueValue(str_contains($draftEditor->body, 'data-exact-preview') && !str_contains($draftEditor->body, 'Open exact preview (home)'), 'a published-only build cannot mislabel a draft with its own page as a home fallback');
+    assertTrueValue(str_contains($draftEditor->body, 'data-exact-preview') && !str_contains($draftEditor->body, 'Preview the website (home page)'), 'a published-only build cannot mislabel a draft with its own page as a home fallback');
     $recordFacts = "SELECT r.current_revision_id, r.current_revision_number, v.site_sequence FROM cms_records r JOIN cms_record_revisions v ON v.id = r.current_revision_id WHERE r.id = '$recordId'";
     $beforeRecord = $pdo->query($recordFacts)->fetch(PDO::FETCH_ASSOC);
     $opened = $request('POST', $openPath, [...$form, 'title__en' => 'Never save this submitted value']);
@@ -164,7 +164,7 @@ try {
 
     $homeId = '70000000000000000000000000000001';
     $homeEditor = $request('GET', '/records/site-settings/' . $homeId);
-    assertTrueValue(str_contains($homeEditor->body, 'Open exact preview (home)'), 'record without a route says it will open home');
+    assertTrueValue(str_contains($homeEditor->body, 'Preview the website (home page)'), 'record without a route says it will open home');
     $homeOpen = $request('POST', '/records/site-settings/' . $homeId . '/exact-preview', $form);
     $homeView = $request('GET', $location($homeOpen));
     assertTrueValue(str_ends_with($frame($homeView), '/en/') && str_contains($homeView->body, 'This record has no page'), 'route-less record opens the real localized home');

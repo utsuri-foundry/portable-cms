@@ -7,7 +7,7 @@ form edits while you work on a page.
 ## Open a preview
 
 1. Keep your changes. With scripts disabled, save the record first.
-2. Choose **Open exact preview** from the record editor for a review including
+2. Choose **Preview the website** from the record editor for a review including
    saved drafts, or use the Previews page to choose the build mode.
 3. Wait for the worker. On cron-only hosting, it starts at the next scheduled run.
 4. Follow any failed-check links, correct the content and try again.
@@ -58,7 +58,7 @@ replace full release-target verification.
 
 ## Opening from the record editor
 
-The save bar offers **Live preview** beside **Open exact preview**. Live preview
+The rail offers **Preview while editing** beside **Preview the website**. Live preview
 draws the page while it is being edited. Exact preview waits for automatic
 keeping, then opens the whole saved website including drafts in a new tab.
 Failed keeping leaves the tab closed and focuses the save error. Without

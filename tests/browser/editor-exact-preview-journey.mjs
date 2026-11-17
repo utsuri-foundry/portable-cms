@@ -170,7 +170,7 @@ try {
 		await evaluate(
 			"[document.querySelector('[data-live-toggle]').textContent, document.querySelector('[data-exact-preview]').textContent]",
 		),
-		["Live preview", "Open exact preview"],
+		["Preview while editing", "Preview the website"],
 		"both preview actions say plainly which is which",
 	);
 	await evaluate("document.querySelector('[data-live-toggle]').focus()");
@@ -368,7 +368,7 @@ try {
 	);
 	assert.equal(
 		await evaluate("document.querySelector('[data-exact-preview]').textContent"),
-		"Open exact preview (home)",
+		"Preview the website (home page)",
 	);
 	assert.equal(
 		await evaluate("document.documentElement.scrollWidth <= innerWidth"),

@@ -144,8 +144,8 @@ try {
 		);
 		const labels = [
 			...names.map((button) => button.name.trim()),
-			"Live preview",
-			"Open exact preview",
+			"Preview while editing",
+			"Preview the website",
 		].sort();
 		assert.deepEqual(
 			await accessibleNames(labels),

@@ -5,8 +5,6 @@ declare(strict_types=1);
 return [
     'video.upload_limits' => 'MP4, WebM · hasta {limit} MiB.',
     'video.native_upload_limit' => 'Sin scripts: {limit} MiB.',
-    'video.video' => 'Vídeo',
-    'video.poster' => 'Imagen de portada',
     'video.unavailable' => 'El perfil o el servidor no admite vídeos preparados.',
     'video.missing' => 'Recurso no disponible',
     'video.selection_invalid' => 'Elige un vídeo preparado y una imagen de portada preparada separada.',
@@ -32,7 +30,7 @@ return [
     'video.codec_unknown' => 'Códec desconocido',
     'video.frame_invalid' => 'La vista previa debe ser un fotograma WebP pequeño con las dimensiones esperadas.',
     'video.none' => 'Aún sin elegir',
-    'video.open' => 'Abrir',
+    'video.details' => 'Detalles del vídeo',
     'video.remove_video' => 'Quitar el vídeo',
     'video.remove_poster' => 'Quitar la imagen de portada',
     'video.change_video' => 'Cambiar vídeo',

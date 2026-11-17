@@ -5,9 +5,10 @@ declare(strict_types=1);
 return [
     'vimeo.url' => 'Vimeo-Adresse',
     'vimeo.title' => 'Videotitel',
-    'vimeo.poster' => 'Posterbild',
     'vimeo.choose_poster' => 'Posterbild auswählen',
-    'vimeo.open' => 'Video auf Vimeo öffnen',
+    'vimeo.change_poster' => 'Posterbild ändern',
+    'vimeo.no_poster' => 'Kein Posterbild',
+    'vimeo.open' => 'Auf Vimeo öffnen',
     'vimeo.help' => 'Wählen Sie ein eigenes Poster und einen Titel. Vimeo wird erst geladen, wenn Besucher Wiedergabe drücken.',
     'vimeo.url_required' => 'Geben Sie eine Vimeo-Adresse ein.',
     'vimeo.scheme' => 'Verwenden Sie eine HTTPS-Adresse von Vimeo.',

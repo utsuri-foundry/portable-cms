@@ -5,6 +5,10 @@ declare(strict_types=1);
 return [
     'client.keep.saving' => 'Wird gespeichert',
     'client.keep.saved' => 'Um {time} gespeichert',
+    'client.keep.state.draft' => 'Erst nach „Als bereit markieren“ Teil einer Veröffentlichung.',
+    'client.keep.state.published' => 'In Veröffentlichungen enthalten.',
+    'client.keep.state.published_changes' => 'Veröffentlichungen nehmen die bereite Version; diese Änderungen warten darauf, als bereit markiert zu werden.',
+    'client.keep.state.archived' => 'Nicht auf der Website.',
     'client.keep.failed' => 'Nicht gespeichert: {reason}',
     'client.keep.retry' => 'Erneut versuchen',
     'client.keep.network' => 'Die Verbindung ist fehlgeschlagen. Deine Änderungen bleiben auf dieser Seite.',

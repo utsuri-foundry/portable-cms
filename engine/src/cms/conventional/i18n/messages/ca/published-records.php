@@ -10,8 +10,5 @@ return [
     'workflow.discard' => 'Descarta els canvis',
     'workflow.discard_help' => 'Restaura el contingut a punt com una revisió nova. Les revisions descartades es conserven a l’historial.',
     'workflow.discard_confirm' => 'Confirmo que vull descartar els canvis fets des que el registre es va marcar com a punt.',
-    'workflow.published_revision' => 'Revisió a punt: {revision}.',
-    'workflow.pending' => 'Aquestes edicions estan desades per revisar-les. Marca-les com a punt per incloure-les en la propera publicació.',
-    'workflow.changed_at' => 'Darrera edició:',
     'preview.pending_publication' => '{count, plural, one {# registre té canvis encara no marcats com a punt.} other {# registres tenen canvis encara no marcats com a punt.}}',
 ];

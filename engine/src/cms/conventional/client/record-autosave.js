@@ -63,10 +63,12 @@ export function mountRecordAutosave(form, window = form.ownerDocument.defaultVie
 	let allowSubmit = false;
 	let allowUpload = false;
 	let openingExact = false;
+	// The same 24-hour clock as the rest of the administration, whatever the interface language.
+	const clock = { hour: "2-digit", minute: "2-digit", hourCycle: "h23" };
 	let savedAt = form.dataset.savedAt
 		? new window.Date(form.dataset.savedAt).toLocaleTimeString(
 				document.documentElement.lang,
-				{ hour: "2-digit", minute: "2-digit" },
+				clock,
 			)
 		: null;
 	if (status)
@@ -211,6 +213,14 @@ export function mountRecordAutosave(form, window = form.ownerDocument.defaultVie
 			if (discard) discard.hidden = !result.pending;
 			for (const node of document.querySelectorAll("[data-record-state]"))
 				node.textContent = result.statusLabel;
+			const stateHelp = {
+				draft: t("keep.state.draft"),
+				published: t("keep.state.published"),
+				published_changes: t("keep.state.published_changes"),
+				archived: t("keep.state.archived"),
+			}[result.pending ? "published_changes" : result.state];
+			for (const node of document.querySelectorAll("[data-record-state-help]"))
+				if (stateHelp) node.textContent = stateHelp;
 			for (const node of document.querySelectorAll("[data-record-revision-number]"))
 				node.textContent = String(result.revision);
 			for (const panel of document.querySelectorAll("[data-media-upload]"))
@@ -218,7 +228,7 @@ export function mountRecordAutosave(form, window = form.ownerDocument.defaultVie
 			form.dataset.pendingInput = "false";
 			savedAt = new window.Date(result.savedAt).toLocaleTimeString(
 				document.documentElement.lang,
-				{ hour: "2-digit", minute: "2-digit" },
+				clock,
 			);
 			fieldErrors(result.errors);
 			form.dispatchEvent(new window.CustomEvent("record-kept", { detail: result }));

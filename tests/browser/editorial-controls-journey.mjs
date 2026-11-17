@@ -358,7 +358,7 @@ try {
 	const { root } = await command("DOM.getDocument");
 	const { nodeId } = await command("DOM.querySelector", {
 		nodeId: root.nodeId,
-		selector: "[name='images[]']",
+		selector: "[name='images_gallery[]']",
 	});
 	await command("DOM.setFileInputFiles", {
 		nodeId,
@@ -369,14 +369,14 @@ try {
 		],
 	});
 	await evaluate(
-		"document.getElementById('media-upload-form').requestSubmit(document.querySelector('[data-native-upload-start][form=media-upload-form]'))",
+		"document.querySelector('[data-editorial-form]').requestSubmit(document.querySelector('[data-upload-field=\"gallery\"] [data-native-upload-start]'))",
 	);
 	await ready(
-		"location.pathname.endsWith('/upload') && document.querySelector('[role=status]')",
+		"document.readyState==='complete' && document.querySelector('[data-media-upload-result]')",
 	);
 	assert.match(
-		await evaluate("document.querySelector('[role=status]').textContent"),
-		/1 image\(s\) accepted/,
+		await evaluate("document.querySelector('[data-media-upload-result]').textContent"),
+		/Added to [^:]+: 1\./,
 	);
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	await navigate("/media", ".admin-media-grid");

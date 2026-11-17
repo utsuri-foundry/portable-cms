@@ -64,16 +64,15 @@ try {
 	await ready("location.pathname==='/' && document.querySelector('.admin-navigation')");
 	await navigate(record, "[data-editorial-form]");
 	const original = await evaluate("document.querySelector('[name=title__en]').value");
-	const publishedRevision = await evaluate(
-		"document.querySelector('[data-published-revision]').dataset.publishedRevision",
-	);
 	await save(title);
-	assert.ok(await evaluate("document.querySelector('[data-unpublished-changes]')"));
 	assert.equal(
-		await evaluate(
-			"document.querySelector('[data-published-revision]').dataset.publishedRevision",
-		),
-		publishedRevision,
+		await evaluate("document.querySelector('[data-record-state]').textContent"),
+		"Ready, with changes",
+		"the rail names the pending state",
+	);
+	assert.ok(
+		await evaluate("document.querySelector('[data-publish-changes]:not([hidden])')"),
+		"Mark changes as ready is offered",
 	);
 	assert.match(
 		await evaluate("document.querySelector('main').textContent"),
@@ -105,13 +104,11 @@ try {
 	);
 	await evaluate("document.querySelector('#record-publish-form').requestSubmit()");
 	await ready(
-		`document.querySelector('[name=_revision]')?.value==='${current + 1}' && !document.querySelector('[data-unpublished-changes]') && document.readyState==='complete'`,
+		`document.querySelector('[name=_revision]')?.value==='${current + 1}' && document.querySelector('[data-record-state]')?.textContent==='Ready' && document.readyState==='complete'`,
 	);
-	assert.equal(
-		await evaluate(
-			"document.querySelector('[data-published-revision]').dataset.publishedRevision",
-		),
-		String(current + 1),
+	assert.ok(
+		await evaluate("document.querySelector('[data-publish-changes][hidden]')"),
+		"nothing is left to mark as ready",
 	);
 	const after = await preview();
 	assert.equal(
@@ -139,7 +136,7 @@ try {
 		"document.querySelector('[form=record-discard-form][name=_confirmed]').checked=true;document.querySelector('#record-discard-form').requestSubmit()",
 	);
 	await ready(
-		`document.querySelector('[name=_revision]')?.value==='${edited + 1}' && !document.querySelector('[data-unpublished-changes]') && document.readyState==='complete'`,
+		`document.querySelector('[name=_revision]')?.value==='${edited + 1}' && document.querySelector('[data-record-state]')?.textContent==='Ready' && document.readyState==='complete'`,
 	);
 	assert.equal(
 		await evaluate("document.querySelector('[name=title__en]').value"),

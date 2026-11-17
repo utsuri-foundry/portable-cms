@@ -92,12 +92,13 @@ final class ReferenceControls
             $media = $mediaField ? $this->media?->find($id) : null;
             $descriptionWarning = $media === null ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
             $name = $mediaField ? ($media->name ?? $t->text('picker.unavailable_image')) : ($record === null ? $t->text('picker.unavailable_record') : RecordLabels::label($record, $this->profile));
+            // An image is one row: thumbnail, name, the way to its details, then the remove control.
             $markup .= '<li class="admin-selection">' . ($media === null ? '' : self::thumbnail($media))
                 . '<span>' . Html::text($name) . ($media !== null && $media->status !== 'ready' ? '<small class="admin-meta">' . Html::text(self::mediaState($media->status, $t)) . '</small>' : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
-                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error">' . Html::text($descriptionWarning) . '</small>') . '</span>'
+                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error">' . Html::text($descriptionWarning) . '</small>')
+                . ($media === null ? '' : '<a class="admin-selection__link" href="' . Html::url('/media/' . $media->id) . '">' . $t->html('picker.image_details') . '</a>') . '</span>'
                 . '<input type="hidden" name="' . Html::attribute($field->id . ($field->type === 'record_reference' ? '' : '[]')) . '" value="' . Html::attribute($id) . '">'
                 . '<span class="admin-selection__actions">'
-                . ($media === null ? '' : '<a href="' . Html::url('/media/' . $media->id) . '">' . $t->html('media.text.edit') . '</a>')
                 . self::button('remove:' . $field->id . ':' . $id, '×', $t->text('picker.remove', ['name' => $name]))
                 . ($index > 0 ? self::button('up:' . $field->id . ':' . $id, '↑', $t->text('picker.move_earlier', ['name' => $name])) : '')
                 . ($index + 1 < count($selected) ? self::button('down:' . $field->id . ':' . $id, '↓', $t->text('picker.move_later', ['name' => $name])) : '')
@@ -105,14 +106,16 @@ final class ReferenceControls
             $replaceOptions .= '<option value="' . $index . '">' . Html::text($name) . '</option>';
         }
         $markup .= '</ol>';
-        if ($selected === [] && $tile === '') {
-            $markup .= '<p class="admin-meta">' . $t->html('picker.nothing') . '</p>';
-        }
         // Search opens on demand; it stays open while the editor is searching, paging or picking in this field.
         $browsing = $query !== '' || $filter !== '' || ($this->request->method === 'POST' && ($pageAction[1] ?? '') === $field->id && in_array($pageAction[0], ['page', 'search', 'select', 'add-media', 'replace', 'term'], true));
         $uploading = $tile !== '' && ($this->request->formValue('_upload_field') === $field->id || ($pageAction[0] === 'uploaded-media' && ($pageAction[1] ?? '') === $field->id));
+        // A full image field offers nothing to add; removing a row is the way to change it. An upload
+        // that has just completed keeps its panel, so its images can still be described.
+        if ($mediaField && !$uploading && $field->maximumItems !== null && count($selected) >= $field->maximumItems) {
+            return $markup . '</fieldset>';
+        }
         $markup .= '<details class="admin-picker__browse"' . ($browsing || $uploading ? ' open' : '') . '><summary>'
-            . ($mediaField ? $t->html('picker.add_media') : $t->html($field->type === 'record_reference' ? 'picker.choose_field' : 'picker.add_field', ['field' => $t->inlineLabel($field->label)])) . '</summary>';
+            . ($mediaField ? $t->html($field->maximumItems === 1 ? 'picker.choose_image' : 'picker.add_media') : $t->html($field->type === 'record_reference' ? 'picker.choose_field' : 'picker.add_field', ['field' => $t->inlineLabel($field->label)])) . '</summary>';
         if ($tile !== '') {
             $markup .= '<details class="admin-picker__upload"' . ($uploading ? ' open' : '') . '><summary>' . $t->html('picker.upload_images') . '</summary><div class="admin-upload-tile">' . $tile . '</div></details>'
                 . '<details class="admin-picker__library"' . ($browsing ? ' open' : '') . '><summary>' . $t->html('picker.choose_library') . '</summary>';

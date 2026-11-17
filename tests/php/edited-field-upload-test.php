@@ -145,9 +145,10 @@ $tests['media picker bulk selection is one bounded transient action with conflic
         assertSameValue(200, $nested->status, 'nested media pickers use the same batch action');
         assertSameValue([$one, $two], editedFieldSelections($nested->body, $nestedId), 'nested selection preserves existing values and enforces its own maximum');
         assertTrueValue(str_contains($response->body, 'Kept only in the library: 1.'), 'excess library selections are explained');
-        assertTrueValue(str_contains($response->body, 'name="_pick_gallery[]"') && str_contains($response->body, 'value="add-media:gallery"'), 'the picker exposes native checkboxes and one submit button');
         $removed = $f['app']->handle(new Request('POST', $f['path'], contentMutationHeaders(), [...$f['form'], 'gallery' => [$one, $two], '_editor_action' => 'remove:gallery:' . $two], $f['cookies']));
         assertSameValue([$one], editedFieldSelections($removed->body), 'removal only changes the pending field');
+        assertTrueValue(!str_contains($response->body, 'name="_pick_gallery[]"'), 'a full field offers nothing to add');
+        assertTrueValue(str_contains($removed->body, 'name="_pick_gallery[]"') && str_contains($removed->body, 'value="add-media:gallery"'), 'a field with room exposes native checkboxes and one submit button');
         assertTrueValue($f['media']['library']->find($two) !== null && $f['media']['repository']->writes === 0, 'removal never deletes library media');
         $f['service']->update('project', $f['record']->id, 1, ['title' => ['ca' => 'Other editor', 'es' => 'Saved', 'en' => 'Saved'], 'gallery' => '[]'], str_repeat('1', 32));
         $conflict = $f['app']->handle(new Request('POST', $f['path'], contentMutationHeaders(), [...$f['form'], '_editor_action' => 'add-media:gallery', '_pick_gallery' => [$two, $three]], $f['cookies']));

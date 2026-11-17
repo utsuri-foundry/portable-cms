@@ -93,7 +93,7 @@ $tests['video field limits reject each measured violation in pickers saves publi
             } else {
                 assertTrueValue($saved instanceof ValidationFailure && isset($saved->errors['trailer']), 'save refuses ' . $variant);
                 assertTrueValue(str_contains($html, 'data-video-limit-error'), 'a chosen clip outside the limits is explained under its row for ' . $variant);
-                assertTrueValue(str_contains($html, 'data-video-link="video" href="/media/' . $video . '">Open</a>'), 'the row still links to the media page');
+                assertTrueValue(str_contains($html, 'data-video-link="video" href="/media/' . $video . '">Video details</a>'), 'the row still links to the media page');
                 assertTrueValue(str_contains($html, 'picker.selected_state') || str_contains($html, '>Selected<'), 'the chosen clip is marked in the library list');
                 assertTrueValue(!str_contains($html, 'data-video-choose="video"') || str_contains($html, ' disabled aria-label='), 'picker disables ' . $variant);
                 assertTrueValue(str_contains($html, '_retained_trailer__video'), 'native form preserves the invalid ID');

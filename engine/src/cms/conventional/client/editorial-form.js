@@ -152,8 +152,12 @@ function enhanceEditorialForm(form, window, own) {
 			if (selected && focus) button.focus();
 		}
 		for (const panel of panels) panel.hidden = panel.dataset.localePanel !== locale;
+		// The tag reads as part of the label, in the language's own name: "Title · Català".
+		const name = buttons
+			.find((button) => button.dataset.localeTab === locale)
+			?.textContent.trim();
 		for (const tag of tags) {
-			tag.textContent = locale.toUpperCase();
+			tag.textContent = `· ${name || locale}`;
 			tag.hidden = false;
 		}
 	};

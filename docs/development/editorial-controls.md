@@ -161,7 +161,10 @@ runs at most the existing worker allowance; cron remains recovery. No-script
 editors can reload the library to inspect status.
 
 Every supported top-level image field on a saved collection record has one
-Add images disclosure offering library selection and a collapsed native uploader.
+Add images disclosure (Choose image on a single-image field) offering library
+selection and a collapsed native uploader while the field has room; a field at
+its maximum offers nothing to add, except right after an upload it received, so
+the new images can still be described.
 Native multipart submission includes the complete unsaved editorial
 form and its original revision; it reads only the chosen field's file input.
 The enhanced uploader transfers files sequentially, then posts completed session
