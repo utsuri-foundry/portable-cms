@@ -21,7 +21,7 @@ final readonly class SiteWordingHttp
     {
         $saved = $this->service->load();
         if ($request->method === 'GET') {
-            return new Response(200, SiteWordingPage::render($this->profile, $this->chrome, $saved, notice: $request->queryValue('saved') === '1'));
+            return new Response(200, SiteWordingPage::render($this->profile, $this->chrome, $saved, notice: $request->queryValue('saved') === '1', query: $request->queryValue('q')));
         }
         $texts = [];
         $submitted = [];

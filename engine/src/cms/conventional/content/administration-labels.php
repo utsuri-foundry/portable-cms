@@ -25,7 +25,7 @@ final readonly class AdministrationLabels
      *   options: array<string, string>,
      *   items: array<string, string>,
      *   blocks: array<string, string>,
-     *   wording: array<string, array{label: string, purpose: string}>,
+     *   wording: array<string, array{label: string, purpose: string, group: ?string}>,
      *   navigation: array<string, string>
      * }> $languages
      */
@@ -127,13 +127,14 @@ final readonly class AdministrationLabels
                 throw new \InvalidArgumentException('Profile administration wording labels are invalid');
             }
             foreach ($labels['wording'] ?? [] as $key => $names) {
-                if (!is_string($key) || $profile->wording($key) === null || !is_array($names) || count($names) !== 2
-                    || !self::label($names['label'] ?? null) || !is_string($names['purpose'] ?? null)
+                // A label, a purpose and, optionally, the group the page folds the entry under.
+                if (!is_string($key) || $profile->wording($key) === null || !is_array($names) || array_diff_key($names, ['label' => 1, 'purpose' => 1, 'group' => 1]) !== []
+                    || !self::label($names['label'] ?? null) || !is_string($names['purpose'] ?? null) || (array_key_exists('group', $names) && !self::label($names['group']))
                     || !mb_check_encoding($names['purpose'], 'UTF-8') || trim($names['purpose']) === ''
                     || mb_strlen($names['purpose'], 'UTF-8') > 300 || preg_match('/[\x00-\x1f\x7f]/u', $names['purpose']) === 1) {
                     throw new \InvalidArgumentException('Profile administration wording label is invalid');
                 }
-                $entry['wording'][$key] = ['label' => $names['label'], 'purpose' => $names['purpose']];
+                $entry['wording'][$key] = ['label' => $names['label'], 'purpose' => $names['purpose'], 'group' => $names['group'] ?? null];
             }
             $languages[$language] = $entry;
         }
@@ -175,6 +176,7 @@ final readonly class AdministrationLabels
             $definition->maximumLength,
             $definition->defaults,
             $definition->uniqueIn,
+            $names['group'] ?? null,
         );
     }
 

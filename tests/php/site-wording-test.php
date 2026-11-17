@@ -6,6 +6,7 @@ use Utsuri\PortableCms\Conventional\Compiler\FrozenSnapshot;
 use Utsuri\PortableCms\Conventional\Compiler\ProfileBuildFailure;
 use Utsuri\PortableCms\Conventional\Compiler\ProfileBuildReason;
 use Utsuri\PortableCms\Conventional\Compiler\PublishedSlugHistory;
+use Utsuri\PortableCms\Conventional\Content\EditorialTerminology;
 use Utsuri\PortableCms\Conventional\Content\ProfileManifest;
 use Utsuri\PortableCms\Conventional\Content\SiteWording;
 use Utsuri\PortableCms\Conventional\Content\SiteWordingConflict;
@@ -15,6 +16,8 @@ use Utsuri\PortableCms\Conventional\Content\SiteWordingService;
 use Utsuri\PortableCms\Conventional\Content\ValidationFailure;
 use Utsuri\PortableCms\Conventional\Export\NormalizedExport;
 use Utsuri\PortableCms\Conventional\Http\Request;
+use Utsuri\PortableCms\Conventional\I18n\Message;
+use Utsuri\PortableCms\Conventional\I18n\Translator;
 use Utsuri\PortableCms\Conventional\Identity\AdministrationPermissions;
 use Utsuri\PortableCms\Conventional\Preview\PreviewSnapshot;
 use Utsuri\PortableCms\Conventional\Preview\ProfilePreviewCompiler;
@@ -239,7 +242,7 @@ $tests['the site wording page lists every key per language and saves through nat
     $reset = $http->handle(new Request('POST', '/settings/wording', form: ['_revision' => '3', '_reset' => 'page.projects']), $editor);
     assertSameValue([303, ['page.home' => ['ca' => 'Portada'], 'page.projects' => ['en' => 'Selected work']]], [$reset->status, $repository->load($profile)->values], 'reset follows the profile text in the languages shown');
     assertSameValue(422, $http->handle(new Request('POST', '/settings/wording', form: ['_revision' => '4', '_reset' => 'page.unknown']), $editor)->status, 'an unknown key cannot be reset');
-    assertTrueValue(str_contains($http->handle(new Request('GET', '/settings/wording', query: ['saved' => '1']), $editor)->body, 'Site wording saved.'), 'the saved notice follows the redirect');
+    assertTrueValue(str_contains($http->handle(new Request('GET', '/settings/wording', query: ['saved' => '1']), $editor)->body, 'Wording saved. It reaches the website with the next release.'), 'the saved notice follows the redirect and says when the change shows');
 };
 
 $tests['snapshots carry the wording of their languages and profile code reads every fixed text from it'] = static function (): void {
@@ -321,7 +324,7 @@ $tests['publication preflight refuses a public language whose wording is incompl
     $issues = ProfilePreviewCompiler::missingWording($release, $snapshot([]));
     assertSameValue([['preflight.issue.wording', ['language' => 'Español', 'keys' => 'page.home, address.search']]], array_map(static fn($issue): array => [$issue->key, $issue->parameters], $issues), 'one issue retains the incomplete language and every missing text identity');
     $presented = \Utsuri\PortableCms\Conventional\Preview\PreviewDiagnostics::present($issues[0], $release);
-    assertSameValue('Site wording in Español is incomplete: Home link (The navigation link to the home page.), Search address (The part of the address of the search pages after the language.).', \Utsuri\PortableCms\Conventional\I18n\Translator::english()->message($presented), 'editors read the missing keys and their purposes');
+    assertSameValue('Wording in Español is incomplete: Home link (The navigation link to the home page.), Search address (The part of the address of the search pages after the language.).', \Utsuri\PortableCms\Conventional\I18n\Translator::english()->message($presented), 'editors read the missing keys and their purposes');
     assertSameValue('address.search', ProfilePreviewCompiler::missingWording($release, $snapshot([], [['key' => 'page.home', 'locale' => 'es', 'text' => 'Inicio']]))[0]->parameters['keys'] ?? null, 'a text the editors wrote completes its key');
     assertSameValue([], ProfilePreviewCompiler::missingWording($release, $snapshot(['es'])), 'a language in preparation never blocks publication');
 
@@ -362,4 +365,41 @@ $tests['profile releases that change wording declarations or defaults are presen
     assertSameValue([['wording'], ['wording'], []], [$changes->manifestKeys, $changes->neutral, $changes->affecting], 'wording needs no content migration');
     $new['wording'][$index]['secret'] = true;
     assertSameValue('wording', ProfileManifestChanges::classify($old, $new)->affecting[0]['path'] ?? null, 'an unknown wording property fails closed');
+};
+
+$tests['the wording page folds texts by where they appear, searches without script and says when changes show'] = static function (): void {
+    $package = referenceStudioPackage();
+    $profile = (new EditorialTerminology($package->manifest->id, 0, []))->present($package->manifest, 'en', $package->administrationLabels);
+    $repository = new MemorySiteWording(SiteWording::of($package->manifest, 2, ['page.projects' => ['ca' => 'Obres']]));
+    $chrome = new AdminChrome(str_repeat('c', 32), 'Editor', role: 'editor');
+    $page = SiteWordingPage::render($profile, $chrome, $repository->load($package->manifest));
+    $groups = SiteWordingPage::groups($profile, Translator::english());
+    assertSameValue(['Across the site', 'Page titles and links', 'Project details', 'Page addresses'], array_column($groups, 'name'), 'groups follow the labels in the order the profile names them, addresses last');
+    assertSameValue([7, 9, 4, 8], array_map(static fn(array $group): int => count($group['entries']), $groups), 'every text sits in one group');
+    assertSameValue(4, substr_count($page, '<details class="admin-section admin-wording__group"'), 'one fold per group');
+    assertSameValue(1, substr_count($page, 'admin-wording__group" open'), 'the first group opens, the others fold');
+    assertTrueValue(str_contains($page, '<h2>Across the site</h2><span class="admin-wording__count">7 texts</span>'), 'a group names itself and counts its texts');
+    assertSameValue(1, substr_count($page, 'Changing an address moves its page.'), 'the address warning is stated once, in its group');
+    assertTrueValue(!str_contains($page, 'Saved revision') && str_contains($page, 'Changes reach the website with the next release.') && str_contains($page, '>Save</button>'), 'the save bar says when changes show');
+    assertTrueValue(str_contains($page, '<h1>Wording</h1>') && str_contains($page, 'id="wording-query"') && !str_contains($page, 'admin-card admin-wording__entry'), 'the page is titled Wording, has a search box and lists rows rather than cards');
+    assertTrueValue(str_contains($page, 'class="admin-wording__entry" role="group" data-wording-key="page.projects" aria-labelledby="wording-page-projects-label" aria-describedby="wording-page-projects-help"') && str_contains($page, 'class="admin-button--small admin-button--quiet">Use the profile text</button>'), 'a row names its text, folds its explanation and offers a quiet way back');
+
+    $search = SiteWordingPage::render($profile, $chrome, $repository->load($package->manifest), query: 'projects');
+    assertSameValue(2, substr_count($search, '<details class="admin-section admin-wording__group" open'), 'a search opens the groups that match and hides the rest');
+    assertTrueValue(str_contains($search, 'data-wording-key="page.projects"') && str_contains($search, 'data-wording-key="address.projects"') && !str_contains($search, 'data-wording-key="page.home"'), 'the search keeps the texts whose name or words match');
+    assertTrueValue(str_contains($search, 'value="projects"') && str_contains($search, '>Show every text</a>'), 'the search box keeps its query and offers the whole page');
+    $byText = SiteWordingPage::render($profile, $chrome, $repository->load($package->manifest), query: 'obres');
+    assertTrueValue(str_contains($byText, 'data-wording-key="page.projects"') && substr_count($byText, 'data-wording-key=') === 1, 'a search also finds a saved text');
+    $none = SiteWordingPage::render($profile, $chrome, $repository->load($package->manifest), query: 'zzz');
+    assertTrueValue(str_contains($none, 'No text matches “zzz”.') && !str_contains($none, 'admin-save-bar'), 'an empty search says so and offers nothing to save');
+
+    $errors = [SiteWording::field('metadata.year', 'ca') => new Message('wording.too_long', ['maximum' => 40])];
+    $invalid = SiteWordingPage::render($profile, $chrome, $repository->load($package->manifest), [], $errors);
+    assertTrueValue(str_contains($invalid, '<h2>Project details</h2>') && substr_count($invalid, 'admin-wording__group" open') === 2, 'a group with an error opens beside the first');
+    foreach (['ca', 'es', 'de', 'fr'] as $language) {
+        $t = Translator::load($language);
+        $presented = (new EditorialTerminology($package->manifest->id, 0, []))->present($package->manifest, $language, $package->administrationLabels);
+        $translated = SiteWordingPage::render($presented, new AdminChrome(str_repeat('c', 32), 'Editor', translator: $t), $repository->load($package->manifest));
+        assertTrueValue(str_contains($translated, '<h1>' . $t->html('wording.title') . '</h1>') && str_contains($translated, $t->html('wording.group.addresses')) && str_contains($translated, $t->html('wording.next_release')), $language . ' wording page is translated');
+    }
 };

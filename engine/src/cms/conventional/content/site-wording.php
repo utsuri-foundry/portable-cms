@@ -20,7 +20,9 @@ final readonly class WordingDefinition
     public const MAXIMUM_TEXT = 500;
     public const MAXIMUM_SEGMENT = 80;
 
-    /** @param array<string, string> $defaults Language to text. */
+    /** @param array<string, string> $defaults Language to text.
+     * @param ?string $group Where the text appears, as the administration labels name it; the page folds entries by it.
+     */
     public function __construct(
         public string $key,
         public string $label,
@@ -29,8 +31,9 @@ final readonly class WordingDefinition
         public int $maximumLength,
         public array $defaults,
         public ?string $uniqueIn = null,
+        public ?string $group = null,
     ) {
-        if (!self::validKey($key) || !ProfileManifest::label($label) || $purpose === '' || mb_strlen($purpose, 'UTF-8') > 300
+        if (!self::validKey($key) || !ProfileManifest::label($label) || ($group !== null && !ProfileManifest::label($group)) || $purpose === '' || mb_strlen($purpose, 'UTF-8') > 300
             || preg_match('/[\x00-\x1f\x7f]/u', $purpose) === 1 || !in_array($kind, self::KINDS, true)
             || $maximumLength < 1 || $maximumLength > ($kind === 'text' ? self::MAXIMUM_TEXT : self::MAXIMUM_SEGMENT)
             || ($uniqueIn !== null && ($kind !== 'address_segment' || !ProfileManifest::canonicalId($uniqueIn)))
