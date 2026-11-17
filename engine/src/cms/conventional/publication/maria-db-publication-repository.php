@@ -215,13 +215,18 @@ final class MariaDbPublicationRepository implements PublicationRepository
     /** @param array<string, mixed> $row */
     private function hydrate(array $row): Release
     {
-        return new Release($row['id'], $row['preview_id'], $row['expected_previous'], $row['status'], $row['artifact_sha256'], $row['actor_user_id'], $row['error_code'], $row['target_sha256'], (bool) $row['is_rollback'], is_string($row['scheduled_at']) ? new \DateTimeImmutable($row['scheduled_at'], new \DateTimeZone('UTC')) : null, (int) $row['schedule_revision']);
+        return new Release($row['id'], $row['preview_id'], $row['expected_previous'], $row['status'], $row['artifact_sha256'], $row['actor_user_id'], $row['error_code'], $row['target_sha256'], (bool) $row['is_rollback'], is_string($row['scheduled_at']) ? new \DateTimeImmutable($row['scheduled_at'], new \DateTimeZone('UTC')) : null, (int) $row['schedule_revision'], self::instant($row['created_at'] ?? null), self::instant($row['updated_at'] ?? null));
     }
 
     /** @param array<string, mixed> $metadata */
     private function audit(string $id, string $actor, string $event, array $metadata, \DateTimeImmutable $now): void
     {
         $this->pdo->prepare('INSERT INTO cms_audit_events (id, actor_user_id, event_type, metadata_json, occurred_at) VALUES (:id, :actor, :event, :metadata, :at)')->execute(['id' => $id, 'actor' => $actor, 'event' => $event, 'metadata' => json_encode($metadata, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), 'at' => self::time($now)]);
+    }
+
+    private static function instant(mixed $stored): ?\DateTimeImmutable
+    {
+        return is_string($stored) && $stored !== '' ? new \DateTimeImmutable($stored, new \DateTimeZone('UTC')) : null;
     }
 
     private static function time(\DateTimeImmutable $now): string

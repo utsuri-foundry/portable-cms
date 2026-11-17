@@ -20,6 +20,8 @@ final readonly class Release
         public bool $rollback = false,
         public ?\DateTimeImmutable $scheduledAt = null,
         public int $scheduleRevision = 0,
+        public ?\DateTimeImmutable $createdAt = null,
+        public ?\DateTimeImmutable $updatedAt = null,
     ) {
         foreach ([$id, $previewId, $actorId, ...($previousId === null ? [] : [$previousId])] as $identity) {
             if (preg_match('/\A[a-f0-9]{32}\z/', $identity) !== 1) {

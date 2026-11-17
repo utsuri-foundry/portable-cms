@@ -37,6 +37,12 @@ final class PublicationService
         return $this->repository->head();
     }
 
+    /** The public address visitors open. */
+    public function websiteUrl(): string
+    {
+        return $this->context->baseUrl;
+    }
+
     /** @return list<Release> */
     public function list(): array
     {

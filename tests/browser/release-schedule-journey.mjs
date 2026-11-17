@@ -81,7 +81,7 @@ try {
 	);
 	assert.ok(
 		await evaluate(
-			"document.querySelector('main').textContent.includes('first run at or after')",
+			"document.querySelector('main').textContent.includes('within a few minutes')",
 		),
 	);
 	worker();
@@ -96,7 +96,7 @@ try {
 	await navigate(previewPath, "[data-release-schedules]");
 	assert.ok(
 		await evaluate(
-			"document.querySelector('[data-release-schedules]').textContent.includes('approved preview')",
+			"document.querySelector('[data-release-schedules]').textContent.includes('version approved')",
 		),
 	);
 	await navigate(
@@ -105,7 +105,7 @@ try {
 	);
 	assert.ok(
 		await evaluate(
-			`document.querySelector('[data-release-schedules]').textContent.includes(${JSON.stringify(releaseId.slice(0, 8))})`,
+			"document.querySelector('[data-release-schedules]').textContent.includes('Scheduled release')",
 		),
 	);
 	await navigate("/releases", "[name=action][value=move_schedule]");

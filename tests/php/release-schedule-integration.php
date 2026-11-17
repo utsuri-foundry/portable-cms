@@ -126,6 +126,11 @@ function exerciseReleaseSchedules(PDO $pdo, RuntimeConfiguration $configuration,
     $profile = \Utsuri\PortableCms\Conventional\Content\ProfilePackage::load($configuration->profileRoot ?? throw new RuntimeException('Missing profile'))->manifest;
     $page = PublicationPage::render($profile, new AdminChrome('csrf', 'Editor', role: 'editor'), $service, $previews);
     assertTrueValue(!str_contains($page, 'action="/releases"'), 'editors see the release list without mutation controls');
+    $owner = PublicationPage::render($profile, new AdminChrome('csrf', 'Owner', role: 'owner'), $service, $previews, 'release_changed', static fn(string $id): string => 'Montse');
+    foreach (['On the website now', 'Published ', ' by Montse.', 'Ready to publish', 'Earlier releases', 'name="action" value="rollback"', 'name="action" value="forget"', 'name="timing" value="later"', 'Details for the agency: release_changed'] as $expected) {
+        assertTrueValue(str_contains($owner, $expected), 'the owner page carries ' . $expected);
+    }
+    assertTrueValue(preg_match('/\b[a-f0-9]{32}\b/', strip_tags($owner)) !== 1 && !str_contains(strip_tags($owner), 'sha256') && !str_contains($owner, '<code>'), 'no release identity, hash or code reaches the reader');
     $audit = $pdo->query("SELECT actor_user_id, event_type, metadata_json FROM cms_audit_events WHERE event_type LIKE 'release_schedul%' ORDER BY occurred_at, id")->fetchAll(PDO::FETCH_ASSOC);
     assertTrueValue(count($audit) >= 9, 'schedule creation, moves, cancellation, start and stale approval are durable audit facts');
     foreach ($audit as $event) {

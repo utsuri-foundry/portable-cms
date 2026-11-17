@@ -55,7 +55,7 @@ try {
 	);
 	await navigate("/settings/installation", ".admin-installation-facts");
 	const facts = await evaluate(
-		"Object.fromEntries([...document.querySelectorAll('.admin-installation-facts dt')].map(e=>[e.childNodes[0].textContent,e.nextElementSibling.childNodes[0].textContent]))",
+		"Object.fromEntries([...document.querySelectorAll('.admin-installation-facts dt')].map(e=>[e.childNodes[0].textContent,e.nextElementSibling.textContent]))",
 	);
 	assert.equal(facts["Website name"], name);
 	assert.equal(facts["Profile ID"], "reference-studio");

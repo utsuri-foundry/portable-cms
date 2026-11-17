@@ -535,6 +535,24 @@ preview states use stable text and status semantics. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
 
+### Releases
+
+Releases is where publishing happens, so it speaks of pages, times and people
+and never of identities, checksums or the worker. Three cards in reading order:
+"On the website now" names what visitors see (the website or the coming soon
+page), when it was published and by whom, with a link to open the website;
+"Ready to publish" is one form for owners and administrators that lists the
+candidates by what they are and when they were built with a Preview link,
+folds older coming soon builds behind one line, asks Now or a date (the date
+field appears only when a date is chosen), takes one plain confirmation and
+one Publish button, and offers the coming soon build as a secondary action;
+"Earlier releases" lists dated rows with a readable status, Restore and a
+quiet Remove, each behind a disclosure with its own confirmation. Scheduled
+releases sit in their own card with Move and Cancel. A running publication is
+one line ("Publishing, usually a few minutes") and a failure is a sentence,
+with the engine's code folded behind an "i" for owners and administrators
+only. Editors read the same page without its forms.
+
 ### Errors
 
 Safe error pages show the stable human heading, a short explanation, a link to
