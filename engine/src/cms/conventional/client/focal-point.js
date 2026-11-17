@@ -1,5 +1,8 @@
 import { messages } from "./messages.js";
 
+/** The example crop is square, as FocalPointForm::CROP draws it. */
+const CROP = 240;
+
 /** Enhances one native revision-protected form; changes stay unsaved until submit. */
 export function mountFocalPoint(fieldset) {
 	const x = fieldset.querySelector('[name="focal_x"]');
@@ -20,11 +23,11 @@ export function mountFocalPoint(fieldset) {
 		if (crop) {
 			const width = Number(crop.dataset.width);
 			const height = Number(crop.dataset.height);
-			const scale = Math.max(400 / width, 240 / height);
+			const scale = Math.max(CROP / width, CROP / height);
 			crop.setAttribute("width", String(width * scale));
 			crop.setAttribute("height", String(height * scale));
-			crop.setAttribute("x", String(((400 - width * scale) * horizontal) / 100));
-			crop.setAttribute("y", String(((240 - height * scale) * vertical) / 100));
+			crop.setAttribute("x", String(((CROP - width * scale) * horizontal) / 100));
+			crop.setAttribute("y", String(((CROP - height * scale) * vertical) / 100));
 		}
 		output.textContent = t("focal.position", { x: horizontal, y: vertical });
 	};

@@ -61,11 +61,16 @@ final class Pages
         array $recent = [],
         ?\Utsuri\PortableCms\Conventional\Preview\PreviewCheck $latestCheck = null,
         array $previewSetup = [],
+        ?\Utsuri\PortableCms\Conventional\Publication\PublicationService $publication = null,
+        ?\Closure $actorName = null,
     ): string {
         $t = AdminShell::translator($chrome);
-        $intro = '<p class="admin-lede">' . $t->html('overview.signed_in', ['name' => $displayName])
-            . ($profile === null ? '' : ' · ' . $t->html('overview.languages', ['count' => count($profile->locales)]))
-            . ($recent === [] ? '' : ' · ' . $t->markup('overview.last_change', [], ['time' => AdminShell::time($recent[0]->updatedAt, $chrome?->now, $t)])) . '</p>';
+        // The header states two facts an editor acts on: when the content last changed and what the website shows.
+        $facts = $recent === [] ? [] : [$t->markup('overview.last_change', [], ['time' => AdminShell::time($recent[0]->updatedAt, $chrome?->now, $t)])];
+        if ($publication !== null) {
+            $facts[] = self::websiteFact($publication, $actorName, $chrome, $t);
+        }
+        $intro = $facts === [] ? '' : '<p class="admin-lede">' . implode(' ', $facts) . '</p>';
         $continue = '';
         $attention = self::mediaAttention($latestMediaJob, $t)
             . PreviewCheckPanel::failed($latestCheck, $profile, $t, true)
@@ -103,19 +108,39 @@ final class Pages
             $stats .= '<li><a href="' . Html::url('/records/' . $type->id) . '"><strong>' . $count . '</strong><span>' . Html::text($type->label) . '</span></a></li>';
         }
         $contentCard = $stats === '' ? '' : '<section class="admin-card" aria-labelledby="content-heading"><div class="admin-card__header"><h2 id="content-heading">' . $t->html('overview.content.title') . '</h2></div><ul class="admin-stats">' . $stats . '</ul></section>';
-        $previews = in_array('previews', $chrome->unavailable ?? [], true)
-            ? '<div><span>' . $t->html('overview.previews.label') . '</span>' . AdminShell::status('plain', $t->text('overview.previews.unavailable')) . '<p>' . $t->html('overview.previews.unavailable_help') . '</p></div>'
-            : '<div><span>' . $t->html('overview.previews.label') . '</span><a class="admin-button admin-button--small" href="' . Html::url('/previews') . '">' . $t->html('overview.previews.open') . '</a><p>' . $t->html('overview.previews.help') . '</p></div>';
-        $systemCard = '<section class="admin-card" aria-labelledby="system-heading"><div class="admin-card__header"><h2 id="system-heading">' . $t->html('overview.system.title') . '</h2></div><div class="admin-system">'
-            . self::mediaJobStatus($latestMediaJob, $csrfToken, $t) . $previews
-            . ($chrome?->role === 'editor' ? '' : '<div><span>' . $t->html('overview.export.label') . '</span><a class="admin-button admin-button--small" href="' . Html::url('/exports') . '">' . $t->html('overview.export.action') . '</a><p>' . $t->html('overview.export.help') . '</p></div>')
-            . '</div></section>';
+        // Owners see the installation's problems, and only those; editors never see this card.
+        $problems = $chrome?->role === 'editor' ? '' : self::mediaJobStatus($latestMediaJob, $csrfToken, $t)
+            . (in_array('previews', $chrome->unavailable ?? [], true) ? '<div><span>' . $t->html('overview.previews.label') . '</span>' . AdminShell::status('plain', $t->text('overview.previews.unavailable')) . '<p>' . $t->html('overview.previews.unavailable_help') . '</p></div>' : '');
+        $agencyCard = $problems === '' ? '' : '<section class="admin-card" aria-labelledby="agency-heading"><div class="admin-card__header"><h2 id="agency-heading">' . $t->html('shell.group.agency') . '</h2></div><div class="admin-system">' . $problems . '</div></section>';
         $body = TrustedHtml::fromEngineMarkup(
             AdminShell::header($t->text('overview.title'), $intro)
             . '<div class="admin-overview"><div class="admin-overview__column">' . $continueCard . $attentionCard . '</div>'
-            . '<div class="admin-overview__column">' . $contentCard . $systemCard . '</div></div>',
+            . '<div class="admin-overview__column">' . $contentCard . $agencyCard . '</div></div>',
         );
         return AdminShell::application($t->text('overview.title'), $body, $profile, 'overview', 'wide', $chrome);
+    }
+
+    /** What visitors see right now: the latest publication, when and by whom, with the website to open. */
+    private static function websiteFact(\Utsuri\PortableCms\Conventional\Publication\PublicationService $publication, ?\Closure $actorName, ?AdminChrome $chrome, Translator $t): string
+    {
+        $active = null;
+        foreach ($publication->list() as $release) {
+            if ($release->id === $publication->head()->activeId) {
+                $active = $release;
+            }
+        }
+        if ($active === null) {
+            return $t->html('overview.website.none');
+        }
+        $at = $active->updatedAt ?? $active->createdAt;
+        $name = $actorName === null ? null : $actorName($active->actorId);
+        $time = $at === null ? null : AdminShell::time($at, $chrome?->now, $t);
+        $fact = match (true) {
+            $time === null => $t->html('overview.website.published_sometime'),
+            $name === null => $t->markup('overview.website.published', [], ['time' => $time]),
+            default => $t->markup('overview.website.published_by', ['name' => $name], ['time' => $time]),
+        };
+        return $fact . ' <a href="' . Html::attribute($publication->websiteUrl()) . '" target="_blank" rel="noopener">' . $t->html('overview.website.open') . '</a>';
     }
 
     /** @param array<string, int|string|null>|null $job */
@@ -126,17 +151,18 @@ final class Pages
             : '';
     }
 
-    /** @param array<string, int|string|null>|null $job */
+    /** A processing line only while something is queued, running, retrying or stuck; a healthy library says nothing.
+     * @param array<string, int|string|null>|null $job
+     */
     private static function mediaJobStatus(?array $job, string $csrfToken, Translator $t): string
     {
-        if ($job === null) {
-            return '<div aria-labelledby="media-processing"><span id="media-processing">' . $t->html('overview.media.label') . '</span>' . AdminShell::status('plain', $t->text('overview.media.idle'))
-                . '<p>' . $t->html('overview.media.idle_help') . '</p></div>';
-        }
         $status = is_string($job['status'] ?? null) ? $job['status'] : 'unknown';
+        if ($job === null || $status === 'completed') {
+            return '';
+        }
         $attempts = is_int($job['attempts'] ?? null) ? $job['attempts'] : 0;
         $maximum = is_int($job['maxAttempts'] ?? null) ? $job['maxAttempts'] : 0;
-        $parts = [$t->text(in_array($status, ['queued', 'running', 'retry', 'completed', 'needs_attention'], true) ? 'overview.media.' . $status : 'overview.media.unknown')];
+        $parts = [$t->text(in_array($status, ['queued', 'running', 'retry', 'needs_attention'], true) ? 'overview.media.' . $status : 'overview.media.unknown')];
         if (in_array($status, ['running', 'retry', 'needs_attention'], true) && $maximum > 0) {
             $parts[] = $t->text('overview.media.attempt', ['attempt' => (string) $attempts, 'maximum' => (string) $maximum]);
         }
@@ -149,7 +175,7 @@ final class Pages
             ? '<form method="post" action="' . Html::url('/jobs/wake') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">'
                 . '<button type="submit" class="admin-button--small">' . $t->html('overview.media.recover') . '</button></form>'
             : '';
-        return '<div><span>' . $t->html('overview.media.label') . '</span>' . AdminShell::status($status, $status === 'completed' ? $t->text('state.ready') : null, $t)
+        return '<div><span>' . $t->html('overview.media.label') . '</span>' . AdminShell::status($status, null, $t)
             . '<p' . $role . '>' . Html::text(implode(' ', $parts)) . '</p>' . $recovery . '</div>';
     }
 

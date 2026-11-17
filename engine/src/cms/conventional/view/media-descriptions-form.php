@@ -22,12 +22,24 @@ final class MediaDescriptionsForm
             return '';
         }
         $missing = [];
-        foreach ($profile->locales as $locale) {
-            if (!($media->text ?? MediaText::from())->publishable($locale, $profile->defaultLocale)) {
-                $missing[] = strtoupper($locale);
+        foreach ($profile->localeDefinitions as $locale) {
+            if (in_array($locale->id, $profile->locales, true) && !($media->text ?? MediaText::from())->publishable($locale->id, $profile->defaultLocale)) {
+                $missing[] = $locale->label;
             }
         }
-        return $missing === [] ? '' : $t->text('media.descriptions.missing', ['languages' => implode(', ', $missing)]);
+        return $missing === [] ? '' : $t->text('media.descriptions.missing', ['languages' => self::languages($missing, $t)]);
+    }
+
+    /** Language names read as a sentence: "Catalan", "Catalan and English", "Catalan, Spanish and English".
+     * @param list<string> $names
+     */
+    public static function languages(array $names, Translator $t): string
+    {
+        if (count($names) < 2) {
+            return implode('', $names);
+        }
+        $last = array_pop($names);
+        return $t->text('media.descriptions.pair', ['first' => implode(', ', $names), 'second' => $last]);
     }
 
     /** @param ?array<string, mixed> $submitted */

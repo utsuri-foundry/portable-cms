@@ -58,6 +58,7 @@ return [
     'picker.term.help' => 'El terme nou es desa a la biblioteca compartida. Revisa els canvis d’aquest registre abans de publicar.',
     'picker.term.submit' => 'Crear i seleccionar',
     'media.size' => '{megabytes, number,#,##0.0} MB',
+    'media.size_small' => '{kilobytes} KB',
     'media.state.ready' => 'a punt',
     'media.state.processing' => 'en procés',
     'media.state.queued' => 'a la cua',

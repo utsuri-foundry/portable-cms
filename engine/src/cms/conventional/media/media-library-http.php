@@ -15,7 +15,8 @@ use Utsuri\PortableCms\Conventional\View\Pages;
 /** Parent application owns editorial session, origin and CSRF checks. */
 final class MediaLibraryHttp
 {
-    public function __construct(private readonly MediaLibrary $library, private readonly ContentService $content, private readonly ProfileManifest $profile, private readonly ?\Utsuri\PortableCms\Conventional\View\AdminChrome $chrome = null, private readonly bool $uploadsAvailable = false) {}
+    /** @param bool $cronOnly Uploads wait for the scheduled worker instead of being prepared right after the response. */
+    public function __construct(private readonly MediaLibrary $library, private readonly ContentService $content, private readonly ProfileManifest $profile, private readonly ?\Utsuri\PortableCms\Conventional\View\AdminChrome $chrome = null, private readonly bool $uploadsAvailable = false, private readonly bool $cronOnly = false) {}
 
     private function translator(): \Utsuri\PortableCms\Conventional\I18n\Translator
     {
@@ -35,7 +36,8 @@ final class MediaLibraryHttp
         }
         if ($request->path === '/media' && $request->method === 'GET') {
             $page = filter_var($request->queryValue('page'), FILTER_VALIDATE_INT);
-            return new Response(200, MediaLibraryPage::listing($this->library->search($request->queryValue('q'), is_int($page) ? $page : 1), $this->profile, $this->chrome, $this->uploadsAvailable ? $this->content : null, $session->csrfToken, $this->library->videoUploads));
+            $listing = $this->library->browse($request->queryValue('q'), is_int($page) ? $page : 1, $request->queryValue('show'), $this->profile->locales, $this->profile->defaultLocale);
+            return new Response(200, MediaLibraryPage::listing($listing, $this->profile, $this->chrome, $this->uploadsAvailable ? $this->content : null, $session->csrfToken, $this->library->videoUploads, $this->cronOnly));
         }
         $id = explode('/', $request->path)[2] ?? '';
         $media = $this->library->find($id);

@@ -377,6 +377,8 @@ final class IdentityApplication
                     $this->content?->recent(8) ?? [],
                     $this->previews?->latestCheck(),
                     $this->content === null ? [] : ($this->previews?->setup($this->content) ?? []),
+                    $this->publication,
+                    $this->actorName(),
                 )),
                 $session,
             );
@@ -475,6 +477,7 @@ final class IdentityApplication
                 $this->siteLanguages?->load()->editingProfile($profile) ?? $profile,
                 $this->chrome($request, $session),
                 $this->mediaUploads !== null,
+                $this->previewCronOnly,
             ))->handle($request, $session, $correlationId), $session);
         }
 

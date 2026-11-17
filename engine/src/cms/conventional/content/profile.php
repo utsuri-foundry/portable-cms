@@ -429,7 +429,7 @@ final readonly class PrivacyDeclaration
 
 final readonly class ProfileManifest
 {
-    public const ENGINE_VERSION = '0.13.2';
+    public const ENGINE_VERSION = '0.13.3';
 
     /** @var array<string, RecordTypeDefinition> */
     private array $typesById;

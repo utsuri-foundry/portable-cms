@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 return [
-    'website_media.owner' => 'Lloc web (imatges)',
     'website_media.upload_help' => 'Afegeix una imatge del teu ordinador a la biblioteca. Quan estigui preparada, tria-la aquí.',
     'website_media.file' => 'Imatge nova',
     'website_media.upload' => 'Puja',

@@ -23,6 +23,18 @@ try {
 		);
 	}
 	await ready("location.pathname==='/' && document.querySelector('.admin-navigation')");
+	// The Overview opens on the last change and what the website shows; no installation card and no account line.
+	assert.match(
+		await evaluate(
+			"document.querySelector('.admin-page-header .admin-lede')?.textContent ?? ''",
+		),
+		/Last change|published/,
+	);
+	assert.equal(await evaluate("document.querySelector('#system-heading')"), null);
+	assert.equal(
+		await evaluate("document.body.textContent.includes('Signed in as')"),
+		false,
+	);
 	await command("Emulation.setScriptExecutionDisabled", { value: true });
 	await navigate(
 		"/records/project/10000000000000000000000000000001",
@@ -35,6 +47,22 @@ try {
 		"Edit image details",
 	);
 	await navigate(path, "[name=alternativeText__en]");
+	// Languages by name, a square crop with the numbers folded, and no state word on a ready image.
+	const legends = await evaluate(
+		"[...document.querySelectorAll('.admin-media-text > legend')].map(l=>l.textContent)",
+	);
+	assert.ok(legends.includes("English") && legends.every((l) => l.length > 2));
+	assert.equal(
+		await evaluate(
+			"document.querySelector('.admin-focal__crop').getAttribute('viewBox')",
+		),
+		"0 0 240 240",
+	);
+	assert.equal(
+		await evaluate("document.querySelector('.admin-focal__numbers').open"),
+		false,
+	);
+	assert.equal(await evaluate("document.body.textContent.includes('· ready')"), false);
 	const original = await evaluate(
 		"Object.fromEntries([...document.querySelectorAll('input[type=text]')].map(c=>[c.name,c.value]))",
 	);

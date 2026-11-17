@@ -25,10 +25,22 @@ final class MemoryMediaLibrary implements MediaLibraryRepository
     public array $items = [];
     public int $writes = 0;
 
-    public function search(string $query, int $page): MediaPage
+    public function search(string $query, int $page, string $kind = 'all'): MediaPage
     {
-        $items = array_values(array_filter($this->items, static fn(LibraryMedia $item): bool => $query === '' || mb_stripos($item->name, $query) !== false));
-        return new MediaPage(array_slice($items, ($page - 1) * 20, 20), count($items) > $page * 20, $page, $query);
+        $prefix = ['images' => 'image/', 'videos' => 'video/'][$kind] ?? '';
+        $items = array_values(array_filter($this->items, static fn(LibraryMedia $item): bool => ($query === '' || mb_stripos($item->name, $query) !== false) && str_starts_with($item->mime, $prefix)));
+        return new MediaPage(array_slice($items, ($page - 1) * 20, 20), count($items) > $page * 20, $page, $query, MediaPage::filter($kind));
+    }
+
+    public function imageTexts(string $query): array
+    {
+        $images = [];
+        foreach ($this->items as $item) {
+            if (($query === '' || mb_stripos($item->name, $query) !== false) && str_starts_with($item->mime, 'image/')) {
+                $images[] = ['id' => $item->id, 'status' => $item->status, 'text' => $item->text];
+            }
+        }
+        return $images;
     }
 
     public function find(string $id): ?LibraryMedia
@@ -76,10 +88,10 @@ $tests['media library is bounded private escaped and metadata conflicts preserve
         $id = array_key_first($fixture['repository']->items);
         assertSameValue(303, $app->handle(new Request('GET', '/media'))->status, 'library is not public');
         $first = $app->handle(new Request('GET', '/media', cookies: $cookies));
-        assertSameValue(20, substr_count($first->body, '<li class="admin-card">'), 'library page is bounded');
+        assertSameValue(20, substr_count($first->body, '<li class="admin-card admin-media-card"'), 'library page is bounded');
         assertTrueValue(str_contains($first->body, 'page=2'), 'library has native next page');
         $second = $app->handle(new Request('GET', '/media', cookies: $cookies, query: ['page' => '2']));
-        assertSameValue(5, substr_count($second->body, '<li class="admin-card">'), 'second page contains remaining records');
+        assertSameValue(5, substr_count($second->body, '<li class="admin-card admin-media-card"'), 'second page contains remaining records');
         $post = ['_csrf' => $cookies[IdentityService::CSRF_COOKIE], '_revision' => '1', 'name' => '<script>renamed</script>'];
         assertSameValue(403, $app->handle(new Request('POST', '/media/' . $id, contentMutationHeaders(), [...$post, '_csrf' => 'bad'], $cookies))->status, 'metadata requires CSRF');
         assertSameValue(303, $app->handle(new Request('POST', '/media/' . $id, contentMutationHeaders(), $post, $cookies))->status, 'metadata saves with redirect');

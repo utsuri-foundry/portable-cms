@@ -65,7 +65,7 @@ $tests['batch image descriptions are authenticated bounded native forms with ind
         assertSameValue('', MediaDescriptionsForm::warning($decorative, $profile, Translator::english()), 'decorative image has no missing-alternative warning');
         assertTrueValue(MediaDescriptionsForm::warning($fixture['library']->find($ids[1]), $profile, Translator::english()) !== '', 'missing description matches publication eligibility');
         $listing = $app->handle(new Request('GET', '/media', cookies: $cookies));
-        assertTrueValue(str_contains($listing->body, 'Text alternative needed before publishing'), 'library flags incomplete images');
+        assertTrueValue(str_contains($listing->body, 'Describe this image in Català, Español and English before publishing.'), 'library names the languages an image still needs');
         $writes = $fixture['repository']->writes;
         foreach ([[], [$ids[0], $ids[0]], array_slice(array_keys($fixture['repository']->items), 0, 9), ['../private'], [str_repeat('f', 32)]] as $bad) {
             assertSameValue(422, $app->handle($mutate([...$post, 'media_ids' => $bad]))->status, 'invalid batch rejected before writes');

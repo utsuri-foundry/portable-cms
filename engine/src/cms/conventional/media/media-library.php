@@ -29,13 +29,29 @@ final readonly class LibraryMedia
 
 final readonly class MediaPage
 {
-    /** @param list<LibraryMedia> $items */
-    public function __construct(public array $items, public bool $hasNext, public int $page, public string $query) {}
+    public const FILTERS = ['all', 'images', 'videos', 'undescribed'];
+
+    /** @param list<LibraryMedia> $items
+     * @param string $filter One of FILTERS; "undescribed" lists the images that still need a description in a website language.
+     * @param int $undescribed How many images matching the query need a description, for the filter's count.
+     */
+    public function __construct(public array $items, public bool $hasNext, public int $page, public string $query, public string $filter = 'all', public int $undescribed = 0) {}
+
+    public static function filter(string $value): string
+    {
+        return in_array($value, self::FILTERS, true) ? $value : 'all';
+    }
 }
 
 interface MediaLibraryRepository
 {
-    public function search(string $query, int $page): MediaPage;
+    /** @param string $kind "all", "images" or "videos", by declared or detected type. */
+    public function search(string $query, int $page, string $kind = 'all'): MediaPage;
+
+    /** Every image matching the query with its state and authored text, newest first and bounded, so the library can count and list the ones still to describe.
+     * @return list<array{id: string, status: string, text: ?MediaText}>
+     */
+    public function imageTexts(string $query): array;
 
     public function find(string $id): ?LibraryMedia;
 
@@ -79,6 +95,42 @@ final class MediaLibrary
     {
         $result = $this->repository->search(mb_substr(trim($query), 0, 100), max(1, min(1000, $page)));
         return new MediaPage(array_map($this->withFrame(...), $result->items), $result->hasNext, $result->page, $result->query);
+    }
+
+    /**
+     * One page of the library under a filter, with the count of images still to describe for the same query.
+     * @param list<string> $locales The website languages a description must cover.
+     */
+    public function browse(string $query, int $page, string $filter, array $locales, string $defaultLocale): MediaPage
+    {
+        $query = mb_substr(trim($query), 0, 100);
+        $page = max(1, min(1000, $page));
+        $filter = MediaPage::filter($filter);
+        $undescribed = [];
+        foreach ($this->repository->imageTexts($query) as $image) {
+            if ($image['status'] !== 'ready') {
+                continue; // A file still being prepared, or one that failed, is not asked for a description yet.
+            }
+            $text = $image['text'] ?? MediaText::from();
+            foreach ($locales as $locale) {
+                if (!$text->publishable($locale, $defaultLocale)) {
+                    $undescribed[] = $image['id'];
+                    break;
+                }
+            }
+        }
+        if ($filter === 'undescribed') {
+            $items = [];
+            foreach (array_slice($undescribed, ($page - 1) * 20, 20) as $id) {
+                $media = $this->find($id);
+                if ($media !== null) {
+                    $items[] = $media;
+                }
+            }
+            return new MediaPage($items, count($undescribed) > $page * 20, $page, $query, $filter, count($undescribed));
+        }
+        $result = $this->repository->search($query, $page, $filter);
+        return new MediaPage(array_map($this->withFrame(...), $result->items), $result->hasNext, $result->page, $result->query, $filter, count($undescribed));
     }
 
     public function find(string $id): ?LibraryMedia

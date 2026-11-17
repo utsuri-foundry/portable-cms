@@ -264,9 +264,18 @@ final class ReferenceControls
     public static function metadata(LibraryMedia $media, ?Translator $translator = null): string
     {
         $t = $translator ?? Translator::english();
-        return (str_starts_with($media->mime, 'video/') ? $t->text('video.kind') . ' · ' . VideoPreview::duration($media, $t) . ' · ' : '')
-            . ($media->width === null ? '' : $media->width . ' × ' . $media->height . ' · ')
-            . $t->text('media.size', ['megabytes' => $media->byteSize / 1_048_576]) . ' · ' . self::mediaState($media->status, $t);
+        // A ready file needs no state word; only waiting and failed states are said.
+        $parts = str_starts_with($media->mime, 'video/') ? [$t->text('video.kind'), VideoPreview::duration($media, $t)] : [];
+        if ($media->width !== null) {
+            $parts[] = $media->width . ' × ' . $media->height;
+        }
+        $parts[] = $media->byteSize < 1_048_576
+            ? $t->text('media.size_small', ['kilobytes' => (string) (int) round($media->byteSize / 1024)])
+            : $t->text('media.size', ['megabytes' => $media->byteSize / 1_048_576]);
+        if ($media->status !== 'ready') {
+            $parts[] = self::mediaState($media->status, $t);
+        }
+        return implode(' · ', $parts);
     }
 
     /** Lower-case processing state for inline metadata; unknown states stay diagnostic. */
