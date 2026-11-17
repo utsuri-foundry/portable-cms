@@ -101,7 +101,7 @@ $tests['identity upgrade notes survive saving and show retained values as escape
     assertSameValue($next->identity()->document(), $expanded->identity()->document(), 'language expansion does not change the canonical identity');
     assertSameValue('Coming soon.', $expanded->document()['translations'][3]['message'], 'a newly installed language receives its default holding message');
     $page = WebsitePublicationPage::render($profile, new AdminChrome('csrf', 'Administrator'), $next);
-    assertTrueValue(str_contains($page, 'kept the name and icon from Website settings') && str_contains($page, 'Previous &lt;studio&gt;') && !str_contains($page, 'Previous <studio>'), 'the editor sees which source was kept and the escaped former values');
+    assertTrueValue(str_contains($page, 'The name and icon saved here were kept') && !str_contains($page, 'Previous <studio>') && !str_contains($page, 'Previous &lt;studio&gt;') && preg_match('/[a-f0-9]{8}\b/', strip_tags($page)) === 0, 'administrators read one sentence about the kept source, without former values or identities');
 };
 
 $tests['typed blocks cannot introduce a second editable website icon'] = static function (): void {

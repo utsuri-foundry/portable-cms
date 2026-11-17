@@ -5,6 +5,23 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.13.1
+
+- Website settings is redesigned in the order of an editor's tasks. One line
+  under the heading says what the public website shows now. "Website" holds
+  the name, with where it appears, and the icon: the rule first, the chosen
+  image previewed at the 32, 180 and 512 pixel sizes it becomes, and a chooser
+  that lists only images that qualify. "Before launch" asks what the next
+  release publishes as two explained choices, shows the message and contact
+  per language by language name for the public languages only, and asks for a
+  confirmation only when going back from the website to the coming soon page.
+  "Administration appearance" comes last with the logo and its dark mode
+  variant, each shown on its backing, and choosers that list only images that
+  fit. Saving says it saved and names the next step on Releases. Every failure
+  is a sentence; operator notes, locale codes and the atomic delivery sentence
+  leave the page. Editors read the page; owners and administrators change it.
+  The settings and their meaning are unchanged.
+
 ## 0.13.0
 
 - Previews reads as seeing the website as it would be published: one form

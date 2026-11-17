@@ -148,7 +148,7 @@ $tests['administration leads with accessible logos and retains named icon and in
         assertSameValue(200, $browsed->status, 'native browsing does not save');
         assertSameValue(0, $f['settings']->writes, 'browsing leaves the revision alone');
         assertTrueValue(str_contains($browsed->body, 'Unsaved logo studio') && str_contains($browsed->body, 'Image 25'), 'search keeps other unsaved settings');
-        assertTrueValue(str_contains($browsed->body, '<details open><summary>Administration logo</summary>'), 'native search results remain disclosed after navigation');
+        assertTrueValue(preg_match('#data-logo-picker="adminLogoMediaId"[^>]*>.*?<details class="admin-optional admin-picker__chooser" open>#s', $browsed->body) === 1, 'native search results remain disclosed after navigation');
     } finally {
         staticCompilerRemoveTree($f['root']);
     }

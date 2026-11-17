@@ -239,7 +239,7 @@ final class IdentityApplication
             if ($request->method === 'POST' && $this->mutationRejection($request, $session) !== null) {
                 return $this->withSessionCookies(new Response(403, Pages::error(403, $correlationId, $t)), $session);
             }
-            return $this->withSessionCookies((new Publication\WebsitePublicationHttp($this->websitePublication, $profile, $this->chrome($request, $session), $this->mediaLibrary, $this->mediaUploads, $this->random))->handle($request, $session), $session);
+            return $this->withSessionCookies((new Publication\WebsitePublicationHttp($this->websitePublication, $this->siteLanguages?->load()->editingProfile($profile) ?? $profile, $this->chrome($request, $session), $this->mediaLibrary, $this->mediaUploads, $this->random, $this->publicState(), $this->siteLanguages?->load()->public()))->handle($request, $session), $session);
         }
         if ($request->path === '/settings/languages' && $profile !== null && $this->siteLanguages !== null) {
             if (!$session->editorial()) {
@@ -1061,6 +1061,27 @@ final class IdentityApplication
             actorName: $this->actorName(),
             zone: $sharing?->timeZone,
         ));
+    }
+
+    /** What the public website shows now: the coming soon page, the website, or nothing yet. */
+    private function publicState(): ?string
+    {
+        $publication = $this->publication;
+        if ($publication === null) {
+            return null;
+        }
+        $activeId = $publication->head()->activeId;
+        if ($activeId === null) {
+            return 'none';
+        }
+        $active = null;
+        foreach ($publication->list() as $release) {
+            if ($release->id === $activeId) {
+                $active = $release;
+                break;
+            }
+        }
+        return $active !== null && $publication->holding?->builds->find($active->previewId) !== null ? 'coming_soon' : 'website';
     }
 
     private function actorName(): ?\Closure
