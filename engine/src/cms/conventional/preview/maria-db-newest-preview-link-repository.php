@@ -9,35 +9,63 @@ use Utsuri\PortableCms\Conventional\Identity\MariaDbIdentityRepository;
 
 final class MariaDbNewestPreviewLinkRepository implements NewestPreviewLinkRepository
 {
+    private const COLUMNS = 'id, created_at, expires_at, note, created_by, sealed_secret';
+
     public function __construct(private readonly PDO $pdo) {}
 
     public function create(NewestPreviewLink $link, string $tokenHash, string $actor, string $auditId): void
     {
         $this->transaction(function () use ($link, $tokenHash, $actor, $auditId): void {
-            // The installation owner serializes the global active-link bound across publishers.
+            // The installation owner serializes the global active-link bound across sharers.
             $this->pdo->query("SELECT id FROM cms_users WHERE role = 'owner' FOR UPDATE")->fetchColumn();
-            $this->publisher($actor);
+            $this->sharer($actor);
             if (count($this->active($link->createdAt)) >= 50) {
                 throw new ShareUnavailable();
             }
-            $statement = $this->pdo->prepare('INSERT INTO cms_preview_follow_links (id, token_hash, created_by, created_at, expires_at) VALUES (:id, :hash, :actor, :created, :expires)');
-            $statement->execute(['id' => $link->id, 'hash' => $tokenHash, 'actor' => $actor, 'created' => self::time($link->createdAt), 'expires' => self::time($link->expiresAt)]);
+            $statement = $this->pdo->prepare('INSERT INTO cms_preview_follow_links (id, token_hash, created_by, created_at, expires_at, note, sealed_secret) VALUES (:id, :hash, :actor, :created, :expires, :note, :sealed)');
+            $statement->execute(['id' => $link->id, 'hash' => $tokenHash, 'actor' => $actor, 'created' => self::time($link->createdAt), 'expires' => self::time($link->expiresAt), 'note' => $link->note, 'sealed' => $link->sealedSecret]);
             $this->audit($auditId, $actor, 'preview.follow.created', $link, null, $link->createdAt);
         });
     }
 
     public function active(\DateTimeImmutable $now): array
     {
-        $statement = $this->pdo->prepare('SELECT id, created_at, expires_at FROM cms_preview_follow_links WHERE revoked_at IS NULL AND expires_at > :now ORDER BY created_at DESC, id DESC LIMIT 50');
+        $statement = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_follow_links WHERE revoked_at IS NULL AND expires_at > :now ORDER BY created_at DESC, id DESC LIMIT 50');
         $statement->execute(['now' => self::time($now)]);
         return array_map(self::hydrate(...), $statement->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function listed(\DateTimeImmutable $now): array
+    {
+        $statement = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_follow_links WHERE revoked_at IS NULL AND expires_at > :floor ORDER BY created_at DESC, id DESC LIMIT 50');
+        $statement->execute(['floor' => self::time(SharedLinkLifetime::listingFloor($now))]);
+        return array_map(self::hydrate(...), $statement->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function extend(string $id, \DateTimeImmutable $expiresAt, string $actor, string $auditId, \DateTimeImmutable $now): NewestPreviewLink
+    {
+        return $this->transaction(function () use ($id, $expiresAt, $actor, $auditId, $now): NewestPreviewLink {
+            $this->sharer($actor);
+            $statement = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_follow_links WHERE id = :id AND revoked_at IS NULL FOR UPDATE');
+            $statement->execute(['id' => $id]);
+            $row = $statement->fetch(PDO::FETCH_ASSOC);
+            if (!is_array($row)) {
+                throw new ShareUnavailable();
+            }
+            $update = $this->pdo->prepare('UPDATE cms_preview_follow_links SET expires_at = :expires WHERE id = :id');
+            $update->execute(['expires' => self::time($expiresAt), 'id' => $id]);
+            $row['expires_at'] = self::time($expiresAt);
+            $link = self::hydrate($row);
+            $this->audit($auditId, $actor, 'preview.follow.extended', $link, null, $now);
+            return $link;
+        });
     }
 
     public function revoke(string $id, string $actor, string $auditId, \DateTimeImmutable $now): void
     {
         $this->transaction(function () use ($id, $actor, $auditId, $now): void {
-            $this->publisher($actor);
-            $statement = $this->pdo->prepare('SELECT id, created_at, expires_at FROM cms_preview_follow_links WHERE id = :id AND revoked_at IS NULL FOR UPDATE');
+            $this->sharer($actor);
+            $statement = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_follow_links WHERE id = :id AND revoked_at IS NULL FOR UPDATE');
             $statement->execute(['id' => $id]);
             $row = $statement->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
@@ -53,7 +81,7 @@ final class MariaDbNewestPreviewLinkRepository implements NewestPreviewLinkRepos
     {
         return $this->transaction(function () use ($id, $tokenHash, $pinnedPreview, $auditId, $now): ?NewestPreviewResolution {
             // This lock orders resolution/use with revocation and deduplicates the use audit.
-            $statement = $this->pdo->prepare('SELECT id, token_hash, created_at, expires_at, revoked_at FROM cms_preview_follow_links WHERE id = :id FOR UPDATE');
+            $statement = $this->pdo->prepare('SELECT id, token_hash, created_at, expires_at, revoked_at, note, created_by FROM cms_preview_follow_links WHERE id = :id FOR UPDATE');
             $statement->execute(['id' => $id]);
             $row = $statement->fetch(PDO::FETCH_ASSOC);
             $matches = hash_equals(is_array($row) ? (string) $row['token_hash'] : str_repeat('0', 64), $tokenHash);
@@ -89,7 +117,7 @@ final class MariaDbNewestPreviewLinkRepository implements NewestPreviewLinkRepos
     {
         $this->transaction(function () use ($resolution, $tokenHash, $expiresAt, $now): void {
             $select = $this->pdo->prepare(<<<'SQL'
-SELECT l.id, l.created_at, l.expires_at
+SELECT l.id, l.created_at, l.expires_at, l.note, l.created_by
 FROM cms_preview_follow_links l JOIN cms_preview_follow_resolutions r ON r.link_id = l.id JOIN cms_previews p ON p.id = r.preview_id
 WHERE l.id = :id AND r.preview_id = :preview AND l.revoked_at IS NULL AND l.expires_at > :now AND p.status = 'ready' AND p.build_kind = 'website'
 FOR UPDATE
@@ -115,7 +143,7 @@ SQL);
     public function files(string $id, string $tokenHash, \DateTimeImmutable $now): ?NewestPreviewResolution
     {
         $select = $this->pdo->prepare(<<<'SQL'
-SELECT l.id, l.created_at, l.expires_at, f.preview_id, f.token_hash
+SELECT l.id, l.created_at, l.expires_at, l.note, l.created_by, f.preview_id, f.token_hash
 FROM cms_preview_follow_files f JOIN cms_preview_follow_links l ON l.id = f.link_id
 JOIN cms_preview_follow_resolutions r ON r.link_id = f.link_id AND r.preview_id = f.preview_id JOIN cms_previews p ON p.id = r.preview_id
 WHERE f.link_id = :id AND f.token_hash = :hash AND f.expires_at > :now_file
@@ -131,7 +159,7 @@ SQL);
     {
         return $this->transaction(function () use ($id, $parentTokenHash, $fileTokenHash, $expiresAt, $now): ?NewestPreviewResolution {
             // Keep parent-before-file lock ordering with minting and revocation.
-            $select = $this->pdo->prepare('SELECT id, token_hash, created_at, expires_at, revoked_at FROM cms_preview_follow_links WHERE id = :id FOR UPDATE');
+            $select = $this->pdo->prepare('SELECT id, token_hash, created_at, expires_at, revoked_at, note, created_by FROM cms_preview_follow_links WHERE id = :id FOR UPDATE');
             $select->execute(['id' => $id]);
             $row = $select->fetch(PDO::FETCH_ASSOC);
             $matches = hash_equals(is_array($row) ? (string) $row['token_hash'] : str_repeat('0', 64), $parentTokenHash);
@@ -148,9 +176,10 @@ SQL);
         });
     }
 
-    private function publisher(string $actor): void
+    /** Every active account may share: owners, administrators and editors alike. */
+    private function sharer(string $actor): void
     {
-        $statement = $this->pdo->prepare("SELECT id FROM cms_users WHERE id = :id AND role IN ('owner', 'administrator') AND status = 'active' AND must_change_password = 0 FOR UPDATE");
+        $statement = $this->pdo->prepare("SELECT id FROM cms_users WHERE id = :id AND role IN ('owner', 'administrator', 'editor') AND status = 'active' AND must_change_password = 0 FOR UPDATE");
         $statement->execute(['id' => $actor]);
         if ($statement->fetchColumn() === false) {
             throw new ShareUnavailable();
@@ -165,7 +194,14 @@ SQL);
     /** @param array<string, mixed> $row */
     private static function hydrate(array $row): NewestPreviewLink
     {
-        return new NewestPreviewLink((string) $row['id'], new \DateTimeImmutable((string) $row['created_at'], new \DateTimeZone('UTC')), new \DateTimeImmutable((string) $row['expires_at'], new \DateTimeZone('UTC')));
+        return new NewestPreviewLink(
+            (string) $row['id'],
+            new \DateTimeImmutable((string) $row['created_at'], new \DateTimeZone('UTC')),
+            new \DateTimeImmutable((string) $row['expires_at'], new \DateTimeZone('UTC')),
+            is_string($row['note'] ?? null) && $row['note'] !== '' ? $row['note'] : null,
+            is_string($row['created_by'] ?? null) ? $row['created_by'] : null,
+            is_string($row['sealed_secret'] ?? null) ? $row['sealed_secret'] : null,
+        );
     }
 
     /** @template T

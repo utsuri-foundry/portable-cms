@@ -608,7 +608,7 @@ $tests['exact preview routes require authentication and acknowledge durable queu
     $cookies = authenticatedTestCookies($app);
     $list = $app->handle(new Request('GET', '/previews', cookies: $cookies));
     assertSameValue(200, $list->status, 'authenticated editor should open preview list');
-    assertTrueValue(str_contains($list->body, 'Create exact preview'), 'preview action should be explicit');
+    assertTrueValue(str_contains($list->body, 'Preview the website'), 'preview action should be explicit');
 
     $rejected = $app->handle(new Request(
         'POST',
@@ -637,7 +637,7 @@ $tests['exact preview routes require authentication and acknowledge durable queu
     );
     $status = $app->handle(new Request('GET', '/previews/' . $preview->id, cookies: $cookies));
     assertSameValue(200, $status->status, 'queued preview should have a stable status page');
-    assertTrueValue(str_contains($status->body, 'frozen preview is queued'), 'status should explain queued work');
+    assertTrueValue(str_contains($status->body, 'Waiting to build.'), 'status should explain queued work');
     assertSameValue(
         '2; url=/previews/' . $preview->id,
         $status->headers()['refresh'][0] ?? null,

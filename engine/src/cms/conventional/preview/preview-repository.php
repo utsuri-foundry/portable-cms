@@ -31,6 +31,7 @@ final readonly class PreviewStatus
         public string $buildKind = 'website',
         public ?PreviewDiagnostics $diagnostics = null,
         public bool $includePreparation = false,
+        public ?string $createdBy = null,
     ) {}
 }
 

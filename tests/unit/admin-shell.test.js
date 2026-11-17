@@ -3,6 +3,7 @@ import test from "node:test";
 import {
 	applyTheme,
 	mountAccountMenu,
+	mountCopyButtons,
 	mountHelpControls,
 	mountThemeForm,
 	toggleHelp,
@@ -164,4 +165,43 @@ test("mounted help controls answer clicks and Escape only for their own toggle",
 		"false",
 		"nothing listens after unmount",
 	);
+});
+
+test("copy buttons write their own value and say so for a moment", async () => {
+	const button = new EventTarget();
+	button.dataset = {
+		copy: "https://cms.example.test/shared-previews/a/#b",
+		copied: "Copied",
+	};
+	button.textContent = "Copy";
+	const root = { querySelectorAll: () => [button] };
+	const written = [];
+	const timers = { setTimeout: (callback) => callback() };
+	const unmount = mountCopyButtons(
+		root,
+		{ clipboard: { writeText: async (value) => written.push(value) } },
+		timers,
+	);
+	button.dispatchEvent(new Event("click"));
+	await Promise.resolve();
+	await Promise.resolve();
+	assert.deepEqual(written, ["https://cms.example.test/shared-previews/a/#b"]);
+	assert.equal(button.textContent, "Copy", "the label returns after the timer");
+	const refused = mountCopyButtons(
+		root,
+		{
+			clipboard: {
+				writeText: async () => {
+					throw new Error("denied");
+				},
+			},
+		},
+		{ setTimeout: () => assert.fail("a refused copy says nothing") },
+	);
+	unmount();
+	button.dispatchEvent(new Event("click"));
+	await Promise.resolve();
+	await Promise.resolve();
+	assert.equal(button.textContent, "Copy");
+	refused();
 });

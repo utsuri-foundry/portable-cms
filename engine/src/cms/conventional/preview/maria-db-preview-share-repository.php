@@ -9,44 +9,68 @@ use Utsuri\PortableCms\Conventional\Identity\MariaDbIdentityRepository;
 
 final class MariaDbPreviewShareRepository implements PreviewShareRepository
 {
+    private const COLUMNS = 'id, preview_id, created_at, expires_at, note, created_by, sealed_secret';
+
     public function __construct(private readonly PDO $pdo) {}
 
     public function create(PreviewShare $share, string $tokenHash, string $actor, string $auditId): void
     {
         $this->transaction(function () use ($share, $tokenHash, $actor, $auditId): void {
-            $this->publisher($actor);
+            $this->sharer($actor);
             $preview = $this->pdo->prepare('SELECT status FROM cms_previews WHERE id = :id FOR UPDATE');
             $preview->execute(['id' => $share->previewId]);
             if ($preview->fetchColumn() !== 'ready' || count($this->active($share->previewId, $share->createdAt)) >= 50) {
                 throw new ShareUnavailable();
             }
             $insert = $this->pdo->prepare(<<<'SQL'
-INSERT INTO cms_preview_shares (id, preview_id, token_hash, created_by, created_at, expires_at)
-VALUES (:id, :preview, :hash, :actor, :created, :expires)
+INSERT INTO cms_preview_shares (id, preview_id, token_hash, created_by, created_at, expires_at, note, sealed_secret)
+VALUES (:id, :preview, :hash, :actor, :created, :expires, :note, :sealed)
 SQL);
             $insert->execute(['id' => $share->id, 'preview' => $share->previewId, 'hash' => $tokenHash, 'actor' => $actor,
-                'created' => self::time($share->createdAt), 'expires' => self::time($share->expiresAt)]);
+                'created' => self::time($share->createdAt), 'expires' => self::time($share->expiresAt), 'note' => $share->note, 'sealed' => $share->sealedSecret]);
             $this->audit($auditId, $actor, 'preview.share.created', $share, $share->createdAt);
         });
     }
 
     public function active(string $previewId, \DateTimeImmutable $now): array
     {
-        $statement = $this->pdo->prepare(<<<'SQL'
-SELECT id, preview_id, created_at, expires_at FROM cms_preview_shares
-WHERE preview_id = :preview AND revoked_at IS NULL AND expires_at > :now
-ORDER BY created_at DESC, id DESC LIMIT 50
-SQL);
+        $statement = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_shares WHERE preview_id = :preview AND revoked_at IS NULL AND expires_at > :now ORDER BY created_at DESC, id DESC LIMIT 50');
         $statement->execute(['preview' => $previewId, 'now' => self::time($now)]);
         return array_map(self::hydrate(...), $statement->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    public function revoke(string $previewId, string $id, string $actor, string $auditId, \DateTimeImmutable $now): void
+    public function listed(\DateTimeImmutable $now): array
     {
-        $this->transaction(function () use ($previewId, $id, $actor, $auditId, $now): void {
-            $this->publisher($actor);
-            $select = $this->pdo->prepare('SELECT id, preview_id, created_at, expires_at FROM cms_preview_shares WHERE id = :id AND preview_id = :preview AND revoked_at IS NULL FOR UPDATE');
-            $select->execute(['id' => $id, 'preview' => $previewId]);
+        $statement = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_shares WHERE revoked_at IS NULL AND expires_at > :floor ORDER BY created_at DESC, id DESC LIMIT 50');
+        $statement->execute(['floor' => self::time(SharedLinkLifetime::listingFloor($now))]);
+        return array_map(self::hydrate(...), $statement->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function extend(string $id, \DateTimeImmutable $expiresAt, string $actor, string $auditId, \DateTimeImmutable $now): PreviewShare
+    {
+        return $this->transaction(function () use ($id, $expiresAt, $actor, $auditId, $now): PreviewShare {
+            $this->sharer($actor);
+            $select = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_shares WHERE id = :id AND revoked_at IS NULL FOR UPDATE');
+            $select->execute(['id' => $id]);
+            $row = $select->fetch(PDO::FETCH_ASSOC);
+            if (!is_array($row)) {
+                throw new ShareUnavailable();
+            }
+            $update = $this->pdo->prepare('UPDATE cms_preview_shares SET expires_at = :expires WHERE id = :id');
+            $update->execute(['id' => $id, 'expires' => self::time($expiresAt)]);
+            $row['expires_at'] = self::time($expiresAt);
+            $share = self::hydrate($row);
+            $this->audit($auditId, $actor, 'preview.share.extended', $share, $now);
+            return $share;
+        });
+    }
+
+    public function revoke(string $id, string $actor, string $auditId, \DateTimeImmutable $now): void
+    {
+        $this->transaction(function () use ($id, $actor, $auditId, $now): void {
+            $this->sharer($actor);
+            $select = $this->pdo->prepare('SELECT ' . self::COLUMNS . ' FROM cms_preview_shares WHERE id = :id AND revoked_at IS NULL FOR UPDATE');
+            $select->execute(['id' => $id]);
             $row = $select->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 throw new ShareUnavailable();
@@ -61,7 +85,7 @@ SQL);
     {
         return $this->transaction(function () use ($id, $tokenHash, $auditId, $now): ?PreviewShare {
             $select = $this->pdo->prepare(<<<'SQL'
-SELECT s.id, s.preview_id, s.token_hash, s.created_at, s.expires_at, s.revoked_at, p.status
+SELECT s.id, s.preview_id, s.token_hash, s.created_at, s.expires_at, s.revoked_at, s.note, s.created_by, p.status
 FROM cms_preview_shares s JOIN cms_previews p ON p.id = s.preview_id
 WHERE s.id = :id FOR UPDATE
 SQL);
@@ -116,7 +140,7 @@ SQL);
     public function files(string $shareId, string $tokenHash, \DateTimeImmutable $now): ?PreviewShare
     {
         $select = $this->pdo->prepare(<<<'SQL'
-SELECT s.id, s.preview_id, s.created_at, s.expires_at, f.token_hash
+SELECT s.id, s.preview_id, s.created_at, s.expires_at, s.note, s.created_by, f.token_hash
 FROM cms_preview_share_files f JOIN cms_preview_shares s ON s.id = f.share_id JOIN cms_previews p ON p.id = s.preview_id
 WHERE f.share_id = :id AND f.token_hash = :hash AND f.expires_at > :now_file
 AND s.revoked_at IS NULL AND s.expires_at > :now_share AND p.status = 'ready'
@@ -126,9 +150,10 @@ SQL);
         return hash_equals(is_array($row) ? (string) $row['token_hash'] : str_repeat('0', 64), $tokenHash) && is_array($row) ? self::hydrate($row) : null;
     }
 
-    private function publisher(string $actor): void
+    /** Every active account may share: owners, administrators and editors alike. */
+    private function sharer(string $actor): void
     {
-        $select = $this->pdo->prepare("SELECT id FROM cms_users WHERE id = :id AND role IN ('owner', 'administrator') AND status = 'active' AND must_change_password = 0 FOR UPDATE");
+        $select = $this->pdo->prepare("SELECT id FROM cms_users WHERE id = :id AND role IN ('owner', 'administrator', 'editor') AND status = 'active' AND must_change_password = 0 FOR UPDATE");
         $select->execute(['id' => $actor]);
         if ($select->fetchColumn() === false) {
             throw new ShareUnavailable();
@@ -154,6 +179,9 @@ SQL);
             (string) $row['preview_id'],
             new \DateTimeImmutable((string) $row['created_at'], new \DateTimeZone('UTC')),
             new \DateTimeImmutable((string) $row['expires_at'], new \DateTimeZone('UTC')),
+            is_string($row['note'] ?? null) && $row['note'] !== '' ? $row['note'] : null,
+            is_string($row['created_by'] ?? null) ? $row['created_by'] : null,
+            is_string($row['sealed_secret'] ?? null) ? $row['sealed_secret'] : null,
         );
     }
 

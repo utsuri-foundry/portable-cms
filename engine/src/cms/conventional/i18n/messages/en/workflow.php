@@ -21,7 +21,6 @@ return [
     'workflow.required' => '{field} is required in every website language before the record is ready.',
     'workflow.relationship' => 'Mark referenced records as ready first, or remove the reference.',
     'workflow.media' => 'Selected media must have finished processing. Unsupported media cannot be included.',
-    'preview.include_drafts' => 'Include saved drafts and changes not yet marked as ready (review only)',
     'preview.mode.drafts' => 'Includes saved drafts. Review only; cannot be released.',
     'preview.include_preparation' => 'Include languages in preparation: {languages} (review only)',
     'preview.mode.preparation' => 'Includes languages in preparation. Review only; cannot be released.',

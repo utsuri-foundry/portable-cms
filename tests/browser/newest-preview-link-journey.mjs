@@ -10,20 +10,32 @@ export async function verifyNewestPreviewLink(
 	csrf,
 ) {
 	const { command, evaluate, navigate, ready } = browser;
-	await navigate("/previews", "#newest-share-expiry");
-	await evaluate(
-		"document.querySelector('#newest-share-expiry').value='720';document.querySelector('form[action=\"/previews/shares/newest\"]').requestSubmit()",
+	await navigate("/previews", "[data-share-panel]");
+	await evaluate(`(() => {
+		const form = document.querySelector('[data-share-panel] form');
+		form.elements.namedItem('kind').value = 'newest';
+		form.elements.namedItem('days').value = '30';
+		form.elements.namedItem('note').value = 'Comparison tool';
+		form.requestSubmit();
+	})()`);
+	await ready(
+		"document.readyState==='complete' && document.querySelector('[data-share-created] #share-link')",
 	);
-	await ready("document.querySelector('#newest-share-link')");
-	const link = await evaluate("document.querySelector('#newest-share-link').value");
-	const manifest = await evaluate(
-		"document.querySelector('#newest-share-manifest').value",
-	);
+	const link = await evaluate("document.querySelector('#share-link').value");
 	assert.ok(
 		await evaluate(
-			"document.querySelector('#newest-preview-links').textContent.includes('including drafts')",
+			"document.querySelector('[data-share-created]').textContent.includes('newest')",
 		),
+		"the new link says it always shows the newest preview",
 	);
+	const id = new URL(link).pathname.split("/")[2];
+	assert.ok(
+		await evaluate(
+			`document.querySelector('[data-shared-link="newest:${id}"]').textContent.includes('Comparison tool')`,
+		),
+		"the newest link is listed by its note",
+	);
+	const manifest = new URL("artifact/artifact.json", link).href;
 	const secret = new URL(link).hash.slice(1);
 	const bearer = { Authorization: `Bearer ${secret}` };
 	const firstManifest = await fetch(manifest, { headers: bearer });
@@ -42,6 +54,10 @@ export async function verifyNewestPreviewLink(
 		"document.querySelector('[data-share-notice]') && document.querySelector('iframe[data-share-renew]')",
 	);
 	assert.equal(await evaluate("location.hash"), "");
+	assert.match(
+		await evaluate("document.querySelector('[data-share-notice] p').textContent"),
+		/not public, shared by /,
+	);
 	const frameBefore = await evaluate("document.querySelector('iframe').src");
 	assert.match(
 		new URL(frameBefore).pathname,
@@ -77,11 +93,6 @@ export async function verifyNewestPreviewLink(
 		"SecurityError",
 	);
 	await isolated.close();
-	await evaluate("document.querySelector('[data-share-dismiss]').click()");
-	assert.equal(
-		await evaluate("document.querySelector('[data-share-notice]').hidden"),
-		true,
-	);
 	const guest = await command("Network.getCookies", { urls: [origin] });
 	assert.ok(
 		guest.cookies.some(
@@ -173,14 +184,13 @@ export async function verifyNewestPreviewLink(
 		mobile: false,
 	});
 	assert.ok(await evaluate("document.documentElement.scrollWidth<=innerWidth"));
-	const id = new URL(link).pathname.split("/")[2];
-	const revoked = await fetch(`${origin}/previews/shares/newest/${id}/revoke`, {
+	const stopped = await fetch(`${origin}/previews/shares/newest/${id}/stop`, {
 		method: "POST",
 		headers: managementHeaders,
 		body: new URLSearchParams({ _csrf: csrf }),
 		redirect: "manual",
 	});
-	assert.equal(revoked.status, 303);
+	assert.equal(stopped.status, 303);
 	for (const url of [manifest, firstPinnedUrl, fresh.url, frameBefore, frameAfter]) {
 		assert.equal(
 			await fetch(url, { headers: bearer }).then((response) => response.status),
@@ -188,6 +198,6 @@ export async function verifyNewestPreviewLink(
 		);
 	}
 	console.log(
-		"PASS newest preview browser sharing: profile scripts in an opaque frame, parent-cookie renewal, pinned browser/bearer bytes, notice dismissal, newer build and reload, 360px and immediate revocation.",
+		"PASS newest preview browser sharing: a named link from the Share panel, profile scripts in an opaque frame, parent-cookie renewal, pinned browser/bearer bytes, the bar, newer build and reload, 360px and immediate stop.",
 	);
 }

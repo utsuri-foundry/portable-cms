@@ -5,18 +5,60 @@ import { verifyNewestPreviewLink } from "./newest-preview-link-journey.mjs";
 
 export async function verifySharedPreview(browser, origin, preview) {
 	const { command, evaluate, navigate, ready } = browser;
-	const route = `${preview}/shares`;
-	async function create() {
-		await navigate(route, "#share-expiry");
+	async function create(note, days = "7") {
+		await navigate(preview, "[data-share-panel]");
 		await evaluate(`(() => {
-			document.querySelector('[name=expiry_hours]').value='24';
-			document.querySelector('form[action="${route}"]').requestSubmit();
+			const form = document.querySelector('[data-share-panel] form');
+			form.elements.namedItem('days').value = ${JSON.stringify(days)};
+			form.elements.namedItem('note').value = ${JSON.stringify(note)};
+			form.requestSubmit();
 		})()`);
-		await ready("document.querySelector('#share-link')");
+		await ready(
+			"document.readyState==='complete' && document.querySelector('[data-share-created] #share-link')",
+		);
 		return evaluate("document.querySelector('#share-link').value");
 	}
-	const link = await create();
-	const retained = await create();
+	const link = await create("Designer");
+	assert.ok(
+		await evaluate(
+			"document.querySelector('[data-share-created]').textContent.includes('Designer') && document.querySelector('[data-share-created]').textContent.includes('until')",
+		),
+		"the new link is named by its note and says until when it works",
+	);
+	const retained = await create("Client", "1");
+	assert.ok(
+		await evaluate(
+			"document.querySelectorAll('[data-shared-link^=\"preview:\"]').length >= 2",
+		),
+		"both links are listed under the previews",
+	);
+	assert.equal(
+		await evaluate(
+			`[...document.querySelectorAll('[data-shared-link] [data-copy]')].some(button => button.dataset.copy === ${JSON.stringify(link)})`,
+		),
+		true,
+		"a listed link can be copied again in full",
+	);
+	assert.equal(
+		await evaluate(
+			"(() => { const text = document.querySelector('#shared-links').textContent; return /[a-f0-9]{32}/.test(text) || text.includes('UTC'); })()",
+		),
+		false,
+		"the list shows neither identities nor UTC",
+	);
+	const share = new URL(link).pathname.split("/")[2];
+	const untilBefore = await evaluate(
+		`document.querySelector('[data-shared-link="preview:${share}"] .admin-meta').textContent`,
+	);
+	await evaluate(`(() => {
+		const row = document.querySelector('[data-shared-link="preview:${share}"]');
+		const form = row.querySelector('form[action$="/extend"]');
+		form.elements.namedItem('days').value = '30';
+		form.requestSubmit();
+	})()`);
+	await ready(
+		`location.pathname==='/previews' && document.querySelector('[data-shared-link="preview:${share}"] .admin-meta').textContent !== ${JSON.stringify(untilBefore)}`,
+	);
 	const csrf = await evaluate("document.querySelector('[name=_csrf]').value");
 	const { cookies } = await command("Network.getCookies", { urls: [origin] });
 	const cookie = cookies.map((value) => `${value.name}=${value.value}`).join("; ");
@@ -38,6 +80,11 @@ export async function verifySharedPreview(browser, origin, preview) {
 		"document.querySelector('[data-share-notice]') && document.querySelector('iframe[data-share-renew]')",
 	);
 	assert.equal(await evaluate("location.hash"), "");
+	assert.match(
+		await evaluate("document.querySelector('[data-share-notice] p').textContent"),
+		/not public, shared by /,
+		"the bar names the site as not public and says who shared it",
+	);
 	const guest = await command("Network.getCookies", { urls: [origin] });
 	assert.ok(
 		guest.cookies.some(
@@ -60,12 +107,17 @@ export async function verifySharedPreview(browser, origin, preview) {
 			"document.documentElement.scrollWidth <= innerWidth && document.querySelector('iframe').getBoundingClientRect().width === innerWidth",
 		),
 	);
-	await evaluate("document.querySelector('[data-share-dismiss]').click()");
-	assert.equal(
-		await evaluate("document.querySelector('[data-share-notice]').hidden"),
-		true,
-	);
 	const files = await evaluate("document.querySelector('iframe').src");
+	assert.ok(
+		(await evaluate("document.querySelectorAll('[data-share-language]').length")) >= 2,
+		"the bar offers the preview's languages",
+	);
+	await evaluate("document.querySelector('[data-share-language=\"ca\"]').click()");
+	assert.equal(
+		await evaluate("document.querySelector('iframe').src"),
+		`${files}ca/`,
+		"a language choice moves the frame without leaving the viewer",
+	);
 	assert.equal(
 		await evaluate(`fetch(${JSON.stringify(new URL("renew", link).href)}, {
 			method: 'POST',
@@ -149,14 +201,13 @@ export async function verifySharedPreview(browser, origin, preview) {
 		createHash("sha256").update(sharedBytes).digest("hex"),
 		createHash("sha256").update(original).digest("hex"),
 	);
-	const share = new URL(link).pathname.split("/")[2];
-	const revoked = await fetch(`${origin}${route}/${share}/revoke`, {
+	const stopped = await fetch(`${origin}/previews/shares/preview/${share}/stop`, {
 		method: "POST",
 		headers: managementHeaders,
 		body: new URLSearchParams({ _csrf: csrf }),
 		redirect: "manual",
 	});
-	assert.equal(revoked.status, 303);
+	assert.equal(stopped.status, 303);
 	assert.equal(
 		await evaluate(
 			`fetch(${JSON.stringify(deep)},{credentials:"omit"}).then(response=>response.status)`,
@@ -183,6 +234,6 @@ export async function verifySharedPreview(browser, origin, preview) {
 	await ready("location.pathname==='/login' && document.querySelector('form')");
 	assert.equal(await evaluate("location.pathname"), "/login");
 	process.stdout.write(
-		"PASS browser preview sharing: fragment exchange, scoped secure cookie, notice dismissal, narrow layout, profile scripts, opaque-origin attacks, frozen bytes, revocation, deletion and guest isolation.\n",
+		"PASS browser preview sharing: named links from the Share panel, copy again, extend, fragment exchange, scoped secure cookie, bar with site and sharer, language choice, narrow layout, profile scripts, opaque-origin attacks, frozen bytes, stop, deletion and guest isolation.\n",
 	);
 }

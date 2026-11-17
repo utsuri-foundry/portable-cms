@@ -137,7 +137,7 @@ $tests['content feed declarations never expose a field added later and preview d
     $now = new DateTimeImmutable('2026-10-19T12:00:00Z');
     $preview = new \Utsuri\PortableCms\Conventional\Preview\PreviewStatus(str_repeat('1', 32), 'ready', str_repeat('2', 32), null, $inventory->manifest(), $now, $now);
     $html = \Utsuri\PortableCms\Conventional\View\Pages::previewStatus('csrf', $profile, $preview);
-    assertTrueValue(str_contains($html, '/previews/' . $preview->id . '/artifact/' . $snapshotPath) && str_contains($html, 'View content feed snapshot'), 'a ready exact preview offers its immutable feed snapshot through the existing private artifact boundary');
+    assertTrueValue(str_contains($html, '/previews/' . $preview->id . '/artifact/' . $snapshotPath) && str_contains($html, 'Content feed snapshot'), 'a ready exact preview offers its immutable feed snapshot through the existing private artifact boundary');
 };
 
 $tests['content feed pagination is stable bounded and discovers empty collections'] = static function (): void {

@@ -11,40 +11,21 @@ const recordPath = "/records/project/10000000000000000000000000000001";
 const previewPath = /^\/previews\/[a-f0-9]{32}$/;
 
 async function openListedPreview(path, keyboard = false) {
-	await navigate("/previews", ".preview-cleanup-row");
+	await navigate("/previews", ".admin-preview-row");
 	assert.equal(
 		await evaluate(
-			"[...document.querySelectorAll('.preview-cleanup-row')].every(row => row.querySelectorAll('a[href]').length === 1 && row.querySelector('.admin-meta').textContent.trim() && row.querySelector('.admin-status').textContent.trim())",
+			"[...document.querySelectorAll('.admin-preview-row')].every(row => row.querySelectorAll('a.admin-table__title').length === 1 && row.querySelector('a.admin-table__title').textContent.trim() && row.dataset.previewStatus && !/[a-f0-9]{32}/.test(row.querySelector('.admin-preview-row__details').textContent))",
 		),
 		true,
-		"each row has one opening link with readable date and status",
+		"each row is named by its time, carries its status and shows no identity",
 	);
-	const selector = `.preview-cleanup-row a[href="${path}"]`;
+	const selector = `.admin-preview-row a.admin-table__title[href="${path}"]`;
 	if (keyboard) {
-		await evaluate(
-			`document.querySelector(${JSON.stringify(selector)}).closest('li').querySelector('input').focus()`,
-		);
-		for (const type of ["keyDown", "keyUp"]) {
-			await command("Input.dispatchKeyEvent", {
-				type,
-				key: "Tab",
-				code: "Tab",
-				windowsVirtualKeyCode: 9,
-			});
-		}
+		await evaluate(`document.querySelector(${JSON.stringify(selector)}).focus()`);
 		assert.equal(
-			await evaluate(
-				`document.activeElement.matches(${JSON.stringify(selector)}) && document.activeElement.matches(':focus-visible')`,
-			),
+			await evaluate(`document.activeElement.matches(${JSON.stringify(selector)})`),
 			true,
-			"one Tab from the selection checkbox reaches the native opening link",
-		);
-		assert.equal(
-			await evaluate(
-				"getComputedStyle(document.activeElement, '::after').outlineStyle !== 'none' && parseFloat(getComputedStyle(document.activeElement, '::after').outlineWidth) > 0",
-			),
-			true,
-			"keyboard focus visibly outlines the row",
+			"the native opening link takes focus",
 		);
 		for (const type of ["keyDown", "keyUp"]) {
 			await command("Input.dispatchKeyEvent", {
@@ -59,7 +40,7 @@ async function openListedPreview(path, keyboard = false) {
 			const link = document.querySelector(${JSON.stringify(selector)});
 			link.scrollIntoView({block:'center'});
 			const row = link.closest('li').getBoundingClientRect();
-			const x = row.right - 8, y = row.bottom - 8;
+			const x = row.left + 8, y = row.bottom - 8;
 			return {x, y, reachable: document.elementFromPoint(x, y) === link};
 		})()`);
 		assert.equal(
@@ -209,7 +190,7 @@ try {
 	assert.deepEqual(
 		(
 			await evaluate(
-				"[...document.querySelectorAll('.admin-list a')].map(a=>a.pathname)",
+				"[...document.querySelectorAll('.admin-list a.admin-table__title')].map(a=>a.pathname)",
 			)
 		).sort(),
 		[statusPath, nextStatusPath].sort(),

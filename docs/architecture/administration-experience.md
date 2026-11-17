@@ -535,6 +535,31 @@ preview states use stable text and status semantics. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
 
+### Previews
+
+Previews is seeing the website as it would be published, in the editor's words.
+The lede says so. One form asks what to preview, "Content marked ready" (what a
+release would publish) or "Everything, drafts included" (for review only), plus
+the languages in preparation when the site has some, with one button, "Preview
+the website". The list names each preview by its time in the site's zone, says
+who made it and tags drafts or languages in preparation, and offers Open, Share
+and a quiet Delete; a preview that is still building shows its state instead.
+The notice about records not yet marked as ready appears only when there are
+some. Bulk selection is not on the page: "Select several" turns it on, and
+pages beyond the first keep it reachable. A preview's own page is titled by its
+time and offers the same Open, Share and Delete. No identity or hash names a
+preview anywhere.
+
+Share is one panel per ready preview, for every account: what the link shows
+(this preview, or always the newest preview), for how long (1, 7 or 30 days,
+7 by default) and who it is for (a note). The result is the complete link in a
+field with Copy and a sentence saying what it shows and until when. "Shared
+links" under the previews lists each link by its note or a counted name, what
+it shows, until when in the site's time zone and by whom, with Copy, Extend and
+Stop; an expired link keeps Extend and Remove. The viewer a reviewer opens has a
+thin bar, "Preview of <site>, not public, shared by <name>", with the preview's
+languages. See [preview sharing](../development/preview-sharing.md).
+
 ### Releases
 
 Releases is where publishing happens, so it speaks of pages, times and people

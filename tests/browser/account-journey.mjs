@@ -162,7 +162,7 @@ try {
 	await navigate("/previews", 'form[action="/previews"]');
 	await evaluate(`(() => {
 		const form=document.querySelector('form[action="/previews"]');
-		form.elements.namedItem('include_drafts').checked=true;
+		form.elements.namedItem('include_drafts').value='1';
 		form.requestSubmit();
 	})()`);
 	try {

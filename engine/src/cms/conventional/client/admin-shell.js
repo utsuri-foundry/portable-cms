@@ -89,6 +89,34 @@ export function mountHelpControls(root) {
 }
 
 /** Keeps the account panel visible when it opens at the bottom of a scrolling rail. */
+/** A Copy button puts its own value on the clipboard and says so for a moment; the text stays selectable without it. */
+export function mountCopyButtons(
+	root,
+	navigator = root.ownerDocument?.defaultView?.navigator ?? globalThis.navigator,
+	timers = globalThis,
+) {
+	const buttons = [...root.querySelectorAll("[data-copy]")];
+	const handlers = buttons.map((button) => {
+		const label = button.textContent;
+		const copy = async () => {
+			try {
+				await navigator.clipboard.writeText(button.dataset.copy ?? "");
+			} catch {
+				return;
+			}
+			button.textContent = button.dataset.copied ?? label;
+			timers.setTimeout(() => {
+				button.textContent = label;
+			}, 2000);
+		};
+		button.addEventListener("click", copy);
+		return () => button.removeEventListener("click", copy);
+	});
+	return () => {
+		for (const remove of handlers) remove();
+	};
+}
+
 export function mountAccountMenu(details) {
 	const reveal = () => {
 		if (details.open) details.lastElementChild?.scrollIntoView?.({ block: "nearest" });
@@ -106,5 +134,6 @@ if (typeof document !== "undefined") {
 	for (const details of document.querySelectorAll(".admin-account"))
 		mountAccountMenu(details);
 	mountHelpControls(document);
+	mountCopyButtons(document);
 	document.dispatchEvent(new CustomEvent("admin-enhanced", { detail: "shell" }));
 }

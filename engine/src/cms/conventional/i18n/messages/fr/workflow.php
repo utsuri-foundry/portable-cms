@@ -21,7 +21,6 @@ return [
     'workflow.required' => '{field} est obligatoire dans toutes les langues du site pour que le contenu soit prêt.',
     'workflow.relationship' => 'Marquez d’abord les contenus référencés comme prêts ou supprimez la référence.',
     'workflow.media' => 'Les médias sélectionnés doivent avoir fini d’être traités. Les médias non pris en charge ne peuvent pas être inclus.',
-    'preview.include_drafts' => 'Inclure les brouillons enregistrés et les modifications pas encore marquées comme prêtes (révision uniquement)',
     'preview.mode.drafts' => 'Inclut les brouillons enregistrés. Vérification uniquement ; publication interdite.',
     'preview.include_preparation' => 'Inclure les langues en préparation : {languages} (vérification uniquement)',
     'preview.mode.preparation' => 'Inclut des langues en préparation. Vérification uniquement ; publication interdite.',

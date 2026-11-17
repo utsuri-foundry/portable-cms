@@ -65,7 +65,7 @@ async function preview(includeDrafts, expected) {
 	await navigate("/previews", "form[action='/previews']");
 	await evaluate(`(() => {
 		const form=document.querySelector('form[action="/previews"]');
-		form.elements.namedItem('include_drafts').checked=${includeDrafts};
+		form.elements.namedItem('include_drafts').value=${includeDrafts ? "1" : "0"};
 		form.requestSubmit();
 	})()`);
 	await ready(
@@ -128,7 +128,7 @@ try {
 		}
 	}
 	await evaluate(
-		"document.querySelector('form[action=\"/previews\"]').elements.namedItem('include_drafts').checked=true;document.querySelector('form[action=\"/previews\"]').requestSubmit()",
+		"document.querySelector('form[action=\"/previews\"]').elements.namedItem('include_drafts').value='1';document.querySelector('form[action=\"/previews\"]').requestSubmit()",
 	);
 	await ready(
 		"document.querySelector('#preflight-heading') && document.querySelector('main time')",
