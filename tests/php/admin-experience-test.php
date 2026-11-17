@@ -59,10 +59,22 @@ $tests['administration shell groups navigation exposes current state and owns ac
     assertSameValue(1, substr_count($html, '<main '), 'administration pages should expose one main landmark');
     assertTrueValue(str_contains($html, 'href="#main-content"'), 'shell should provide a skip link');
     assertTrueValue(str_contains($html, 'aria-label="CMS navigation"'), 'global navigation should be labelled');
-    foreach (['Content', 'Pages', 'Library', 'Publish', 'Website'] as $group) {
+    foreach (['Content', 'Publish', 'Website', 'For the agency'] as $group) {
         assertTrueValue(str_contains($html, '>' . $group . '</h2>'), "{$group} navigation group should exist");
     }
-    assertTrueValue(!str_contains($html, '>Workflow</h2>'), 'export and recovery no longer compete with editorial navigation');
+    foreach (['Pages', 'Library', 'Operations', 'Workflow'] as $group) {
+        assertTrueValue(!str_contains($html, '>' . $group . '</h2>'), "{$group} is no longer a navigation group");
+    }
+    assertTrueValue(strpos($html, '<span>Previews</span>') < strpos($html, '<span>Releases</span>') && strpos($html, '>Publish</h2>') < strpos($html, '<span>Releases</span>'), 'Previews and Releases sit together under Publish');
+    assertTrueValue(strpos($html, '<span>Sectors</span>') < strpos($html, '<span>Media</span>') && strpos($html, '<span>Media</span>') < strpos($html, '>Publish</h2>'), 'Media closes the Content group');
+    foreach (['<span>Installation</span>', '<span>Revision history</span>', '<span>Export</span>'] as $agency) {
+        assertTrueValue(strpos($html, '>For the agency</h2>') < strpos($html, $agency), $agency . ' sits in the agency foot');
+    }
+    $editor = Pages::dashboard(str_repeat('a', 32), 'Editor', $profile, ['status' => 'completed'], new AdminChrome(str_repeat('c', 32), 'Editor', role: 'editor'));
+    foreach (['>For the agency</h2>', '<span>Installation</span>', '<span>Export</span>', '<span>Content names</span>', '<span>Design</span>', '<span>Accounts</span>'] as $hidden) {
+        assertTrueValue(!str_contains($editor, $hidden), $hidden . ' is not shown to editors');
+    }
+    assertTrueValue(str_contains($editor, '<span>Releases</span>') && str_contains($editor, '<span>Settings</span>'), 'editors still reach Releases and Settings');
     assertTrueValue(str_contains($html, 'href="/" aria-current="page"><span>Overview</span>'), 'current navigation is programmatically exposed');
     assertTrueValue(str_contains($html, '<span>Projects</span><span class="admin-navigation__count">2</span>'), 'collections show record counts');
     assertTrueValue(str_contains($html, 'popovertarget="admin-menu"') && str_contains($html, 'id="admin-menu" popover'), 'phone menu is a native popover');

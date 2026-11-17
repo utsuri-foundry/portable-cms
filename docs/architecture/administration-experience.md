@@ -99,39 +99,44 @@ The persistent shell groups ordinary editing and publication work as follows:
    administration markup or assets.
 2. Overview: work to continue, items needing attention, content totals, and
    system status.
-3. Navigation groups, each omitted when empty:
-   - Content contains profile collections with record counts.
-   - Pages contains singleton pages. A singleton destination opens its editor
-     directly instead of a one-row list.
-   - Library contains Media and taxonomies, the reusable things editors pick
-     from inside records.
-   - Publish contains previews and releases when the installation can serve
-     them. Unavailable capabilities are omitted rather than shown as dead
-     navigation; their direct routes still explain the missing capability.
-     Editors can read Releases and scheduled times. Owners and administrators
-     approve an exact preview for now or a named-zone date and time, and can
-     move or cancel it before worker start. Scheduled membership is visible on
-     record and exact-preview pages; later edits leave approved bytes unchanged.
-     See [scheduled releases](../development/publication-workflow.md#scheduled-releases).
-   - Website contains site settings, Languages, Site wording, Content names,
-     and Website design. Editors see Languages, which they can read but not
-     change, and Site wording, which they write.
+3. Navigation groups, each omitted when empty, in the order of the work:
+   - Content contains every record type the profile lists, in its order
+     (collections with record counts, singleton pages, taxonomies and the
+     site settings record), then Media. A singleton destination opens its
+     editor directly instead of a one-row list.
+   - Publish contains Previews and Releases whenever the installation can
+     serve them, whatever the profile's navigation declares; a profile cannot
+     move or hide them. Unavailable capabilities are omitted rather than shown
+     as dead navigation; their direct routes still explain the missing
+     capability. Editors can read Releases and scheduled times. Owners and
+     administrators approve an exact preview for now or a named-zone date and
+     time, and can move or cancel it before worker start. Scheduled membership
+     is visible on record and exact-preview pages; later edits leave approved
+     bytes unchanged. See [scheduled releases](../development/publication-workflow.md#scheduled-releases).
+   - Website contains Settings (the website name, icon and coming soon page),
+     Languages and Wording for everyone who may open them, and for owners and
+     administrators also Content names, Design and Accounts. Editors see
+     Languages, which they can read but not change, and Wording, which they
+     write. "Website" appears once, as the group heading; the items are one or
+     two words each.
      Each wording entry is named and explained in the administration language
      through the profile's optional administration labels, falling back to its
      manifest label and purpose. Field errors use the same name; missing-wording
      preview reports resolve saved wording identities in the reader's language.
      These names do not translate the website's authored text or alter its build.
-     Installation details at `/settings/installation` is read-only for owners
-     and administrators, not editors. It labels the website name, profile ID,
-     site version (profile), Portable CMS engine version and installed CMS release
-     separately. These are independent of the public website's publication history.
-     The release is `initial` before the first installed upgrade, then the stable
-     dispatcher's active release identity; a development checkout has no installed
-     release. Operational details are not exposed on sign-in or error pages.
-     Errors keep the generic Portable CMS mark even when configuration is unreadable.
-4. A shell footer holds operator destinations such as Export, and one account
-   disclosure with the appearance preference and Sign out. For every signed-in
-   role it ends with a small, subdued line such as
+4. The sidebar's foot holds the agency's pages under a "For the agency"
+   heading, visibly apart from the editorial groups and absent for editors:
+   Installation details at `/settings/installation`, read-only for owners and
+   administrators, which labels the website name, profile ID, site version
+   (profile), Portable CMS engine version and installed CMS release separately
+   (these are independent of the public website's publication history; the
+   release is `initial` before the first installed upgrade, then the stable
+   dispatcher's active release identity, and a development checkout has no
+   installed release); Revision history; and Export. Operational details are
+   not exposed on sign-in or error pages, and errors keep the generic Portable
+   CMS mark even when configuration is unreadable. Below it, one account
+   disclosure holds the appearance preference and Sign out. For every
+   signed-in role it ends with a small, subdued line such as
    `Portable CMS 0.3.1 · Site 1.1.1`, using the engine and profile versions
    independently. The line stays inside the closed disclosure, including the
    phone menu, so it adds no height or scrolling to the closed sidebar.
