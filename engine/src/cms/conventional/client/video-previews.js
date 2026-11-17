@@ -49,6 +49,11 @@ export function mountVideoField(field) {
 			link.hidden = !id;
 			if (id) link.href = `/media/${id}`;
 		}
+		const summary = field.querySelector(`[data-video-browse="${kind}"] > summary`);
+		if (summary)
+			summary.textContent = id
+				? summary.dataset.videoChangeLabel
+				: summary.dataset.videoChooseLabel;
 		const player = field.querySelector("[data-video-player]");
 		const image = field.querySelector("[data-video-poster-preview]");
 		if (kind === "video") {

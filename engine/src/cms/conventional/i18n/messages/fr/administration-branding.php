@@ -3,12 +3,17 @@
 declare(strict_types=1);
 
 return [
-    'branding.title' => 'Logo de l’administration',
-    'branding.logo' => 'Logo standard',
-    'branding.dark_logo' => 'Variante pour le thème sombre (facultative)',
-    'branding.help' => 'Choisissez des images PNG, WebP ou JPEG prêtes. Les logos carrés, hauts ou larges sont centrés et réduits proportionnellement, sans recadrage, déformation ni agrandissement. Aucun ajout de marges n’est nécessaire. Chaque version préparée est limitée à 960 × 960 pixels et 1 MiB. Avant la connexion, seules les versions préparées choisies sont visibles, jamais les originaux. Sans logo, l’icône du site est utilisée, puis les initiales. Ces réglages ne changent pas le site public. Sans variante sombre, le logo conserve un fond clair.',
+    'branding.title' => 'Apparence de l’administration',
+    'branding.help' => 'Le logo de la page de connexion et de la barre latérale. Sans logo, l’icône du site est utilisée, puis les initiales. Cela ne change pas le site public.',
+    'branding.logo' => 'Logo',
+    'branding.logo_help' => 'Une image PNG, WebP ou JPEG de 960 × 960 pixels au maximum. Les logos carrés, hauts ou larges conviennent : l’image est centrée et réduite, jamais recadrée ni déformée.',
+    'branding.dark_logo' => 'Logo pour le mode sombre',
+    'branding.dark_help' => 'Affiché à la place du logo lorsque l’administration est en mode sombre. Sans lui, le logo conserve un fond clair.',
+    'branding.none' => 'Aucun',
+    'branding.choose' => 'Choisir une autre image',
+    'branding.empty' => 'Aucune image préparée de 960 × 960 pixels au maximum n’est encore dans la bibliothèque.',
     'branding.unavailable' => 'La médiathèque est indisponible. Votre sélection enregistrée est conservée.',
-    'branding.error.administration_logo_invalid' => 'Choisissez des images valides dans la médiathèque.',
-    'branding.error.administration_logo_required' => 'Choisissez un logo standard avant d’ajouter une variante sombre.',
-    'branding.error.administration_logo_not_ready' => 'Un logo est indisponible ou dépasse les limites. Choisissez une image prête avec une version WebP de 960 × 960 pixels et 1 MiB au maximum.',
+    'branding.error.administration_logo_invalid' => 'Choisissez les logos dans la médiathèque.',
+    'branding.error.administration_logo_required' => 'Choisissez un logo avant d’en ajouter un pour le mode sombre.',
+    'branding.error.administration_logo_not_ready' => 'Un logo choisi est indisponible ou dépasse 960 × 960 pixels. Choisissez une image préparée dans cette taille.',
 ];

@@ -10,11 +10,18 @@ if (form instanceof HTMLFormElement && /^[a-f0-9]{64}$/.test(token)) {
 		form.requestSubmit();
 	}
 }
-const dismiss = document.querySelector("[data-share-dismiss]");
-dismiss?.addEventListener("click", () => {
-	const notice = document.querySelector("[data-share-notice]");
-	if (notice instanceof HTMLElement) notice.hidden = true;
-});
+const languages = document.querySelectorAll("[data-share-language]");
+for (const link of languages) {
+	link.addEventListener("click", (event) => {
+		const frame = document.querySelector("iframe[data-share-renew]");
+		if (!(frame instanceof HTMLIFrameElement) || !(link instanceof HTMLAnchorElement))
+			return;
+		event.preventDefault();
+		frame.src = link.href;
+		for (const other of languages) other.removeAttribute("aria-current");
+		link.setAttribute("aria-current", "true");
+	});
+}
 
 const frame = document.querySelector("iframe[data-share-renew]");
 if (frame instanceof HTMLIFrameElement) {

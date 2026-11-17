@@ -31,7 +31,7 @@ final class SiteWordingPage
                 $names[SiteWording::field($definition->key, $locale)] = $definition->label . ', ' . $language . ': ';
             }
         }
-        $body = AdminShell::header($t->text('wording.title'), '<p class="admin-lede">' . $t->html('wording.lede') . '</p><p class="admin-help">' . $t->html('wording.help') . '</p>');
+        $body = AdminShell::header($t->text('wording.title'), '<p class="admin-lede">' . $t->html('wording.lede') . ' ' . FieldHelp::toggle('wording-help', $t->text('wording.title'), $t) . '</p>' . FieldHelp::text('wording-help', $t->html('wording.help')));
         if ($notice) {
             $body .= '<div class="admin-notice admin-notice--success" role="status"><p>' . $t->html('wording.saved') . '</p></div>';
         }
@@ -77,8 +77,10 @@ final class SiteWordingPage
                     . ($hint === '' ? '' : '<p class="admin-field__hint" id="hint-' . Html::attribute($field) . '">' . $hint . '</p>')
                     . ($error === null ? '' : '<p class="admin-field__error" id="error-' . Html::attribute($field) . '">' . Html::text($error) . '</p>') . '</div>';
             }
-            $entries .= '<fieldset class="admin-card admin-wording__entry" data-wording-key="' . Html::attribute($definition->key) . '"><legend>' . Html::text($definition->label) . '</legend>'
-                . '<p class="admin-help">' . Html::text($definition->purpose) . '</p>'
+            $entryId = 'wording-' . str_replace('.', '-', $definition->key);
+            $entries .= '<fieldset class="admin-card admin-wording__entry" data-wording-key="' . Html::attribute($definition->key) . '" aria-labelledby="' . Html::attribute($entryId . '-label') . '" aria-describedby="' . Html::attribute($entryId . '-help') . '">'
+                . FieldHelp::legend($entryId . '-label', Html::text($definition->label), $entryId . '-help', $definition->label, $t)
+                . FieldHelp::text($entryId . '-help', Html::text($definition->purpose))
                 . ($definition->kind === 'address_segment' ? '<p class="admin-meta">' . $t->html('wording.address') . '</p>' : '')
                 . '<div class="admin-wording__languages">' . $fields . '</div>'
                 // Reset buttons submit their own form, so pressing Enter in a field saves instead.

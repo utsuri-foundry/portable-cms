@@ -31,7 +31,6 @@ final class AdministrationPermissions
             || str_starts_with($request->path, '/releases/')
             || (str_starts_with($request->path, '/settings/') && !in_array($request->path, ['/settings/theme', '/settings/language'], true)
                 && !($request->path === '/settings/languages' && $request->method === 'GET') && $request->path !== '/settings/wording')
-            || str_contains($request->path, '/shares')
             || str_ends_with($request->path, '/status')
             || str_starts_with($request->path, '/holding')) {
             return false;

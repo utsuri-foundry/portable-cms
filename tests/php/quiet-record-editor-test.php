@@ -52,8 +52,9 @@ $tests['quiet record with five image and two video fields has native choices and
         $html = Pages::recordForm('csrf', $f['profile'], $type, [], $f['record'], mediaUploadEnabled: true, referenceControls: $controls);
         $xpath = quietEditorDom($html);
         assertSameValue(5, $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Add images"]')->length, 'one Add images control per image field');
-        assertSameValue(5, $xpath->query('//details[@class="admin-picker__upload" and not(@open)]')->length, 'upload choices start collapsed without requiring scripts');
-        assertSameValue(5, $xpath->query('//details[@class="admin-picker__library" and not(@open)]')->length, 'library selection is the other native choice');
+        assertSameValue(7, $xpath->query('//details[@class="admin-picker__upload" and not(@open)]')->length, 'upload choices start collapsed without requiring scripts, in video fields too');
+        assertSameValue(7, $xpath->query('//details[@class="admin-picker__library" and not(@open)]')->length, 'library selection is the other native choice');
+        assertSameValue(2, $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Choose video"]')->length + $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Choose poster image"]')->length - 2, 'one Choose video and one Choose poster image control per video field');
         foreach (['loop' => 6, 'trailer' => 18] as $id => $limit) {
             $upload = quietEditorElement($xpath, '//*[@data-upload-field="' . $id . '"]');
             assertSameValue((string) ($limit * 1048576), $upload->getAttribute('data-video-max-bytes'), 'the upload island receives this field limit');
@@ -156,4 +157,33 @@ $tests['record hints work on nested fields while single language tags disappear 
             assertTrueValue(str_contains($html, 'admin-locale--single'), 'native single-language captions are visually hidden but retain accessible labels');
         }
     }
+};
+
+$tests['field help folds behind a named control and required fields carry a star'] = static function (): void {
+    $profile = ProfileManifest::load(dirname(__DIR__, 2) . '/profiles/reference-studio/profile.json');
+    $field = new FieldDefinition('title', 'Title', 'short_text', false, true, true, ['maximumLength' => 100], maximumLength: 100, hint: 'Short and specific.');
+    $html = RecordPages::field($field, '', null, $profile);
+    $xpath = quietEditorDom($html);
+    $toggle = quietEditorElement($xpath, '//button[@data-help-toggle]');
+    assertSameValue('hint-title', $toggle->getAttribute('aria-controls'), 'the control names the text it opens');
+    assertSameValue('false', $toggle->getAttribute('aria-expanded'), 'help is folded at rest');
+    assertSameValue('iAbout Title', $toggle->textContent, 'the control reads About the field for assistive technology and shows an i');
+    assertSameValue('Short and specific.', quietEditorElement($xpath, '//*[@id="hint-title"][contains(@class,"admin-help-control__text")]')->textContent, 'the hint is the folded text');
+    assertSameValue('hint-title', quietEditorElement($xpath, '//input[@name="title"]')->getAttribute('aria-describedby'), 'the control still describes the field');
+    assertTrueValue(str_contains($html, '<span class="admin-field__required"><span aria-hidden="true">*</span><span class="admin-visually-hidden">Required</span></span>'), 'required is a star with the word kept for assistive technology');
+    assertTrueValue(!str_contains($html, 'admin-field__hint') && !str_contains($html, '>Required</span></label>'), 'no visible hint or Required word remains in the label');
+
+    $localized = new FieldDefinition('summary', 'Summary', 'localized_short_text', true, true, true, ['maximumLength' => 100], maximumLength: 100, hint: 'One line.');
+    $group = RecordPages::field($localized, [], null, $profile);
+    $xpath = quietEditorDom($group);
+    $fieldset = quietEditorElement($xpath, '//fieldset[@id="field-summary"]');
+    assertSameValue('label-summary', $fieldset->getAttribute('aria-labelledby'), 'a group is named by its legend words alone');
+    assertSameValue(1, $xpath->query('//legend/span[@id="label-summary"]/following-sibling::button[@data-help-toggle]')->length, 'the control follows the legend words');
+    assertSameValue('hint-summary', $fieldset->getAttribute('aria-describedby'), 'the group is described by the folded hint');
+
+    $project = $profile->type('project');
+    assertTrueValue($project !== null, 'project definition should be installed');
+    $form = Pages::recordForm(str_repeat('b', 32), $profile, $project, []);
+    $required = array_filter($project->fields, static fn(FieldDefinition $definition): bool => $definition->required) !== [];
+    assertSameValue($required, str_contains($form, '<p class="admin-form__required"><span class="admin-field__required" aria-hidden="true">*</span> required fields</p>'), 'one legend per form explains the star exactly when a field needs it');
 };

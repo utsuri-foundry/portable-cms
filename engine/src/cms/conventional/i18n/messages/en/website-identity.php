@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'holding.identity_kept_website' => 'The upgrade kept the name and icon from Website settings. Former profile values are preserved below.',
-    'holding.identity_kept_profile' => 'The upgrade adopted the former profile name and icon into Website settings. Former values are preserved below.',
-    'holding.identity_previous' => 'Previous profile values',
+    'holding.identity_kept_website' => 'The name and icon saved here were kept when the website’s own pages stopped carrying them.',
+    'holding.identity_kept_profile' => 'The name and icon were moved here from the website’s own pages.',
 ];

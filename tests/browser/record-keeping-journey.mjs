@@ -44,6 +44,13 @@ try {
 	});
 	await login(browser);
 	await navigate(record, '[data-keeping="true"]');
+	assert.deepEqual(
+		await evaluate(
+			"(() => { const star = document.querySelector('label .admin-field__required, legend .admin-field__required'); return [star?.textContent, document.querySelector('.admin-form__required')?.textContent, !!star?.closest('label, legend'), document.querySelectorAll('[required]').length > 0, document.querySelector('.admin-field__hint') === null]; })()",
+		),
+		["*Required", "* required fields", true, true, true],
+		"required fields carry a star, one legend explains it, the state stays exposed and nothing explanatory is visible by default",
+	);
 	assert.equal(
 		await evaluate("document.querySelector('[data-record-save]').hidden"),
 		true,

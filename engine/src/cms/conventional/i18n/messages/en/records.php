@@ -66,6 +66,8 @@ return [
     'editor.upload.label' => 'Upload new images',
     'editor.upload.submit' => 'Upload selected images',
     'field.required' => 'Required',
+    'field.about' => 'About {label}',
+    'form.required_legend' => 'required fields',
     'field.none' => 'None',
     'field.select_many' => 'Select one or more values.',
     'coverage.complete' => 'Complete',

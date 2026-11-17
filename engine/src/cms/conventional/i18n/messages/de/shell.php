@@ -34,7 +34,7 @@ return [
     'shell.theme.dark' => 'Dunkel',
     'shell.theme.apply' => 'Übernehmen',
     'state.draft' => 'Entwurf',
-    'state.published' => 'Veröffentlicht',
+    'state.published' => 'Bereit',
     'state.archived' => 'Archiviert',
     'state.queued' => 'In Warteschlange',
     'state.running' => 'Läuft',

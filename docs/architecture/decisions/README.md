@@ -33,3 +33,5 @@ Accepted decisions:
 - [0011: CI cadence](0011-ci-cadence.md)
 
 - [0012: Isolated Lighthouse measurements](0012-isolated-lighthouse-measurements.md)
+
+- [0013: Website settings in the order of an editor's tasks](0013-website-settings.md)

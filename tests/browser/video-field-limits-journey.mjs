@@ -28,7 +28,14 @@ try {
 	await navigate(record, "[name=trailer__video]");
 	assert.match(
 		await evaluate("document.querySelector('#field-trailer').textContent"),
-		/15 seconds[\s\S]*1920 pixels[\s\S]*1080 pixels[\s\S]*No sound/,
+		/up to 15 seconds, at most 1920 by 1080 pixels, without sound, and a poster image\./,
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelectorAll('#field-trailer [data-video-rule]').length",
+		),
+		1,
+		"the rule is stated once",
 	);
 	for (const variant of ["fitting", ...Object.keys(messages)]) {
 		const { root } = await command("DOM.getDocument");

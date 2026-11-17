@@ -66,6 +66,8 @@ return [
     'editor.upload.label' => 'Téléverser de nouvelles images',
     'editor.upload.submit' => 'Téléverser les images sélectionnées',
     'field.required' => 'Obligatoire',
+    'field.about' => 'À propos de {label}',
+    'form.required_legend' => 'champs obligatoires',
     'field.none' => 'Aucun',
     'field.select_many' => 'Sélectionnez une ou plusieurs valeurs.',
     'coverage.complete' => 'Complet',

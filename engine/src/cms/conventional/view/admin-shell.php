@@ -78,9 +78,9 @@ final readonly class AdminChrome
 
 final class AdminShell
 {
-    public const STYLESHEET_VERSION = '20';
+    public const STYLESHEET_VERSION = '24';
     public const GROUP_STYLESHEET_VERSION = '3';
-    public const SCRIPT_VERSION = '4';
+    public const SCRIPT_VERSION = '6';
 
     public static function translator(?AdminChrome $chrome): Translator
     {
@@ -170,6 +170,13 @@ final class AdminShell
     /** Readable relative day with the exact instant preserved for assistive technology. */
     public static function time(\DateTimeImmutable $instant, ?\DateTimeImmutable $now, ?Translator $translator = null): string
     {
+        return '<time datetime="' . Html::attribute($instant->format(DATE_ATOM)) . '" title="'
+            . Html::attribute($instant->format('Y-m-d H:i T')) . '">' . Html::text(self::timeText($instant, $now, $translator)) . '</time>';
+    }
+
+    /** The same readable day as plain text, for titles, labels and sentences. */
+    public static function timeText(\DateTimeImmutable $instant, ?\DateTimeImmutable $now, ?Translator $translator = null): string
+    {
         $t = $translator ?? Translator::english();
         $zone = $now?->getTimezone() ?? $instant->getTimezone();
         $text = $t->date($instant, 'format.date_time', $zone);
@@ -181,8 +188,7 @@ final class AdminShell
                 default => $t->date($instant, $instant->format('Y') === $now->format('Y') ? 'format.day_month_time' : 'format.date', $zone),
             };
         }
-        return '<time datetime="' . Html::attribute($instant->format(DATE_ATOM)) . '" title="'
-            . Html::attribute($instant->format('Y-m-d H:i T')) . '">' . Html::text($text) . '</time>';
+        return $text;
     }
 
     /** Engine-owned presentation of an installation identifier; never profile markup. */
@@ -222,10 +228,10 @@ final class AdminShell
             . '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
             . '<meta name="color-scheme" content="light dark">'
             . '<title>' . Html::text($title) . '</title>'
-            . ($bodyClass === 'admin-application' ? '<script src="/assets/admin-start.js?v=1"></script>' : '')
+            . ($bodyClass === 'admin-application' ? '<script src="/assets/admin-start.js?v=2"></script>' : '')
             . '<link rel="stylesheet" href="'
             . Html::url('/assets/admin.css?v=' . self::STYLESHEET_VERSION) . '">'
-            . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=1">' : '')
+            . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=2">' : '')
             . ($stylesheet === null ? '' : '<link rel="stylesheet" href="' . Html::url($stylesheet) . '">')
             . '</head><body class="' . Html::attribute($bodyClass) . '">'
             . $content . '</body></html>';

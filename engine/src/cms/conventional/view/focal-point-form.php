@@ -36,8 +36,8 @@ final class FocalPointForm
         } catch (InvalidInput) {
             $point = $media->focalPoint;
         }
-        $html = '<link rel="stylesheet" href="/assets/focal-point.css?v=1"><fieldset class="admin-section admin-focal" data-focal-point data-messages="' . $t->bundleAttribute('client') . '"><legend>' . $t->html('media.focal.title') . '</legend>'
-            . '<input type="hidden" name="_focal_point" value="1"><p id="focal-help" class="admin-help">' . $t->html('media.focal.help') . '</p>';
+        $html = '<link rel="stylesheet" href="/assets/focal-point.css?v=1"><fieldset class="admin-section admin-focal" data-focal-point data-messages="' . $t->bundleAttribute('client') . '" aria-labelledby="focal-label" aria-describedby="focal-help">' . FieldHelp::legend('focal-label', $t->html('media.focal.title'), 'focal-help', $t->text('media.focal.title'), $t)
+            . '<input type="hidden" name="_focal_point" value="1">' . FieldHelp::text('focal-help', $t->html('media.focal.help'));
         if ($media->status === 'ready' && $media->thumbnail?->mime === 'image/webp') {
             $url = Html::url('/media/' . $media->id . '/thumbnail');
             $width = $media->thumbnail->width;

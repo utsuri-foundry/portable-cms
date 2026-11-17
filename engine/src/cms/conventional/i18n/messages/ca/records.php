@@ -66,6 +66,8 @@ return [
     'editor.upload.label' => 'Pujar imatges noves',
     'editor.upload.submit' => 'Pujar les imatges seleccionades',
     'field.required' => 'Obligatori',
+    'field.about' => 'Sobre {label}',
+    'form.required_legend' => 'camps obligatoris',
     'field.none' => 'Cap',
     'field.select_many' => 'Es poden seleccionar un o més valors.',
     'coverage.complete' => 'Complet',

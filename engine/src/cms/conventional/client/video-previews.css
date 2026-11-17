@@ -31,3 +31,54 @@
 .admin-video-field .admin-picker__results small {
 	display: block;
 }
+.admin-video-field {
+	gap: var(--admin-space-2, 0.5rem);
+}
+.admin-video-selection {
+	display: grid;
+	justify-items: start;
+	gap: var(--admin-space-2, 0.5rem);
+}
+.admin-video-field .admin-video-player {
+	width: min(100%, 24rem);
+	border-radius: var(--admin-radius-small, 0.25rem);
+}
+.admin-video-field .admin-video-poster {
+	margin: 0;
+}
+.admin-video-field .admin-video-player:not([hidden]) ~ .admin-video-poster {
+	display: none;
+}
+.admin-video-rows {
+	display: grid;
+	width: 100%;
+	gap: var(--admin-space-1, 0.25rem);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.admin-video-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--admin-space-1, 0.25rem) var(--admin-space-2, 0.5rem);
+	min-height: var(--admin-control-small, 1.75rem);
+	font-size: var(--admin-text-sm, 0.875rem);
+}
+.admin-video-row__kind {
+	flex: 0 0 7.5rem;
+	color: var(--admin-muted, inherit);
+}
+.admin-video-row__name {
+	flex: 1 1 8rem;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+.admin-video-row .admin-selection__actions {
+	align-items: center;
+	margin-left: auto;
+}
+.admin-video-row .admin-selection__actions a {
+	padding: 0 0.375rem;
+	font-size: var(--admin-text-xs, 0.75rem);
+}

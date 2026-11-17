@@ -8,13 +8,25 @@ use Utsuri\PortableCms\Conventional\Identity\Clock;
 use Utsuri\PortableCms\Conventional\Identity\IdentityRepository;
 use Utsuri\PortableCms\Conventional\Identity\RandomSource;
 
+/** A link that always opens the newest ready website preview. Note and sealed secret as for a fixed share. */
 final readonly class NewestPreviewLink
 {
-    public function __construct(public string $id, public \DateTimeImmutable $createdAt, public \DateTimeImmutable $expiresAt)
-    {
-        if (preg_match('/\A[a-f0-9]{32}\z/', $id) !== 1 || $expiresAt <= $createdAt || $expiresAt > $createdAt->modify('+720 hours')) {
+    public function __construct(
+        public string $id,
+        public \DateTimeImmutable $createdAt,
+        public \DateTimeImmutable $expiresAt,
+        public ?string $note = null,
+        public ?string $createdBy = null,
+        public ?string $sealedSecret = null,
+    ) {
+        if (preg_match('/\A[a-f0-9]{32}\z/', $id) !== 1 || $expiresAt <= $createdAt || ($note !== null && !SharedLinkNote::valid($note))) {
             throw new \InvalidArgumentException('Newest preview link is invalid');
         }
+    }
+
+    public function expired(\DateTimeImmutable $now): bool
+    {
+        return $this->expiresAt <= $now;
     }
 }
 
@@ -39,8 +51,13 @@ interface NewestPreviewLinkRepository
 
     public function create(NewestPreviewLink $link, string $tokenHash, string $actor, string $auditId): void;
 
-    /** @return list<NewestPreviewLink> */
+    /** @return list<NewestPreviewLink> Unexpired links. */
     public function active(\DateTimeImmutable $now): array;
+
+    /** @return list<NewestPreviewLink> Links that are not stopped, newest first, including recently expired ones. */
+    public function listed(\DateTimeImmutable $now): array;
+
+    public function extend(string $id, \DateTimeImmutable $expiresAt, string $actor, string $auditId, \DateTimeImmutable $now): NewestPreviewLink;
 
     public function revoke(string $id, string $actor, string $auditId, \DateTimeImmutable $now): void;
 
@@ -52,24 +69,22 @@ interface NewestPreviewLinkRepository
 
 final class NewestPreviewLinkService
 {
-    public const EXPIRY_HOURS = [1, 24, 168, 720];
+    private readonly LinkSecret $secrets;
 
     public function __construct(private readonly NewestPreviewLinkRepository $repository, private readonly IdentityRepository $abuse, private readonly Clock $clock, private readonly RandomSource $random, private readonly string $throttleSecret)
     {
         if (strlen($throttleSecret) < 32) {
             throw new \InvalidArgumentException('Share throttle secret must contain at least 32 bytes');
         }
+        $this->secrets = new LinkSecret($throttleSecret, $random);
     }
 
-    /** @return array{link: NewestPreviewLink, token: string} The raw token is returned only once. */
-    public function create(string $actor, int $hours): array
+    /** @return array{link: NewestPreviewLink, token: string} The raw token is returned once; storage keeps its hash and a sealed copy. */
+    public function create(string $actor, int $days, ?string $note = null): array
     {
-        if (!in_array($hours, self::EXPIRY_HOURS, true)) {
-            throw new InvalidShareExpiry();
-        }
         $now = $this->clock->now();
-        $link = new NewestPreviewLink($this->id(), $now, $now->modify('+' . $hours . ' hours'));
         $token = bin2hex($this->random->bytes(32));
+        $link = new NewestPreviewLink($this->id(), $now, SharedLinkLifetime::expiry($days, $now), $note, $actor, $this->secrets->seal($token));
         $this->repository->create($link, hash('sha256', $token), $actor, $this->id());
         return ['link' => $link, 'token' => $token];
     }
@@ -80,9 +95,27 @@ final class NewestPreviewLinkService
         return $this->repository->active($this->clock->now());
     }
 
+    /** @return list<NewestPreviewLink> */
+    public function listed(): array
+    {
+        return $this->repository->listed($this->clock->now());
+    }
+
+    public function extend(string $id, string $actor, int $days): NewestPreviewLink
+    {
+        $now = $this->clock->now();
+        return $this->repository->extend($id, SharedLinkLifetime::expiry($days, $now), $actor, $this->id(), $now);
+    }
+
     public function revoke(string $id, string $actor): void
     {
         $this->repository->revoke($id, $actor, $this->id(), $this->clock->now());
+    }
+
+    public function url(NewestPreviewLink $link, string $origin): ?string
+    {
+        $secret = $this->secrets->open($link->sealedSecret);
+        return $secret === null ? null : $origin . '/newest-previews/' . $link->id . '/#' . $secret;
     }
 
     public function authorize(string $id, string $token, string $remoteAddress, ?string $pinnedPreview = null): ?NewestPreviewResolution

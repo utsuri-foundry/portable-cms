@@ -113,6 +113,10 @@ The persistent shell groups ordinary editing and publication work as follows:
      time, and can move or cancel it before worker start. Scheduled membership
      is visible on record and exact-preview pages; later edits leave approved
      bytes unchanged. See [scheduled releases](../development/publication-workflow.md#scheduled-releases).
+     The word Publish belongs to this group: in the administration it means the
+     public website changes. A record's own states are Draft, Ready (stored as
+     `published`) and Archived; the rail's actions are Mark as ready and Back to
+     draft, and no record control says Publish.
    - Website contains Settings (the website name, icon and coming soon page),
      Languages and Wording for everyone who may open them, and for owners and
      administrators also Content names, Design and Accounts. Editors see
@@ -207,6 +211,16 @@ removed under `prefers-reduced-motion: reduce`.
 
 ## Page and component behavior
 
+Explanations are folded. A field's hint, a group's purpose and a section's
+explanation are one small `i` control beside the label, legend or heading,
+rendered by the engine's `FieldHelp` component, closed by default; it opens by
+click or keyboard and folds on Escape. The text is always in the page, so the
+control or group it explains describes itself through `aria-describedby`, a
+group keeps its legend's words alone as its name, and without scripts the text
+simply shows inline. Nothing explanatory is visible by default except a page's
+one-line lead; status messages, errors and the text inside an open disclosure
+are not explanations and stay where they are.
+
 ### Login
 
 The login names the installation being signed into, states that the area is
@@ -257,6 +271,14 @@ Uploads preserve unsaved record input and do not save it. Removing a selection
 keeps the library image. See the [media control contract](../development/editorial-controls.md#bounds-and-media-integrity)
 for receipts, conflicts and separate description forms.
 
+Video fields state the rule in one line (format, size and the field's limits,
+and that a poster image goes with the video), show the player, then the video
+and the poster image as two named rows with a link to each media page and a
+quiet remove control. Each choice has one disclosure, **Choose video** or
+**Choose poster image** (**Change** once chosen), holding the library search
+and paging; the upload sits under the video one. The poster appears once, on
+the player. Nothing is drawn over a row's name.
+
 One header switch selects the language for every localized field. It supports
 arrow, Home and End keys. Fields carry a language tag, or share one on a wholly
 localized section. The switch and rail identify missing translations. Before
@@ -274,7 +296,10 @@ explaining retained revisions and offering Export. Require a checked confirmatio
 and a danger action. Show resumable progress and a final result. See
 [language operations](../development/conventional-cms-content.md#site-languages).
 
-Required state is present in text. Validation returns a linked summary and
+Required fields carry a star after their label; one `* required fields` line
+per form explains it, the word Required stays in the label for assistive
+technology, and the words Required and Optional do not appear in labels.
+Validation returns a linked summary and
 field-level messages; the affected section is tinted and counts its issues. A
 revision conflict preserves the editor's input, shows the current saved values
 separately, and provides one explicit resubmission action. A failed validation
@@ -517,6 +542,66 @@ Upload progress uses native `progress` and a polite live status. Processing and
 preview states use stable text and status semantics. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
+
+### Website settings
+
+Website settings reads in the order of an editor's tasks, with the agency's
+part last (decision [0013](decisions/0013-website-settings.md)). The lede says
+what the page holds and that saving changes nothing on the public website until
+a release is published; one quiet line under the heading says what the public
+website shows now. "Website" holds the name, with where it appears, and the
+icon: its rule first, the chosen image previewed at the 32, 180 and 512 pixel
+sizes it becomes, and a chooser that lists only images that qualify. "Before
+launch" asks what the next release publishes as two explained choices, then the
+message and contact per public language, headed by the language's name; the
+confirmation for going back to the coming soon page appears only when the
+website is the saved choice. "Administration appearance" comes last with the
+logo and its dark mode variant on their backings. One Save; afterwards the page
+says it saved and names Releases as the next step. Every failure is a sentence.
+Editors read the page without its controls; owners and administrators change it.
+
+### Previews
+
+Previews is seeing the website as it would be published, in the editor's words.
+The lede says so. One form asks what to preview, "Content marked ready" (what a
+release would publish) or "Everything, drafts included" (for review only), plus
+the languages in preparation when the site has some, with one button, "Preview
+the website". The list names each preview by its time in the site's zone, says
+who made it and tags drafts or languages in preparation, and offers Open, Share
+and a quiet Delete; a preview that is still building shows its state instead.
+The notice about records not yet marked as ready appears only when there are
+some. Bulk selection is not on the page: "Select several" turns it on, and
+pages beyond the first keep it reachable. A preview's own page is titled by its
+time and offers the same Open, Share and Delete. No identity or hash names a
+preview anywhere.
+
+Share is one panel per ready preview, for every account: what the link shows
+(this preview, or always the newest preview), for how long (1, 7 or 30 days,
+7 by default) and who it is for (a note). The result is the complete link in a
+field with Copy and a sentence saying what it shows and until when. "Shared
+links" under the previews lists each link by its note or a counted name, what
+it shows, until when in the site's time zone and by whom, with Copy, Extend and
+Stop; an expired link keeps Extend and Remove. The viewer a reviewer opens has a
+thin bar, "Preview of <site>, not public, shared by <name>", with the preview's
+languages. See [preview sharing](../development/preview-sharing.md).
+
+### Releases
+
+Releases is where publishing happens, so it speaks of pages, times and people
+and never of identities, checksums or the worker. Three cards in reading order:
+"On the website now" names what visitors see (the website or the coming soon
+page), when it was published and by whom, with a link to open the website;
+"Ready to publish" is one form for owners and administrators that lists the
+candidates by what they are and when they were built with a Preview link,
+folds older coming soon builds behind one line, asks Now or a date (the date
+field appears only when a date is chosen), takes one plain confirmation and
+one Publish button, and offers the coming soon build as a secondary action;
+"Earlier releases" lists dated rows with a readable status, Restore and a
+quiet Remove, each behind a disclosure with its own confirmation. Scheduled
+releases sit in their own card with Move and Cancel. A running publication is
+one line ("Publishing, usually a few minutes") and a failure is a sentence,
+with the engine's code folded behind an "i" for owners and administrators
+only. Editors read the same page without its forms.
 
 ### Errors
 

@@ -95,13 +95,14 @@ final class MediaLibraryPage
             . MediaTextForm::render($media->text, $profile, $t, $submittedText)
             . FocalPointForm::render($media, $t, $submittedPoint)
             . '<button type="submit" class="admin-button--primary">' . $t->html('media.text.save') . '</button>'
-            . ($media->ownerRecordId === null ? '<p class="admin-help">' . $t->html('website_media.owner') . '</p>'
+            . ($media->ownerRecordId === null ? '<p class="admin-meta">' . $t->html('website_media.owner') . '</p>'
                 : (in_array($chrome?->role, ['owner', 'administrator'], true) && $media->status === 'ready' && str_starts_with($media->mime, 'image/')
-                    ? '<p class="admin-help">' . $t->html('website_media.keep_help') . '</p><button type="submit" name="_website_owner" value="1" formnovalidate>' . $t->html('website_media.keep') . '</button>' : ''))
+                    ? '<div class="admin-help-row"><button type="submit" name="_website_owner" value="1" formnovalidate aria-describedby="media-keep-help">' . $t->html('website_media.keep') . '</button>' . FieldHelp::toggle('media-keep-help', $t->text('website_media.keep'), $t) . '</div>' . FieldHelp::text('media-keep-help', $t->html('website_media.keep_help')) : ''))
             . '</form></section>'
-            . '<section class="admin-section" aria-labelledby="media-usage-heading"><h2 id="media-usage-heading">' . $t->html('media.usage.title') . '</h2><p class="admin-help">' . $t->html('media.usage.help') . '</p>'
+            . '<section class="admin-section" aria-labelledby="media-usage-heading">' . FieldHelp::heading('<h2 id="media-usage-heading">' . $t->html('media.usage.title') . '</h2>', 'media-usage-help', $t->text('media.usage.title'), $t)
+            . FieldHelp::text('media-usage-help', $t->html('media.usage.help') . ' ' . $t->html('media.replace_help'))
             . ($usage === '' ? '<p class="admin-meta">' . $t->html('media.usage.empty') . '</p>' : '<ul class="admin-list">' . $usage . '</ul>')
-            . '<p class="admin-help">' . $t->html('media.replace_help') . '</p></section></div></div>';
+            . '</section></div></div>';
         return AdminShell::application($media->name, TrustedHtml::fromEngineMarkup($markup), $profile, 'media', 'wide', $chrome);
     }
 }

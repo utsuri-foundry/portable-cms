@@ -326,7 +326,7 @@ try {
 	await publishSavedRecord(browser);
 	await navigate("/previews", "form[action='/previews']");
 	await evaluate(
-		"document.querySelector('form[action=\"/previews\"]').elements.namedItem('include_drafts').checked=true;document.querySelector('form[action=\"/previews\"]').requestSubmit()",
+		"document.querySelector('form[action=\"/previews\"]').elements.namedItem('include_drafts').value='1';document.querySelector('form[action=\"/previews\"]').requestSubmit()",
 	);
 	await ready(
 		"location.pathname.match(/^\\/previews\\/[a-f0-9]{32}$/) && document.querySelector('[data-preview-state]')",
@@ -450,11 +450,8 @@ try {
 	}
 	providerMode = "ready";
 	const beforeShared = requests.length;
-	const shareRoute = `${preview}/shares`;
-	await navigate(shareRoute, "#share-expiry");
-	await evaluate(
-		`document.querySelector('[name=expiry_hours]').value='24';document.querySelector('form[action="${shareRoute}"]').requestSubmit()`,
-	);
+	await navigate(preview, "[data-share-panel]");
+	await evaluate("document.querySelector('[data-share-panel] form').requestSubmit()");
 	await ready("document.querySelector('#share-link')");
 	const link = await evaluate("document.querySelector('#share-link').value");
 	await command("Network.clearBrowserCookies");

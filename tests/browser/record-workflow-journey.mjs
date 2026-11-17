@@ -57,7 +57,7 @@ async function status(path, state) {
 	);
 	assert.match(
 		await evaluate("document.querySelector('main').textContent"),
-		/Website releases take the published version/,
+		/Releases take the ready version/,
 	);
 }
 
@@ -65,7 +65,7 @@ async function preview(includeDrafts, expected) {
 	await navigate("/previews", "form[action='/previews']");
 	await evaluate(`(() => {
 		const form=document.querySelector('form[action="/previews"]');
-		form.elements.namedItem('include_drafts').checked=${includeDrafts};
+		form.elements.namedItem('include_drafts').value=${includeDrafts ? "1" : "0"};
 		form.requestSubmit();
 	})()`);
 	await ready(
@@ -128,7 +128,7 @@ try {
 		}
 	}
 	await evaluate(
-		"document.querySelector('form[action=\"/previews\"]').elements.namedItem('include_drafts').checked=true;document.querySelector('form[action=\"/previews\"]').requestSubmit()",
+		"document.querySelector('form[action=\"/previews\"]').elements.namedItem('include_drafts').value='1';document.querySelector('form[action=\"/previews\"]').requestSubmit()",
 	);
 	await ready(
 		"document.querySelector('#preflight-heading') && document.querySelector('main time')",
@@ -223,22 +223,22 @@ try {
 	);
 	// The native release form approves only one saved, published-only preview.
 	const releasePreview = await preview(false, false);
-	await navigate("/settings/publication", "select[name=mode]");
+	await navigate("/settings/publication", "input[name=mode]");
 	await evaluate(
-		"document.querySelector('[name=mode]').value='live';document.querySelector('[name=mode]').form.requestSubmit()",
+		"const form=document.querySelector('input[name=mode]').form;form.elements.namedItem('mode').value='live';form.requestSubmit()",
 	);
 	await ready(
-		"location.pathname==='/settings/publication' && document.querySelector('[name=_revision]')?.value==='1'",
+		"location.pathname==='/settings/publication' && document.querySelector('[data-settings-saved]') && document.querySelector('[name=_revision]')?.value==='1'",
 	);
-	await navigate("/releases", "select[name=id]");
+	await navigate("/releases", "input[name=id]");
 	await evaluate(`(() => {
-		const form=document.querySelector('select[name=id]').form;
+		const form=document.querySelector('input[name=id]').form;
 		form.elements.namedItem('id').value=${JSON.stringify(releasePreview.split("/").at(-1))};
 		form.elements.namedItem('confirmed').checked=true;
 		form.requestSubmit();
 	})()`);
 	await ready(
-		"location.pathname==='/releases' && document.querySelector('main').textContent.includes('in progress')",
+		"location.pathname==='/releases' && document.querySelector('main').textContent.includes('Publishing')",
 	);
 	execFileSync(
 		"php",
@@ -252,7 +252,9 @@ try {
 	);
 	await navigate("/releases", "main");
 	assert.ok(
-		(await evaluate("document.querySelector('main').textContent")).includes("Active"),
+		(await evaluate("document.querySelector('main').textContent")).includes(
+			"On the website now",
+		),
 	);
 	assert.equal(
 		await evaluate("document.querySelector('input[name=previous]').value.length"),

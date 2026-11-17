@@ -32,7 +32,7 @@ return [
     'picker.all_types' => 'Tots els tipus permesos',
     'picker.type_removed' => 'Aquest tipus ja no és permès. Elimineu o substituïu aquesta selecció.',
     'picker.target_missing' => 'Falta aquest registre. Elimineu o substituïu aquesta selecció.',
-    'picker.target_unpublished' => 'No publicat. Cal resoldre aquest enllaç abans de publicar.',
+    'picker.target_unpublished' => 'Encara no està a punt. Resol aquest enllaç abans de marcar el registre com a punt.',
     'picker.selected' => 'Selecció de {field}',
     'picker.unavailable_image' => 'Imatge no disponible',
     'picker.unavailable_record' => 'Registre no disponible',

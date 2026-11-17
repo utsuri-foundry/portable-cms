@@ -3,7 +3,10 @@ import test from "node:test";
 import {
 	applyTheme,
 	mountAccountMenu,
+	mountCopyButtons,
+	mountHelpControls,
 	mountThemeForm,
+	toggleHelp,
 } from "../../engine/src/cms/conventional/client/admin-shell.js";
 
 function root() {
@@ -106,4 +109,99 @@ test("account panel scrolls into view only when opened", () => {
 	dispose();
 	details.dispatchEvent(new Event("toggle"));
 	assert.equal(scrolled, 1);
+});
+
+function element(attributes = {}) {
+	const map = new Map(Object.entries(attributes));
+	return {
+		getAttribute: (key) => (map.has(key) ? map.get(key) : null),
+		setAttribute: (key, value) => map.set(key, value),
+		removeAttribute: (key) => map.delete(key),
+		has: (key) => map.has(key),
+	};
+}
+
+test("help toggles open and fold while the text stays in the page", () => {
+	const toggle = element({ "aria-expanded": "false", "aria-controls": "hint-title" });
+	const text = element({ id: "hint-title" });
+	assert.equal(toggleHelp(toggle, text), true);
+	assert.equal(toggle.getAttribute("aria-expanded"), "true");
+	assert.equal(text.has("data-open"), true);
+	assert.equal(toggleHelp(toggle, text), false);
+	assert.equal(toggle.getAttribute("aria-expanded"), "false");
+	assert.equal(text.has("data-open"), false);
+	assert.equal(toggleHelp(toggle, text, false), false, "an explicit fold stays folded");
+});
+
+test("mounted help controls answer clicks and Escape only for their own toggle", () => {
+	const toggle = element({ "aria-expanded": "false", "aria-controls": "hint-title" });
+	const text = element({ id: "hint-title" });
+	toggle.closest = (selector) => (selector === "[data-help-toggle]" ? toggle : null);
+	const root = new EventTarget();
+	root.getElementById = (id) => (id === "hint-title" ? text : null);
+	const unmount = mountHelpControls(root);
+	const click = new Event("click");
+	Object.defineProperty(click, "target", { value: toggle });
+	root.dispatchEvent(click);
+	assert.equal(toggle.getAttribute("aria-expanded"), "true");
+	const other = new Event("keydown");
+	Object.defineProperty(other, "target", { value: { closest: () => null } });
+	other.key = "Escape";
+	root.dispatchEvent(other);
+	assert.equal(
+		toggle.getAttribute("aria-expanded"),
+		"true",
+		"Escape elsewhere leaves it open",
+	);
+	const fold = new Event("keydown");
+	Object.defineProperty(fold, "target", { value: toggle });
+	fold.key = "Escape";
+	root.dispatchEvent(fold);
+	assert.equal(toggle.getAttribute("aria-expanded"), "false");
+	unmount();
+	root.dispatchEvent(click);
+	assert.equal(
+		toggle.getAttribute("aria-expanded"),
+		"false",
+		"nothing listens after unmount",
+	);
+});
+
+test("copy buttons write their own value and say so for a moment", async () => {
+	const button = new EventTarget();
+	button.dataset = {
+		copy: "https://cms.example.test/shared-previews/a/#b",
+		copied: "Copied",
+	};
+	button.textContent = "Copy";
+	const root = { querySelectorAll: () => [button] };
+	const written = [];
+	const timers = { setTimeout: (callback) => callback() };
+	const unmount = mountCopyButtons(
+		root,
+		{ clipboard: { writeText: async (value) => written.push(value) } },
+		timers,
+	);
+	button.dispatchEvent(new Event("click"));
+	await Promise.resolve();
+	await Promise.resolve();
+	assert.deepEqual(written, ["https://cms.example.test/shared-previews/a/#b"]);
+	assert.equal(button.textContent, "Copy", "the label returns after the timer");
+	const refused = mountCopyButtons(
+		root,
+		{
+			clipboard: {
+				writeText: async () => {
+					throw new Error("denied");
+				},
+			},
+		},
+		{ setTimeout: () => assert.fail("a refused copy says nothing") },
+	);
+	unmount();
+	button.dispatchEvent(new Event("click"));
+	await Promise.resolve();
+	await Promise.resolve();
+	assert.equal(button.textContent, "Copy");
+	refused();
 });

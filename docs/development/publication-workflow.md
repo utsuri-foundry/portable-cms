@@ -2,14 +2,16 @@
 
 Publishing turns an inspected exact preview into the live static website. Saving
 content or selecting a record's published version does not change public files.
-Only an owner or administrator can approve a release.
+Only an owner or administrator can approve a release. In the administration the
+word Publish belongs to Releases: a record's own state is Draft or Ready, and
+marking a record as ready changes nothing on the public website.
 
 ## Publish a change
 
-1. Keep the edits and use **Publish** or **Publish changes** on the relevant records.
+1. Keep the edits and use **Mark as ready** or **Mark changes as ready** on the relevant records.
 2. Create a published-only exact preview and resolve its failed checks.
 3. Inspect the pages, languages, media and navigation.
-4. Open **Releases**, choose the preview and confirm **Now** or a scheduled time.
+4. Open **Releases**, choose what to publish, choose **Now** or a date and time, confirm and press **Publish**.
 5. Wait for completion. Approval queues work; it is not confirmation that the site
    is already live.
 
@@ -23,12 +25,12 @@ read recovery behaviour before acting on an interrupted publication.
 ## Editor journey
 
 Each record has a current revision and, while Published, a separate published
-revision. Keeping edits advances only the current content; automatic saves may group an editing session into one revision. Publish and exact previews seal their selected revisions. Releases and
+revision. Keeping edits advances only the current content; automatic saves may group an editing session into one revision. Marking as ready and exact previews seal their selected revisions. Releases and
 published-only exact previews take the published version, including its links
 and media references. Draft-inclusive exact previews and live previews take
 current edits; archived records are always excluded.
 
-**Publish** selects a kept draft; **Publish changes** selects a published
+**Mark as ready** selects a kept draft; **Mark changes as ready** selects a ready
 record's newer saved edits. Both require the existing status-change permission,
 the current revision, and publish validation for required public-language fields,
 published references and ready media. They append a content-preserving
@@ -39,10 +41,10 @@ that permission can keep editing and see the pending status.
 copies the published content into a new clean revision, making both heads name
 that identical content. Discarded revisions remain in history. Publication and
 discard commit their revision, relationship projections and audit together.
-Returning to Draft or archiving clears the published revision and preserves all
+**Back to draft** or archiving clears the published revision and preserves all
 content history.
 
-The editor and lists show **Published, with changes** while the two heads differ.
+The editor and lists show **Ready, with changes** while the two heads differ.
 The editor names the published revision and latest edit time; lists can filter
 this status. Previews show the number of records with unpublished changes, which
 can be compared with a release candidate. Site wording, terminology and design
@@ -69,7 +71,7 @@ recovery action is scoped to the pending release and current active release.
 ### Scheduled releases
 
 In **Releases**, an owner or administrator selects an inspected exact preview,
-chooses **Now** or **At a date and time**, and confirms approval. Date inputs and
+chooses **Now** or **On a date and time**, and confirms with **Publish**. Date inputs and
 saved times use the named installation time zone, independently of the browser,
 PHP default zone and interface language. Operators set the private `timeZone`
 configuration to an IANA identifier, such as `Europe/Andorra`; existing

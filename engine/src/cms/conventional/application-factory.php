@@ -97,6 +97,16 @@ final class ApplicationFactory
         $previews = $previewAvailable
             ? new PreviewService($previewRepository, $profile, $clock, $random, $previewStore, checks: new Preview\MariaDbPreviewCheckHistory($pdo), startup: $compiler?->startup(), preparation: static fn(): array => $siteLanguages->load()->preparation())
             : null;
+        $previewShares = new Preview\PreviewShareService(new Preview\MariaDbPreviewShareRepository($pdo), new MariaDbIdentityRepository($pdo), $clock, $random, $configuration->throttleSecret);
+        $newestLinks = new Preview\NewestPreviewLinkService(new Preview\MariaDbNewestPreviewLinkRepository($pdo), new MariaDbIdentityRepository($pdo), $clock, $random, $configuration->throttleSecret);
+        $accounts = new Identity\AccountService(new Identity\MariaDbAccountRepository($pdo), $clock, $random);
+        // A shared viewer names the site and the person who shared, and lists the preview's languages as the site names them.
+        $siteName = static fn(): string => View\AdminShell::installationName($profile, self::websitePublication($profile, $pdo)->load()->identity());
+        $actorName = static fn(string $id): ?string => $accounts->name($id);
+        $languageLabels = [];
+        foreach ($profile->localeDefinitions as $definition) {
+            $languageLabels[$definition->id] = $definition->label;
+        }
         return new IdentityApplication(
             $identity,
             new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback),
@@ -134,15 +144,10 @@ final class ApplicationFactory
             $design,
             self::assistance($configuration, $profile, $pdo),
             $package?->administrationLabels,
-            $previews === null ? null : new Preview\PreviewShareHttp(
-                new Preview\PreviewShareService(new Preview\MariaDbPreviewShareRepository($pdo), new MariaDbIdentityRepository($pdo), $clock, $random, $configuration->throttleSecret),
-                $previews,
-                new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback),
-                $configuration->origin,
-            ),
+            $previews === null ? null : new Preview\PreviewShareHttp($previewShares, $previews, new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback), $siteName, $actorName, $languageLabels),
             $previews === null ? null : self::publication($configuration, $profile, $previews, $pdo),
             self::websitePublication($profile, $pdo),
-            new Identity\AccountService(new Identity\MariaDbAccountRepository($pdo), $clock, $random),
+            $accounts,
             $previews === null || $package === null || $compiler === null ? null : new Preview\LivePreviewHttp(new Preview\LivePreviewService(
                 $package,
                 // Without the private reporter: incomplete values while typing are expected, not incidents to log.
@@ -163,15 +168,11 @@ final class ApplicationFactory
             self::siteWording($profile, $pdo),
             self::languageText($profile, $pdo, $siteLanguages, $mediaLibrary, $design),
             $installedReleaseId,
-            $previews === null ? null : new Preview\NewestPreviewHttp(
-                new Preview\NewestPreviewLinkService(new Preview\MariaDbNewestPreviewLinkRepository($pdo), new MariaDbIdentityRepository($pdo), $clock, $random, $configuration->throttleSecret),
-                $previews,
-                new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback),
-                $configuration->origin,
-            ),
+            $previews === null ? null : new Preview\NewestPreviewHttp($newestLinks, $previews, new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback), $siteName, $actorName, $languageLabels),
             new Content\RecordHistoryService(new Content\MariaDbRecordHistory($pdo), $clock, $random),
             $previews === null ? null : new Preview\EditorExactPreview($previews, $previewRepository, new Preview\MariaDbEditorPreviewFiles($pdo), $profile, $clock, $random),
             $configuration->mediaWakeStrategy === 'cron_only',
+            $previews === null ? null : new Preview\PreviewSharingHttp($previewShares, $newestLinks, $previews, $configuration->origin, new \DateTimeZone($configuration->timeZone)),
         );
     }
 

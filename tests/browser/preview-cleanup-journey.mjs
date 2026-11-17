@@ -34,6 +34,14 @@ async function create() {
 	return (await evaluate("location.pathname")).split("/").at(-1);
 }
 
+async function openSelection() {
+	await navigate("/previews", "[data-preview-select]");
+	await evaluate("document.querySelector('[data-preview-select]').click()");
+	await ready(
+		"location.search==='?select=1' && document.querySelector('[data-preview-selection]') && document.readyState==='complete'",
+	);
+}
+
 async function click(selector) {
 	const point = await evaluate(`(() => {
 		const element = document.querySelector(${JSON.stringify(selector)});
@@ -73,7 +81,7 @@ try {
 		);
 	}
 	const ids = [await create(), await create()];
-	await navigate("/previews", "[data-preview-selection]");
+	await openSelection();
 	assert.equal(
 		await evaluate("document.querySelector('[data-preview-delete-selected]').disabled"),
 		true,
@@ -122,8 +130,9 @@ try {
 	);
 	await evaluate("document.querySelector('a[href=\"/previews\"]').click()");
 	await ready(
-		"location.pathname==='/previews' && document.querySelector('[data-preview-selection]')",
+		"location.pathname==='/previews' && !document.querySelector('[data-preview-selection]') && document.readyState==='complete'",
 	);
+	await openSelection();
 	assert.equal(
 		await evaluate(
 			"document.querySelectorAll('[name=\"preview_ids[]\"]:checked').length",
@@ -138,7 +147,7 @@ try {
 		mobile: false,
 	});
 	await command("Emulation.setScriptExecutionDisabled", { value: true });
-	await navigate("/previews", "[data-preview-selection]");
+	await openSelection();
 	assert.equal(
 		await evaluate("document.documentElement.scrollWidth <= innerWidth"),
 		true,
@@ -155,10 +164,9 @@ try {
 	);
 	let deleted = 0;
 	for (let attempt = 0; attempt < 8; attempt++) {
-		deleted +=
-			(await evaluate("document.querySelector('main').textContent")).split(
-				"Deleted; preview storage cleaned up.",
-			).length - 1;
+		deleted += await evaluate(
+			"[...document.querySelectorAll('.admin-list__item')].filter(item => item.textContent.includes('Deleted; preview storage cleaned up.')).reduce((total, item) => total + Number.parseInt(item.querySelector('.admin-table__title').textContent, 10), 0)",
+		);
 		if (
 			!(await evaluate(
 				"document.querySelector('form[action=\"/previews/delete/confirm\"]') !== null",
@@ -178,13 +186,12 @@ try {
 	);
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	await command("Emulation.clearDeviceMetricsOverride");
-	await navigate("/previews", "[data-preview-selection]");
+	await navigate("/previews", "form[action='/previews']");
 	for (const id of ids)
 		assert.equal(
-			await evaluate(
-				`document.querySelector('[name="preview_ids[]"][value="${id}"]') === null`,
-			),
+			await evaluate(`document.querySelector('[data-preview-row="${id}"]') === null`),
 			true,
+			"deleted previews leave the list",
 		);
 	assert.deepEqual(browserErrors, []);
 	await evaluate("document.querySelector('form[action=\"/logout\"]').requestSubmit()");

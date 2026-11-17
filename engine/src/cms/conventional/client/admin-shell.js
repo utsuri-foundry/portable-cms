@@ -51,7 +51,72 @@ export function mountThemeForm(form, window = form.ownerDocument.defaultView) {
 	};
 }
 
+/** Opens or folds one explanation; the text stays in the page for assistive technology either way. */
+export function toggleHelp(
+	toggle,
+	text,
+	open = toggle.getAttribute("aria-expanded") !== "true",
+) {
+	toggle.setAttribute("aria-expanded", String(open));
+	if (open) text.setAttribute("data-open", "");
+	else text.removeAttribute("data-open");
+	return open;
+}
+
+/** Works every help control in the document: click or Enter opens, Escape folds. */
+export function mountHelpControls(root) {
+	const control = (target) => {
+		const toggle = target.closest?.("[data-help-toggle]");
+		const text = toggle && root.getElementById(toggle.getAttribute("aria-controls"));
+		return text ? [toggle, text] : null;
+	};
+	const click = (event) => {
+		const found = control(event.target);
+		if (found) toggleHelp(...found);
+	};
+	const key = (event) => {
+		if (event.key !== "Escape") return;
+		const found = control(event.target);
+		if (found && found[0].getAttribute("aria-expanded") === "true")
+			toggleHelp(...found, false);
+	};
+	root.addEventListener("click", click);
+	root.addEventListener("keydown", key);
+	return () => {
+		root.removeEventListener("click", click);
+		root.removeEventListener("keydown", key);
+	};
+}
+
 /** Keeps the account panel visible when it opens at the bottom of a scrolling rail. */
+/** A Copy button puts its own value on the clipboard and says so for a moment; the text stays selectable without it. */
+export function mountCopyButtons(
+	root,
+	navigator = root.ownerDocument?.defaultView?.navigator ?? globalThis.navigator,
+	timers = globalThis,
+) {
+	const buttons = [...root.querySelectorAll("[data-copy]")];
+	const handlers = buttons.map((button) => {
+		const label = button.textContent;
+		const copy = async () => {
+			try {
+				await navigator.clipboard.writeText(button.dataset.copy ?? "");
+			} catch {
+				return;
+			}
+			button.textContent = button.dataset.copied ?? label;
+			timers.setTimeout(() => {
+				button.textContent = label;
+			}, 2000);
+		};
+		button.addEventListener("click", copy);
+		return () => button.removeEventListener("click", copy);
+	});
+	return () => {
+		for (const remove of handlers) remove();
+	};
+}
+
 export function mountAccountMenu(details) {
 	const reveal = () => {
 		if (details.open) details.lastElementChild?.scrollIntoView?.({ block: "nearest" });
@@ -68,5 +133,7 @@ if (typeof document !== "undefined") {
 		mountThemeForm(form);
 	for (const details of document.querySelectorAll(".admin-account"))
 		mountAccountMenu(details);
+	mountHelpControls(document);
+	mountCopyButtons(document);
 	document.dispatchEvent(new CustomEvent("admin-enhanced", { detail: "shell" }));
 }

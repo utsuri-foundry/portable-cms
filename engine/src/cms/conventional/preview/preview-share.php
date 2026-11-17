@@ -8,6 +8,7 @@ use Utsuri\PortableCms\Conventional\Identity\Clock;
 use Utsuri\PortableCms\Conventional\Identity\IdentityRepository;
 use Utsuri\PortableCms\Conventional\Identity\RandomSource;
 
+/** A link to one frozen preview. The note says who it is for; the sealed secret lets the link be copied again. */
 final readonly class PreviewShare
 {
     public function __construct(
@@ -15,12 +16,66 @@ final readonly class PreviewShare
         public string $previewId,
         public \DateTimeImmutable $createdAt,
         public \DateTimeImmutable $expiresAt,
+        public ?string $note = null,
+        public ?string $createdBy = null,
+        public ?string $sealedSecret = null,
     ) {
         if (preg_match('/\A[a-f0-9]{32}\z/', $id) !== 1
             || preg_match('/\A[a-f0-9]{32}\z/', $previewId) !== 1
-            || $expiresAt <= $createdAt || $expiresAt > $createdAt->modify('+168 hours')) {
+            || $expiresAt <= $createdAt
+            || ($note !== null && !SharedLinkNote::valid($note))) {
             throw new \InvalidArgumentException('Preview share is invalid');
         }
+    }
+
+    public function expired(\DateTimeImmutable $now): bool
+    {
+        return $this->expiresAt <= $now;
+    }
+}
+
+/** The free text an editor writes when making a link: a name, a company, a purpose. */
+final class SharedLinkNote
+{
+    public const MAX_LENGTH = 120;
+
+    /** Trimmed and bounded; null when nothing was written. */
+    public static function normalize(string $value): ?string
+    {
+        $note = trim(preg_replace('/\s+/u', ' ', $value) ?? '');
+        if ($note === '') {
+            return null;
+        }
+        if (!self::valid($note)) {
+            throw new InvalidShareNote();
+        }
+        return $note;
+    }
+
+    public static function valid(string $note): bool
+    {
+        return $note !== '' && mb_check_encoding($note, 'UTF-8') && mb_strlen($note) <= self::MAX_LENGTH && preg_match('/[\x00-\x1f\x7f]/u', $note) !== 1;
+    }
+}
+
+/** The lifetimes an editor can choose, in days, and the default. Extending counts from today. */
+final class SharedLinkLifetime
+{
+    public const DAYS = [1, 7, 30];
+    public const DEFAULT_DAYS = 7;
+
+    public static function expiry(int $days, \DateTimeImmutable $now): \DateTimeImmutable
+    {
+        if (!in_array($days, self::DAYS, true)) {
+            throw new InvalidShareExpiry();
+        }
+        return $now->modify('+' . $days . ' days');
+    }
+
+    /** Links expired longer ago than this leave the list; until then they can be extended or removed. */
+    public static function listingFloor(\DateTimeImmutable $now): \DateTimeImmutable
+    {
+        return $now->modify('-30 days');
     }
 }
 
@@ -36,10 +91,16 @@ interface PreviewShareRepository
 
     public function create(PreviewShare $share, string $tokenHash, string $actor, string $auditId): void;
 
-    /** @return list<PreviewShare> */
+    /** @return list<PreviewShare> Unexpired links of one preview. */
     public function active(string $previewId, \DateTimeImmutable $now): array;
 
-    public function revoke(string $previewId, string $id, string $actor, string $auditId, \DateTimeImmutable $now): void;
+    /** @return list<PreviewShare> Links of every preview that are not stopped, newest first, including recently expired ones. */
+    public function listed(\DateTimeImmutable $now): array;
+
+    public function extend(string $id, \DateTimeImmutable $expiresAt, string $actor, string $auditId, \DateTimeImmutable $now): PreviewShare;
+
+    /** Stops a link for good; an expired link is removed from the list the same way. */
+    public function revoke(string $id, string $actor, string $auditId, \DateTimeImmutable $now): void;
 
     /** Atomically authorize a live ready preview and audit use, comparing the supplied hash in constant time. */
     public function use(string $id, string $tokenHash, string $auditId, \DateTimeImmutable $now): ?PreviewShare;
@@ -47,7 +108,7 @@ interface PreviewShareRepository
 
 final class PreviewShareService
 {
-    public const EXPIRY_HOURS = [1, 24, 168];
+    private readonly LinkSecret $secrets;
 
     public function __construct(
         private readonly PreviewShareRepository $repository,
@@ -59,17 +120,15 @@ final class PreviewShareService
         if (strlen($throttleSecret) < 32) {
             throw new \InvalidArgumentException('Share throttle secret must contain at least 32 bytes');
         }
+        $this->secrets = new LinkSecret($throttleSecret, $random);
     }
 
-    /** @return array{share: PreviewShare, token: string} Token is returned once, never persisted. */
-    public function create(string $previewId, string $actor, int $hours): array
+    /** @return array{share: PreviewShare, token: string} The token is returned once; storage keeps its hash and a sealed copy. */
+    public function create(string $previewId, string $actor, int $days, ?string $note = null): array
     {
-        if (!in_array($hours, self::EXPIRY_HOURS, true)) {
-            throw new InvalidShareExpiry();
-        }
         $now = $this->clock->now();
-        $share = new PreviewShare($this->id(), $previewId, $now, $now->modify('+' . $hours . ' hours'));
         $token = bin2hex($this->random->bytes(32));
+        $share = new PreviewShare($this->id(), $previewId, $now, SharedLinkLifetime::expiry($days, $now), $note, $actor, $this->secrets->seal($token));
         $this->repository->create($share, hash('sha256', $token), $actor, $this->id());
         return ['share' => $share, 'token' => $token];
     }
@@ -80,9 +139,28 @@ final class PreviewShareService
         return $this->repository->active($previewId, $this->clock->now());
     }
 
-    public function revoke(string $previewId, string $id, string $actor): void
+    /** @return list<PreviewShare> */
+    public function listed(): array
     {
-        $this->repository->revoke($previewId, $id, $actor, $this->id(), $this->clock->now());
+        return $this->repository->listed($this->clock->now());
+    }
+
+    public function extend(string $id, string $actor, int $days): PreviewShare
+    {
+        $now = $this->clock->now();
+        return $this->repository->extend($id, SharedLinkLifetime::expiry($days, $now), $actor, $this->id(), $now);
+    }
+
+    public function revoke(string $id, string $actor): void
+    {
+        $this->repository->revoke($id, $actor, $this->id(), $this->clock->now());
+    }
+
+    /** The complete link again, or null when its secret cannot be opened here. */
+    public function url(PreviewShare $share, string $origin): ?string
+    {
+        $secret = $this->secrets->open($share->sealedSecret);
+        return $secret === null ? null : $origin . '/shared-previews/' . $share->id . '/#' . $secret;
     }
 
     public function authorize(string $id, string $token, string $remoteAddress): ?PreviewShare
@@ -137,6 +215,8 @@ final class PreviewShareService
 }
 
 final class InvalidShareExpiry extends \RuntimeException {}
+
+final class InvalidShareNote extends \RuntimeException {}
 
 final class ShareUnavailable extends \RuntimeException {}
 

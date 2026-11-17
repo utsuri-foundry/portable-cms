@@ -204,9 +204,14 @@ final class Pages
     }
 
     /**
+     * Previews is where editors see the website as it would be published. One form asks what to
+     * preview; the list names each preview by its time with Open, Share and a quiet Delete; the
+     * Shared links section follows. Bulk selection appears only when asked for.
      * @param list<PreviewStatus> $previews
      * @param list<\Utsuri\PortableCms\Conventional\Preview\PreviewSetupItem> $previewSetup
      * @param list<string> $preparation Languages in preparation that a review preview may include.
+     * @param (\Closure(PreviewStatus): string)|null $sharePanel The Share panel for one preview, when sharing exists.
+     * @param (\Closure(string): ?string)|null $actorName
      */
     public static function previewList(
         string $csrfToken,
@@ -220,38 +225,93 @@ final class Pages
         ?string $cleanupRecovery = null,
         array $preparation = [],
         int $pendingPublication = 0,
-        ?TrustedHtml $newestLinks = null,
+        ?TrustedHtml $sharedLinks = null,
+        ?\Closure $sharePanel = null,
+        ?\Closure $actorName = null,
+        ?\DateTimeZone $zone = null,
+        bool $selecting = false,
     ): string {
         $t = AdminShell::translator($chrome);
-        $items = '';
-        foreach ($previews as $preview) {
-            $items .= '<li class="admin-list__item"><div><a class="admin-table__title" href="'
-                . Html::url('/previews/' . $preview->id) . '">' . $t->html('preview.name', ['id' => substr($preview->id, 0, 8)]) . '</a><p class="admin-meta">'
-                . AdminShell::time($preview->createdAt, $chrome?->now, $t) . ' · ' . self::previewMode($preview, $t) . '</p></div>'
-                . AdminShell::status($preview->status, null, $t) . '</li>';
-        }
-        $list = $items === ''
-            ? '<div class="admin-section admin-empty"><h2>' . $t->html('preview.empty.title') . '</h2><p class="admin-meta">' . $t->html('preview.empty.help') . '</p></div>'
-            : '<ul class="admin-list">' . $items . '</ul>';
         if ($cleanup !== null) {
-            $list = PreviewCleanupPageView::listing($cleanup, $pageSelection, $csrfToken, $chrome, $cleanupRecovery);
+            $list = PreviewCleanupPageView::listing($cleanup, $pageSelection, $csrfToken, $chrome, $cleanupRecovery, $selecting, $sharePanel, $actorName, $zone);
+        } else {
+            $items = '';
+            foreach ($previews as $preview) {
+                $items .= self::previewRow($preview, null, false, $csrfToken, $chrome, $t, $sharePanel, $actorName, $zone);
+            }
+            $list = $items === '' ? self::previewEmpty($t) : '<ul class="admin-list">' . $items . '</ul>';
         }
+        $create = '<form method="post" action="' . Html::url('/previews') . '" class="admin-preview-create"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">'
+            . '<fieldset class="admin-field"><legend class="admin-visually-hidden">' . $t->html('preview.what') . '</legend><div class="admin-preview-create__choices">'
+            . '<label class="admin-checkbox"><input type="radio" name="include_drafts" value="0" checked> <span>' . $t->html('preview.what.ready') . ' <span class="admin-meta">' . $t->html('preview.what.ready_help') . '</span></span></label>'
+            . '<label class="admin-checkbox"><input type="radio" name="include_drafts" value="1"> <span>' . $t->html('preview.what.drafts') . ' <span class="admin-meta">' . $t->html('preview.what.drafts_help') . '</span></span></label>'
+            . '</div></fieldset>' . self::preparationChoice($profile, $preparation, $t)
+            . '<div class="admin-actions"><button type="submit" class="admin-button--primary">' . $t->html('preview.create') . '</button></div></form>';
         $body = TrustedHtml::fromEngineMarkup(
             AdminShell::breadcrumbs([[$t->text('shell.group.publish'), null], [$t->text('preview.list.title'), null]], $t)
-            . AdminShell::header(
-                $t->text('preview.list.title'),
-                '<p class="admin-lede">' . $t->html('preview.list.lede') . '</p>',
-                '<form method="post" action="' . Html::url('/previews') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">'
-                . '<label><input type="checkbox" name="include_drafts" value="1"> ' . $t->html('preview.include_drafts') . '</label>'
-                . self::preparationChoice($profile, $preparation, $t)
-                . '<button type="submit" class="admin-button--primary">' . $t->html('preview.create') . '</button></form>',
-            )
-            . '<p class="admin-notice" data-pending-publication="' . $pendingPublication . '">' . $t->html('preview.pending_publication', ['count' => $pendingPublication]) . '</p>'
+            . AdminShell::header($t->text('preview.list.title'), '<p class="admin-lede">' . $t->html('preview.list.lede') . '</p>')
+            . '<section class="admin-section">' . $create . '</section>'
+            . ($pendingPublication > 0 ? '<p class="admin-notice" data-pending-publication="' . $pendingPublication . '">' . $t->html('preview.pending_publication', ['count' => $pendingPublication]) . '</p>' : '')
             . PreviewCheckPanel::failed($latestCheck, $profile, $t)
             . PreviewCheckPanel::setup($previewSetup, $profile, $t)
-            . '<section aria-labelledby="recent-previews" class="admin-form"><h2 id="recent-previews">' . $t->html('preview.list.recent') . '</h2>' . $list . '</section>' . ($newestLinks->value ?? ''),
+            . '<section class="admin-form" aria-label="' . $t->html('preview.list.title') . '">' . $list . '</section>' . ($sharedLinks->value ?? ''),
         );
         return AdminShell::application($t->text('preview.list.title'), $body, $profile, 'previews', 'wide', $chrome);
+    }
+
+    public static function previewEmpty(Translator $t): string
+    {
+        return '<div class="admin-section admin-empty"><h2>' . $t->html('preview.empty.title') . '</h2><p class="admin-meta">' . $t->html('preview.empty.help') . '</p></div>';
+    }
+
+    /**
+     * One preview as a row: its time as the title, who made it and what it includes, then Open,
+     * Share and a quiet Delete. In a selection the row starts with its checkbox.
+     * @param (\Closure(PreviewStatus): string)|null $sharePanel
+     * @param (\Closure(string): ?string)|null $actorName
+     */
+    public static function previewRow(PreviewStatus $preview, ?\Utsuri\PortableCms\Conventional\Preview\PreviewCleanupItem $item, bool $selecting, string $csrfToken, ?AdminChrome $chrome, Translator $t, ?\Closure $sharePanel = null, ?\Closure $actorName = null, ?\DateTimeZone $zone = null): string
+    {
+        $name = self::previewName($preview, $chrome, $t, $zone);
+        $eligible = $item === null || $item->eligible();
+        $check = $selecting
+            ? '<label class="preview-cleanup-check"><input type="checkbox" name="preview_ids[]" value="' . Html::attribute($preview->id) . '" aria-label="' . $t->html('cleanup.select', ['name' => $name]) . '"' . ($eligible ? '' : ' disabled') . '></label>'
+            : '';
+        $meta = [];
+        $by = $preview->createdBy === null || $actorName === null ? null : $actorName($preview->createdBy);
+        if ($by !== null) {
+            $meta[] = $t->html('preview.by', ['name' => $by]);
+        }
+        if ($preview->includeDrafts) {
+            $meta[] = '<span class="admin-tag">' . $t->html('preview.tag.drafts') . '</span>';
+        }
+        if ($preview->includePreparation) {
+            $meta[] = '<span class="admin-tag">' . $t->html('preview.tag.preparation') . '</span>';
+        }
+        if ($item !== null && !$eligible) {
+            $meta[] = PreviewCleanupPageView::reason($item, $t);
+        }
+        $details = '<div class="admin-preview-row__details"><a class="admin-table__title" href="' . Html::url('/previews/' . $preview->id) . '">' . Html::text($name) . '</a>'
+            . ($meta === [] ? '' : '<p class="admin-meta">' . implode(' · ', $meta) . '</p>') . '</div>';
+        $actions = '';
+        if ($preview->status === 'ready') {
+            $actions .= '<a class="admin-button admin-button--small" href="' . Html::url('/previews/' . $preview->id . '/artifact/') . '" target="_blank" rel="noopener">' . $t->html('preview.open') . '</a>';
+            $actions .= $sharePanel === null ? '' : $sharePanel($preview);
+        } else {
+            $actions .= AdminShell::status($preview->status, null, $t);
+        }
+        if ($eligible && in_array($preview->status, ['ready', 'needs_attention'], true)) {
+            $actions .= '<form method="post" action="' . Html::url('/previews/' . $preview->id . '/delete') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><button type="submit" class="admin-button--quiet admin-button--small">' . $t->html('preview.delete') . '</button></form>';
+        }
+        return '<li class="admin-list__item admin-preview-row' . ($selecting ? ' admin-preview-row--selecting' : '') . '" data-preview-row="' . Html::attribute($preview->id) . '" data-preview-status="' . Html::attribute($preview->status) . '">'
+            . $check . $details . '<div class="admin-preview-row__actions">' . $actions . '</div></li>';
+    }
+
+    /** A preview is named by when it was made, in the site's time zone when known. */
+    public static function previewName(PreviewStatus $preview, ?AdminChrome $chrome, Translator $t, ?\DateTimeZone $zone = null): string
+    {
+        $zone ??= $chrome?->now?->getTimezone() ?? $preview->createdAt->getTimezone();
+        return AdminShell::timeText($preview->createdAt->setTimezone($zone), $chrome?->now?->setTimezone($zone), $t);
     }
 
     /** What a preview draws, and whether it can ever be released. */
@@ -273,23 +333,26 @@ final class Pages
                 $names[] = $definition->label;
             }
         }
-        return $names === [] ? '' : '<label><input type="checkbox" name="include_preparation" value="1"> '
+        return $names === [] ? '' : '<label class="admin-checkbox"><input type="checkbox" name="include_preparation" value="1"> '
             . $t->html('preview.include_preparation', ['languages' => implode(', ', $names)]) . '</label>';
     }
 
-    public static function previewQueued(?ProfileManifest $profile, PreviewStatus $preview, ?AdminChrome $chrome = null): string
+    public static function previewQueued(?ProfileManifest $profile, PreviewStatus $preview, ?AdminChrome $chrome = null, ?\DateTimeZone $zone = null): string
     {
         $t = AdminShell::translator($chrome);
         $body = TrustedHtml::fromEngineMarkup(
-            AdminShell::breadcrumbs([[$t->text('preview.list.title'), '/previews'], [$t->text('preview.name', ['id' => substr($preview->id, 0, 8)]), null]], $t)
+            AdminShell::breadcrumbs([[$t->text('preview.list.title'), '/previews'], [self::previewName($preview, $chrome, $t, $zone), null]], $t)
             . AdminShell::header($t->text('preview.queued.title'))
-            . '<div class="admin-notice admin-notice--warning" role="status">'
-            . '<p>' . $t->html('preview.queued.notice') . '</p></div>'
+            . '<div class="admin-notice" role="status"><p>' . $t->html('preview.queued.notice') . '</p></div>'
             . '<p><a class="admin-button" href="' . Html::url('/previews/' . $preview->id) . '">' . $t->html('preview.queued.check') . '</a></p>',
         );
         return AdminShell::application($t->text('preview.queued.title'), $body, $profile, 'previews', 'narrow', $chrome);
     }
 
+    /**
+     * A preview's own page is titled by its time and offers Open, Share and Delete. While it builds,
+     * the page says so and refreshes itself; a failure shows its diagnostics.
+     */
     public static function previewStatus(
         string $csrfToken,
         ?ProfileManifest $profile,
@@ -298,9 +361,17 @@ final class Pages
         bool $sharingAvailable = false,
         string $scheduleNotice = '',
         int $missingRevisions = 0,
+        ?string $sharePanel = null,
+        ?string $creator = null,
+        ?\DateTimeZone $zone = null,
     ): string {
         $t = AdminShell::translator($chrome);
-        $message = $t->text(in_array($preview->status, ['queued', 'building', 'ready', 'needs_attention'], true) ? 'preview.status.' . $preview->status : 'preview.status.unknown');
+        $name = self::previewName($preview, $chrome, $t, $zone);
+        $message = match ($preview->status) {
+            'ready' => '',
+            'queued', 'building', 'needs_attention' => '<p role="status">' . $t->html('preview.status.' . $preview->status) . '</p>',
+            default => '<p role="status">' . $t->html('preview.status.unknown') . '</p>',
+        };
         $open = $preview->status === 'ready'
             ? '<a class="admin-button admin-button--primary" href="' . Html::url('/previews/' . $preview->id . '/artifact/')
                 . '" target="_blank" rel="noopener">' . $t->html('preview.open') . '</a>'
@@ -308,13 +379,11 @@ final class Pages
         if ($preview->status === 'ready' && $preview->manifest !== null) {
             foreach (\Utsuri\PortableCms\Conventional\Preview\PreviewBuild::fromManifest($preview->manifest)->artifacts as $artifact) {
                 if (preg_match('#\Afeed/v1/snapshots/[a-f0-9]{64}/manifest\.json\z#', $artifact->path) === 1) {
-                    $open .= '<a class="admin-button" href="' . Html::url('/previews/' . $preview->id . '/artifact/' . $artifact->path) . '">' . $t->html('preview.content_feed') . '</a>';
+                    $open .= '<a class="admin-button admin-button--quiet" href="' . Html::url('/previews/' . $preview->id . '/artifact/' . $artifact->path) . '">' . $t->html('preview.content_feed') . '</a>';
                 }
             }
         }
-        if ($sharingAvailable && $preview->status === 'ready' && ($chrome === null || $chrome->role !== 'editor')) {
-            $open .= '<a class="admin-button" href="' . Html::url('/previews/' . $preview->id . '/shares') . '">' . $t->html('share.title') . '</a>';
-        }
+        $share = $sharingAvailable && $preview->status === 'ready' ? ($sharePanel ?? '') : '';
         $error = $preview->status === 'needs_attention' && $preview->errorCode !== null
             ? '<p>' . $t->markup('preview.error', [], ['code' => '<code>' . Html::text($preview->errorCode) . '</code>']) . '</p>'
             : '';
@@ -324,22 +393,19 @@ final class Pages
         $delete = in_array($preview->status, ['ready', 'needs_attention'], true)
             ? '<form method="post" action="' . Html::url('/previews/' . $preview->id . '/delete') . '">'
                 . '<input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">'
-                . '<button type="submit" class="admin-button--danger">' . $t->html('preview.delete') . '</button></form>'
+                . '<button type="submit" class="admin-button--quiet">' . $t->html('preview.delete') . '</button></form>'
             : '';
-        $refresh = $preview->status === 'queued' || $preview->status === 'building'
-            ? '<a class="admin-button" href="' . Html::url('/previews/' . $preview->id) . '">' . $t->html('preview.refresh') . '</a>'
-            : '';
-        $name = $t->text('preview.name', ['id' => substr($preview->id, 0, 8)]);
+        $meta = '<span class="admin-status admin-status--' . Html::attribute($preview->status) . '" data-preview-state="' . Html::attribute($preview->status) . '">' . Html::text(AdminShell::stateLabel($preview->status, $t)) . '</span>'
+            . ($creator === null ? '' : '<span>' . $t->html('preview.by', ['name' => $creator]) . '</span>')
+            . '<span data-preview-mode="' . ($preview->includeDrafts ? 'drafts' : 'published') . '"' . ($preview->includePreparation ? ' data-preview-languages="preparation"' : '') . '>' . self::previewMode($preview, $t) . '</span>';
         $body = TrustedHtml::fromEngineMarkup(
             AdminShell::breadcrumbs([[$t->text('preview.list.title'), '/previews'], [$name, null]], $t)
-            . $scheduleNotice . AdminShell::header($name, '<p class="admin-meta-line"><span class="admin-status admin-status--'
-                . Html::attribute($preview->status) . '" data-preview-state="' . Html::attribute($preview->status) . '">' . Html::text(AdminShell::stateLabel($preview->status, $t)) . '</span>'
-                . '<span>' . $t->markup('preview.created', [], ['time' => AdminShell::time($preview->createdAt, $chrome?->now, $t)]) . '</span></p>')
-            . '<section class="admin-section"><p class="admin-meta" data-preview-mode="' . ($preview->includeDrafts ? 'drafts' : 'published') . '"' . ($preview->includePreparation ? ' data-preview-languages="preparation"' : '') . '>' . self::previewMode($preview, $t) . '</p><p role="status">' . Html::text($message) . '</p>' . $error
+            . $scheduleNotice . AdminShell::header($name, '<p class="admin-meta-line">' . $meta . '</p>')
+            . '<section class="admin-section">' . $message . $error
             . ($missingRevisions === 0 ? '' : '<p class="admin-help">' . $t->html('history.preview_missing', ['count' => $missingRevisions]) . '</p>')
-            . '<div class="admin-actions">' . $open . $refresh . $delete . '</div></section>',
+            . '<div class="admin-actions admin-preview-actions">' . $open . $share . $delete . '</div></section>',
         );
-        return AdminShell::application($t->text('preview.status.title'), $body, $profile, 'previews', 'standard', $chrome);
+        return AdminShell::application($name, $body, $profile, 'previews', 'standard', $chrome);
     }
 
     /** @param list<RecordSnapshot> $records */

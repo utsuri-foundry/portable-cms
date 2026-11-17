@@ -34,7 +34,7 @@ return [
     'shell.theme.dark' => 'Dark',
     'shell.theme.apply' => 'Apply',
     'state.draft' => 'Draft',
-    'state.published' => 'Published',
+    'state.published' => 'Ready',
     'state.archived' => 'Archived',
     'state.queued' => 'Queued',
     'state.running' => 'Running',

@@ -66,6 +66,8 @@ return [
     'editor.upload.label' => 'Neue Bilder hochladen',
     'editor.upload.submit' => 'Ausgewählte Bilder hochladen',
     'field.required' => 'Pflichtfeld',
+    'field.about' => 'Über {label}',
+    'form.required_legend' => 'Pflichtfelder',
     'field.none' => 'Keine Angabe',
     'field.select_many' => 'Wählen Sie einen oder mehrere Werte aus.',
     'coverage.complete' => 'Vollständig',

@@ -23,9 +23,12 @@ final class InstallationPage
         $body = AdminShell::header($t->text('installation.title'), '<p class="admin-lede">' . $t->html('installation.help') . '</p>')
             . '<section class="admin-card"><dl class="admin-installation-facts">';
         foreach ($facts as $label => $value) {
-            $body .= '<dt>' . $t->html($label) . '</dt><dd>' . Html::text($value) . '</dd>';
+            $release = $label === 'installation.release_id';
+            // The value keeps its cell to itself; the folded explanation is a second definition of the same term.
+            $body .= '<dt>' . $t->html($label) . ($release ? FieldHelp::toggle('installation-release-help', $t->text($label), $t) : '') . '</dt><dd>' . Html::text($value) . '</dd>'
+                . ($release ? FieldHelp::text('installation-release-help', $t->html('installation.release_help'), 'dd') : '');
         }
-        $body .= '</dl><p class="admin-help">' . $t->html('installation.release_help') . '</p>'
+        $body .= '</dl>'
             . ($chrome->websiteIdentity === null ? '' : '<p><a href="/settings/publication">' . $t->html('holding.settings') . '</a></p>') . '</section>';
         return AdminShell::application($t->text('installation.title'), TrustedHtml::fromEngineMarkup($body), $profile, 'installation', 'standard', $chrome);
     }

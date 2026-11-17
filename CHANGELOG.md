@@ -5,6 +5,97 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.13.2
+
+- Video fields are tidied. The eligibility rule is one sentence stated once.
+  The chosen video and poster image are two plainly named rows with a link to
+  each media page and a quiet remove control; no numbered badges are drawn over
+  their names any more. Each choice has one disclosure, "Choose video" or
+  "Choose poster image" ("Change" once chosen), that holds the library search
+  and paging, and the upload sits under the video one as in image fields. The
+  poster appears once, on the player. Every changed string is in each
+  administration language. Video limits, upload rules, the player, image fields
+  and Vimeo fields are unchanged.
+
+## 0.13.1
+
+- Website settings is redesigned in the order of an editor's tasks. One line
+  under the heading says what the public website shows now. "Website" holds
+  the name, with where it appears, and the icon: the rule first, the chosen
+  image previewed at the 32, 180 and 512 pixel sizes it becomes, and a chooser
+  that lists only images that qualify. "Before launch" asks what the next
+  release publishes as two explained choices, shows the message and contact
+  per language by language name for the public languages only, and asks for a
+  confirmation only when going back from the website to the coming soon page.
+  "Administration appearance" comes last with the logo and its dark mode
+  variant, each shown on its backing, and choosers that list only images that
+  fit. Saving says it saved and names the next step on Releases. Every failure
+  is a sentence; operator notes, locale codes and the atomic delivery sentence
+  leave the page. Editors read the page; owners and administrators change it.
+  The settings and their meaning are unchanged.
+
+## 0.13.0
+
+- Previews reads as seeing the website as it would be published: one form
+  offers "Content marked ready" or "Everything, drafts included" with their
+  consequence and one button, "Preview the website"; previews are named by
+  their time in the site's zone, say who made them, tag drafts and languages in
+  preparation, and offer Open, Share and a quiet Delete; the pending notice
+  shows only when something is pending; bulk selection appears on request or
+  beyond one page; a preview's page is titled by its time. Identities and
+  hashes leave the page.
+- Sharing is one Share panel on every ready preview, for every account: what
+  the link shows (this preview, or always the newest preview), for how long
+  (1, 7 or 30 days, 7 by default) and who it is for (a note). The result is
+  the complete link with Copy and a sentence saying what it shows and until
+  when. "Shared links" lists each link by its note, what it shows, until when
+  in the site's time zone and by whom, with Copy, Extend and Stop; an expired
+  link keeps Extend and Remove. The viewer shows a thin bar, "Preview of
+  <site>, not public, shared by <name>", with the preview's languages. The one
+  hour option, link identities, UTC times, the separate newest links section
+  and the manifest address leave the administration; the bearer manifest route
+  is unchanged and documented.
+- Migration 0033 adds a note and a sealed copy of the secret to share and
+  newest links, so a link can be copied again; authorization still uses only
+  the hash. Links can be extended from today. Previews carry their creator.
+  Share secrets are sealed with AES-256-GCM under a key derived from the
+  installation's throttle secret.
+
+## 0.12.13
+
+- Releases is redesigned around one publish form and plain language: an "On
+  the website now" card with the time, the person and a link to the website;
+  a "Ready to publish" form that lists candidates by what they are and when
+  they were built, folds older coming soon builds, asks Now or a date, takes
+  one confirmation and one Publish button, and offers the coming soon build
+  as a secondary action; "Scheduled" with Move and Cancel; and "Earlier
+  releases" with dated rows, a readable status, Restore and a quiet Remove.
+  No identities, hashes or worker words remain; failures are a sentence with
+  the code folded for the agency. Releases now carry their creation and
+  update times. The publication model and scheduling rules are unchanged.
+- On Installation, the release identity keeps its cell to itself again; its
+  folded explanation is a second definition of the same term, so operator
+  tooling that reads the cell finds the identity alone.
+
+## 0.12.12
+
+- Explanations fold behind a small "i" control beside the label, legend or
+  heading they belong to: profile field hints, group purposes on Wording, the
+  design groups, the media detail and the other pages that printed help under
+  a control. The text stays in the page for assistive technology and shows
+  inline without scripts. Required fields carry a star after the label with
+  one "* required fields" line per record form, and the words Required and
+  optional leave the labels. Stylesheet and shell scripts are versioned.
+
+## 0.12.11
+
+- A record's rail no longer says Publish. The action reads Mark as ready, a
+  ready record offers Back to draft as a confirmed native action, and the
+  states read Draft, Ready and Ready, with changes in every administration
+  language; Publish is the word of Releases and of the Previews' explanation
+  of what a release publishes. The stored states, the status route and the
+  publication model are unchanged.
+
 ## 0.12.10
 
 - The administration sidebar groups destinations by the editor's work: Content

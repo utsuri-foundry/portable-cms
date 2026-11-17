@@ -202,9 +202,10 @@ duration. Disk failures use the existing bounded retry and lease protocol;
 unsupported containers are terminal failures.
 
 A `video_reference` retains exactly `mediaId` and `posterId`, naming a ready
-prepared video and a distinct ready raster image. Native search/pagination and
-separate labelled visual pickers show asset names; editors never enter identities or
-JSON. Uploading adds files to the shared library, while selection remains an
+prepared video and a distinct ready raster image. The field shows the two as
+named rows with a link to each media page; each choice has its own disclosure
+with native library search and paging, and the upload sits under the video's.
+Editors never enter identities or JSON. Uploading adds files to the shared library, while selection remains an
 ordinary revisioned record save. Localized and group video references use the
 same domain contract, and validation/conflict responses retain both choices.
 Profile field `maximumBytes` may tighten the global video ceiling.

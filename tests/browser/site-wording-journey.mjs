@@ -68,10 +68,50 @@ try {
 	);
 	assert.deepEqual(
 		await evaluate(
-			"(()=>{const e=document.querySelector('[data-wording-key=\"metadata.year\"]');return [e.querySelector('legend').textContent,e.querySelector('.admin-help').textContent]})()",
+			"(()=>{const e=document.querySelector('[data-wording-key=\"metadata.year\"]');return [e.querySelector('.admin-legend__text').textContent,e.querySelector('.admin-help-control__text').textContent]})()",
 		),
 		["Etiqueta de l’any", "L’etiqueta de l’any d’un projecte."],
 		"wording is named and explained in the Catalan administration",
+	);
+	const help =
+		"document.querySelector('[data-wording-key=\"metadata.year\"] [data-help-toggle]')";
+	const text = `document.getElementById(${help}.getAttribute('aria-controls'))`;
+	assert.deepEqual(
+		await evaluate(
+			`[getComputedStyle(${text}).display, ${help}.getAttribute('aria-expanded'), document.querySelector('[data-wording-key="metadata.year"]').getAttribute('aria-describedby') === ${text}.id]`,
+		),
+		["none", "false", true],
+		"an explanation is folded at rest and still describes its group",
+	);
+	await evaluate(`${help}.focus()`);
+	for (const type of ["keyDown", "keyUp"]) {
+		await command("Input.dispatchKeyEvent", {
+			type,
+			key: "Enter",
+			code: "Enter",
+			windowsVirtualKeyCode: 13,
+			text: type === "keyDown" ? "\r" : undefined,
+		});
+	}
+	assert.deepEqual(
+		await evaluate(
+			`[getComputedStyle(${text}).display !== 'none', ${help}.getAttribute('aria-expanded'), document.activeElement === ${help}]`,
+		),
+		[true, "true", true],
+		"the keyboard opens the explanation without moving focus",
+	);
+	for (const type of ["keyDown", "keyUp"]) {
+		await command("Input.dispatchKeyEvent", {
+			type,
+			key: "Escape",
+			code: "Escape",
+			windowsVirtualKeyCode: 27,
+		});
+	}
+	assert.equal(
+		await evaluate(`${help}.getAttribute('aria-expanded')`),
+		"false",
+		"Escape folds it again",
 	);
 	assert.deepEqual(
 		await liveLabels(),
