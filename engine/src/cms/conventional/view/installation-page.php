@@ -24,8 +24,9 @@ final class InstallationPage
             . '<section class="admin-card"><dl class="admin-installation-facts">';
         foreach ($facts as $label => $value) {
             $release = $label === 'installation.release_id';
-            $body .= '<dt>' . $t->html($label) . ($release ? FieldHelp::toggle('installation-release-help', $t->text($label), $t) : '') . '</dt><dd>' . Html::text($value)
-                . ($release ? FieldHelp::text('installation-release-help', $t->html('installation.release_help')) : '') . '</dd>';
+            // The value keeps its cell to itself; the folded explanation is a second definition of the same term.
+            $body .= '<dt>' . $t->html($label) . ($release ? FieldHelp::toggle('installation-release-help', $t->text($label), $t) : '') . '</dt><dd>' . Html::text($value) . '</dd>'
+                . ($release ? FieldHelp::text('installation-release-help', $t->html('installation.release_help'), 'dd') : '');
         }
         $body .= '</dl>'
             . ($chrome->websiteIdentity === null ? '' : '<p><a href="/settings/publication">' . $t->html('holding.settings') . '</a></p>') . '</section>';

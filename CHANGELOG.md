@@ -17,6 +17,9 @@ after 0.1.2; older commits are not assigned invented release versions.
   No identities, hashes or worker words remain; failures are a sentence with
   the code folded for the agency. Releases now carry their creation and
   update times. The publication model and scheduling rules are unchanged.
+- On Installation, the release identity keeps its cell to itself again; its
+  folded explanation is a second definition of the same term, so operator
+  tooling that reads the cell finds the identity alone.
 
 ## 0.12.12
 
