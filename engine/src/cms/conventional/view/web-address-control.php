@@ -19,9 +19,10 @@ final class WebAddressControl
         $maximum = $field->maximumLength ?? WebAddress::MAXIMUM_LENGTH;
         $id = 'field-' . $field->id;
         $invalid = $error === null ? '' : ' aria-invalid="true" aria-describedby="' . Html::attribute($id . '-error') . '"';
-        $body = '<fieldset class="admin-field" id="' . Html::attribute($id) . '"><legend>' . Html::text($field->label)
-            . ($field->required ? ' <span class="admin-field__required">' . $t->html('field.required') . '</span>' : '')
-            . ($field->localized ? RecordPages::localeTag() : '') . '</legend><input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
+        $body = '<fieldset class="admin-field" id="' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-label') . '" aria-describedby="' . Html::attribute($id . '-help') . '">'
+            . FieldHelp::legend($id . '-label', Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '') . ($field->localized ? RecordPages::localeTag() : ''), $id . '-help', $field->label, $t)
+            . FieldHelp::text($id . '-help', $t->html('address.help', ['maximum' => $maximum]))
+            . '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
         foreach ($field->localized ? $profile->localeDefinitions : [null] as $definition) {
             $locale = $definition === null ? '' : $definition->id;
             $entry = $field->localized && is_array($value) ? ($value[$locale] ?? null) : $value;
@@ -35,7 +36,6 @@ final class WebAddressControl
                 . '<label for="' . Html::attribute($prefix . '__linkText') . '">' . $t->html('address.link_text') . '</label><input id="' . Html::attribute($prefix . '__linkText') . '" name="' . Html::attribute($prefix . '__linkText') . '" type="text" maxlength="' . WebAddress::MAXIMUM_TEXT . '" value="' . Html::attribute($text) . '"' . $invalid . '>';
             $body .= $definition === null ? '' : '</div>';
         }
-        $body .= '<p class="admin-field__hint">' . $t->html('address.help', ['maximum' => $maximum]) . '</p>';
         return $body . ($error === null ? '' : '<p class="admin-field__error" id="' . Html::attribute($id . '-error') . '" role="alert">' . Html::text($error) . '</p>') . '</fieldset>';
     }
 }

@@ -80,7 +80,7 @@ final class ReferenceControls
         $results = $mediaField ? $this->media?->search($query, $page) : $this->content->searchReferences($field, $query, $page, $filter);
         $items = $mediaField ? ($results->items ?? []) : ($results->records ?? []);
         $markup = '<fieldset class="admin-field admin-picker' . ($mediaField ? ' admin-picker--media' : '') . '" id="field-' . Html::attribute($field->id) . '" data-reference-control' . $this->focusAttributes($field->id) . '><legend>'
-            . Html::text($field->label) . ($field->required ? ' <span class="admin-field__required">' . $t->html('field.required') . '</span>' : '') . '</legend>'
+            . Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '') . '</legend>'
             . '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
         if ($error !== null) {
             $markup .= '<p class="admin-field__error" role="alert">' . Html::text($error) . '</p>';

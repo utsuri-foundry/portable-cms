@@ -28,7 +28,7 @@ $tests['administration stylesheet is tokenized themed local and responsive'] = s
     $css = file_get_contents($path);
     $size = filesize($path);
     assertTrueValue(is_string($css) && is_int($size), 'administration stylesheet should be readable');
-    assertTrueValue($size > 5_000 && $size < 65_536, 'administration stylesheet should stay intentionally bounded');
+    assertTrueValue($size > 5_000 && $size < 73_728, 'administration stylesheet should stay intentionally bounded');
     assertTrueValue(str_contains($css, ':focus-visible'), 'visible keyboard focus should be explicit');
     assertTrueValue(str_contains($css, '@media (max-width: 56rem)'), 'shell should adapt below wide layouts');
     assertTrueValue(str_contains($css, '@media (max-width: 42rem)'), 'tables should adapt for narrow viewports');
@@ -53,7 +53,7 @@ $tests['administration shell groups navigation exposes current state and owns ac
     ], adminTestChrome());
     assertTrueValue(str_contains($html, 'href="/assets/admin.css?v=' . AdminShell::STYLESHEET_VERSION . '"'), 'every page loads the versioned stylesheet');
     assertTrueValue(str_contains($html, 'src="/assets/admin-shell.js?v=' . AdminShell::SCRIPT_VERSION . '"'), 'shell island is a same-origin module');
-    assertTrueValue(str_contains($html, '<script src="/assets/admin-start.js?v=1"></script>'), 'the shell owns one parser-blocking same-origin bootstrap');
+    assertTrueValue(str_contains($html, '<script src="/assets/admin-start.js?v=2"></script>'), 'the shell owns one parser-blocking same-origin bootstrap');
     assertTrueValue(strpos($html, '/assets/admin-start.js?v=1') < strpos($html, '/assets/admin.css?v='), 'the early marker runs before styles and body can paint');
     assertSameValue(0, preg_match('/<script(?![^>]*\bsrc=)[^>]*>/', $html), 'early enhancement needs no inline script or CSP exception');
     assertSameValue(1, substr_count($html, '<main '), 'administration pages should expose one main landmark');

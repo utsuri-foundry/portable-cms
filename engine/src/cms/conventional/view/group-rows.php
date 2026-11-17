@@ -42,7 +42,7 @@ final class GroupRows
             $head = '<span></span>';
             foreach ($children as $index => $child) {
                 $head .= '<span>' . Html::text($child->label) . ($child->localized ? RecordPages::localeTag() : '')
-                    . ($child->hint === null ? '' : '<small class="admin-field__hint" id="hint-' . Html::attribute($prefix . '-' . $field->fields[$index]->id) . '">' . Html::text($child->hint) . '</small>') . '</span>';
+                    . ($child->hint === null ? '' : FieldHelp::toggle('hint-' . $prefix . '-' . $field->fields[$index]->id, $child->label, $t) . FieldHelp::text('hint-' . $prefix . '-' . $field->fields[$index]->id, Html::text($child->hint), 'small')) . '</span>';
             }
             $rows = '';
             foreach ($items as $position => $item) {

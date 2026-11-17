@@ -28,7 +28,8 @@ final class VimeoVideoControl
         $results = $library?->search($query, $page);
         $id = 'field-' . $field->id;
         $invalid = $error === null ? '' : ' aria-invalid="true" aria-describedby="' . Html::attribute($id . '-error') . '"';
-        $html = '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '"><legend>' . Html::text($field->label) . '</legend>'
+        $html = '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-label') . '" aria-describedby="' . Html::attribute($id . '-help') . '">'
+            . FieldHelp::legend($id . '-label', Html::text($field->label), $id . '-help', $field->label, $t) . FieldHelp::text($id . '-help', $t->html('vimeo.help'))
             . '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
         foreach ($field->localized ? $profile->localeDefinitions : [null] as $definition) {
             $locale = $definition->id ?? '';
@@ -84,8 +85,7 @@ final class VimeoVideoControl
         $html .= '<div class="admin-picker__search"><label for="vimeo-query-' . Html::attribute($field->id) . '">' . $t->html('picker.find') . '</label><input id="vimeo-query-' . Html::attribute($field->id) . '" name="_query_' . Html::attribute($field->id) . '" type="search" maxlength="100" value="' . Html::attribute($query) . '">'
             . '<input type="hidden" name="_page_' . Html::attribute($field->id) . '" value="' . $page . '">' . ReferenceControls::button('search:' . $field->id, $t->text('picker.search'))
             . ($page > 1 ? ReferenceControls::button('page:' . $field->id . ':' . ($page - 1), $t->text('records.pages.previous')) : '')
-            . ($results?->hasNext === true ? ReferenceControls::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>'
-            . '<p class="admin-field__hint">' . $t->html('vimeo.help') . '</p>';
+            . ($results?->hasNext === true ? ReferenceControls::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>';
         return $html . ($error === null ? '' : '<p role="alert" class="admin-field__error" id="' . Html::attribute($id . '-error') . '">' . Html::text($error) . '</p>') . '</fieldset>';
     }
 }

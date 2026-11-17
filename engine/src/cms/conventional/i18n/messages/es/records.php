@@ -66,6 +66,8 @@ return [
     'editor.upload.label' => 'Subir imágenes nuevas',
     'editor.upload.submit' => 'Subir las imágenes seleccionadas',
     'field.required' => 'Obligatorio',
+    'field.about' => 'Acerca de {label}',
+    'form.required_legend' => 'campos obligatorios',
     'field.none' => 'Ninguno',
     'field.select_many' => 'Selecciona uno o más valores.',
     'coverage.complete' => 'Completo',

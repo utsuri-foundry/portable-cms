@@ -11,6 +11,7 @@ use Utsuri\PortableCms\Conventional\I18n\InvalidInput;
 use Utsuri\PortableCms\Conventional\Identity\SessionContext;
 use Utsuri\PortableCms\Conventional\View\AdminChrome;
 use Utsuri\PortableCms\Conventional\View\AdminShell;
+use Utsuri\PortableCms\Conventional\View\FieldHelp;
 use Utsuri\PortableCms\Conventional\View\MediaDescriptionsForm;
 use Utsuri\PortableCms\Conventional\View\MediaTextForm;
 use Utsuri\PortableCms\Conventional\View\TrustedHtml;
@@ -75,7 +76,7 @@ final readonly class MediaDescriptionsHttp
             return Response::json(['items' => array_map(fn(LibraryMedia $item): array => ['id' => $item->id, 'name' => $item->name, 'mime' => $item->mime, 'revision' => $item->metadataRevision, 'text' => ($item->text ?? MediaText::from())->document(), 'warning' => MediaDescriptionsForm::warning($item, $this->profile, $t), 'error' => $errors[$item->id] ?? null, 'saved' => in_array($item->id, $saved, true)], $items)], $status);
         }
         $markup = AdminShell::breadcrumbs([[$t->text('media.title'), '/media'], [$t->text('media.descriptions.title'), null]], $t)
-            . AdminShell::header($t->text('media.descriptions.title'), '<p>' . $t->html('media.descriptions.help') . '</p>')
+            . AdminShell::header($t->text('media.descriptions.title'), '<p class="admin-lede">' . $t->html('media.descriptions.help') . ' ' . FieldHelp::toggle('media-text-help', $t->text('media.descriptions.title'), $t) . '</p>' . FieldHelp::text('media-text-help', $t->html('media.text.help', ['locale' => $this->profile->defaultLocale])))
             . MediaDescriptionsForm::form($items, $this->profile, $t, $session->csrfToken, $submitted, $errors, $saved);
         return new Response($status, AdminShell::application($t->text('media.descriptions.title'), TrustedHtml::fromEngineMarkup($markup), $this->profile, 'media', 'wide', $this->chrome));
     }

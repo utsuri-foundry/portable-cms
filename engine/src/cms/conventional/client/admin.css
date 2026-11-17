@@ -357,7 +357,24 @@ button, .admin-button { justify-self: start; }
 fieldset.admin-field { padding: 0; border: 0; }
 fieldset.admin-field > legend { display: flex; align-items: center; gap: 0.375rem; margin-bottom: 0.375rem; padding: 0; }
 .admin-field > label, .admin-field > legend, .admin-field__label { font-size: var(--admin-text-sm); font-weight: 600; }
-.admin-field__required, .admin-field__hint { color: var(--admin-subtle); font-size: var(--admin-text-xs); font-weight: 400; }
+.admin-field__hint { color: var(--admin-subtle); font-size: var(--admin-text-xs); font-weight: 400; }
+.admin-field__required { color: var(--admin-muted); font-weight: 600; }
+.admin-form__required { margin: 0; color: var(--admin-muted); font-size: var(--admin-text-xs); }
+.admin-legend__text { display: inline-flex; align-items: center; gap: 0.375rem; }
+
+/* ---------- Help behind an "i" ---------- */
+.admin-help-control__toggle { display: inline-grid; place-items: center; width: 1.125rem; height: 1.125rem; min-width: 0; min-height: 0; margin: 0 0 0 0.375rem; padding: 0; border: 1px solid var(--admin-border-strong); border-radius: 50%; background: var(--admin-panel); color: var(--admin-muted); font-size: 0.6875rem; font-weight: 600; line-height: 1; box-shadow: none; vertical-align: middle; cursor: pointer; }
+.admin-help-control__toggle:hover, .admin-help-control__toggle[aria-expanded="true"] { border-color: var(--admin-text); background: var(--admin-panel); color: var(--admin-text); }
+.admin-help-control__text { margin: 0; max-width: 65ch; color: var(--admin-muted); font-size: var(--admin-text-sm); font-weight: 400; }
+small.admin-help-control__text { display: block; }
+/* Without the shell script the explanation stays inline and the control is not offered. */
+:root:not([data-admin-help]) .admin-help-control__toggle { display: none; }
+[data-admin-help] .admin-help-control__text:not([data-open]) { display: none; }
+.admin-field:has(> label + .admin-help-control__toggle) { grid-template-columns: max-content minmax(0, 1fr); align-items: center; }
+.admin-field:has(> label + .admin-help-control__toggle) > :not(label, .admin-help-control__toggle) { grid-column: 1 / -1; }
+.admin-field > .admin-help-control__toggle, fieldset.admin-field > legend > .admin-help-control__toggle { justify-self: start; margin-left: 0; }
+.admin-help-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-1); }
+.admin-help-row > h2, .admin-help-row > h3, .admin-help-row > p { margin: 0; }
 .admin-field__error { margin: 0; color: var(--admin-danger); font-size: var(--admin-text-sm); font-weight: 500; }
 .admin-locale-tag { display: inline-flex; padding: 0 0.3125rem; border-radius: 0.25rem; background: var(--admin-accent-soft); color: var(--admin-accent); font-size: 0.625rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
 .admin-locales { display: grid; gap: var(--admin-space-3); }

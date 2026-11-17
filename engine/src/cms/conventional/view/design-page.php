@@ -47,7 +47,7 @@ final class DesignPage
         $specimens = DesignCss::specimens($saved);
         foreach (self::GROUPS as $group) {
             $body .= '<section class="admin-token-group" id="design-' . $group . '"' . ($group === 'typography' ? ' data-design-specimens' : '') . ' aria-labelledby="design-heading-' . $group . '">'
-                . '<h2 id="design-heading-' . $group . '">' . $t->html('design.group.' . $group) . '</h2><p class="admin-help">' . $t->html('design.group.' . $group . '_help') . '</p>';
+                . FieldHelp::heading('<h2 id="design-heading-' . $group . '">' . $t->html('design.group.' . $group) . '</h2>', 'design-help-' . $group, $t->text('design.group.' . $group), $t) . FieldHelp::text('design-help-' . $group, $t->html('design.group.' . $group . '_help'));
             foreach ($document[$group] as $item) {
                 $prefix = $group . '__' . $item['id'] . '__';
                 $body .= '<fieldset class="admin-token"><legend title="' . $t->html('design.stable_id', ['id' => $item['id']]) . '">' . Html::text($item['label']) . '</legend>' . '<div class="admin-token__grid">';
@@ -122,7 +122,7 @@ final class DesignPage
     /** @param array<string, string> $values */
     private static function fontUpload(array $values, bool $fontsAvailable, Translator $t, RegistryDocument $registry): string
     {
-        $markup = '<fieldset class="admin-token"><legend>' . $t->html('design.font.add') . '</legend><p class="admin-help">' . $t->html('design.font.help') . '</p>';
+        $markup = '<fieldset class="admin-token" aria-labelledby="design-font-label" aria-describedby="design-font-help">' . FieldHelp::legend('design-font-label', $t->html('design.font.add'), 'design-font-help', $t->text('design.font.add'), $t) . FieldHelp::text('design-font-help', $t->html('design.font.help'));
         if (!$fontsAvailable) {
             return $markup . '<p class="admin-notice" data-font-unavailable>' . $t->html('design.font.unavailable') . '</p></fieldset>';
         }
@@ -130,17 +130,15 @@ final class DesignPage
         foreach ($registry->document()['fonts'] as $font) {
             $families[$font['id']] = $font['label'];
         }
-        $markup .= self::select('font_family', $t->text('design.font.family'), $values['font_family'] ?? '', $families)
-            . '<p class="admin-help">' . $t->html('design.font.family_help') . '</p>';
+        $markup .= self::select('font_family', $t->text('design.font.family'), $values['font_family'] ?? '', $families, [$t->html('design.font.family_help'), $t]);
         foreach (['id', 'label', 'provenance', 'license'] as $key) {
             $markup .= self::input('font_' . $key, $t->text('design.font.' . $key), $values['font_' . $key] ?? '', false, false, $key === 'provenance' || $key === 'license' ? 2000 : 80);
         }
-        $markup .= self::input('font_face_id', $t->text('design.font.face_id'), $values['font_face_id'] ?? 'regular', false, false, 80)
+        $markup .= self::input('font_face_id', $t->text('design.font.face_id'), $values['font_face_id'] ?? 'regular', false, false, 80, '', [$t->html('design.font.face_help'), $t])
             . self::input('font_face_label', $t->text('design.font.face_label'), $values['font_face_label'] ?? $t->text('design.font.normal'), false, false)
             . self::select('font_style', $t->text('design.font.style'), $values['font_style'] ?? 'normal', ['normal' => $t->text('design.font.normal'), 'italic' => $t->text('design.font.italic')])
             . self::input('font_weight_min', $t->text('design.font.weight_min'), $values['font_weight_min'] ?? '400', true, false)
-            . self::input('font_weight_max', $t->text('design.font.weight_max'), $values['font_weight_max'] ?? '400', true, false)
-            . '<p class="admin-help">' . $t->html('design.font.face_help') . '</p>';
+            . self::input('font_weight_max', $t->text('design.font.weight_max'), $values['font_weight_max'] ?? '400', true, false);
         return $markup . '<div class="admin-field"><label for="font-file">' . $t->html('design.font.file') . '</label><input id="font-file" name="font_file" type="file" accept=".woff2,font/woff2"></div>'
             . '<p><label class="admin-checkbox"><input type="checkbox" name="font_permission" value="yes"' . (($values['font_permission'] ?? '') === 'yes' ? ' checked' : '') . '> ' . $t->html('design.font.permission') . '</label></p></fieldset>';
     }
@@ -171,18 +169,30 @@ final class DesignPage
         return $html;
     }
 
-    private static function input(string $name, string $label, string $value, bool $numeric, bool $required, int $maximum = 100, string $unit = ''): string
+    /** @param ?array{0: string, 1: Translator} $help escaped explanation and the administration language */
+    private static function input(string $name, string $label, string $value, bool $numeric, bool $required, int $maximum = 100, string $unit = '', ?array $help = null): string
     {
         $input = '<input id="' . Html::attribute($name) . '" name="' . Html::attribute($name) . '" type="text"'
-            . ($numeric ? ' inputmode="decimal"' : '') . ($required ? ' required' : '') . ' maxlength="' . $maximum . '" value="' . Html::attribute($value) . '">';
-        return '<div class="admin-field"><label for="' . Html::attribute($name) . '">' . Html::text($label) . '</label>'
+            . ($numeric ? ' inputmode="decimal"' : '') . ($required ? ' required' : '') . ($help === null ? '' : ' aria-describedby="' . Html::attribute($name . '-help') . '"')
+            . ' maxlength="' . $maximum . '" value="' . Html::attribute($value) . '">';
+        return '<div class="admin-field"><label for="' . Html::attribute($name) . '">' . Html::text($label) . '</label>' . self::help($name, $label, $help)
             . ($unit === '' ? $input : '<div class="admin-input-group">' . $input . '<span class="admin-input-unit" aria-hidden="true">' . Html::text($unit) . '</span></div>') . '</div>';
     }
 
-    /** @param array<string, string> $choices */
-    private static function select(string $name, string $label, string $value, array $choices): string
+    /** @param ?array{0: string, 1: Translator} $help */
+    private static function help(string $name, string $label, ?array $help): string
     {
-        $html = '<div class="admin-field"><label for="' . Html::attribute($name) . '">' . Html::text($label) . '</label><select id="' . Html::attribute($name) . '" name="' . Html::attribute($name) . '">';
+        return $help === null ? '' : FieldHelp::toggle($name . '-help', $label, $help[1]) . FieldHelp::text($name . '-help', $help[0]);
+    }
+
+    /**
+     * @param array<string, string> $choices
+     * @param ?array{0: string, 1: Translator} $help escaped explanation and the administration language
+     */
+    private static function select(string $name, string $label, string $value, array $choices, ?array $help = null): string
+    {
+        $html = '<div class="admin-field"><label for="' . Html::attribute($name) . '">' . Html::text($label) . '</label>' . self::help($name, $label, $help)
+            . '<select id="' . Html::attribute($name) . '" name="' . Html::attribute($name) . '"' . ($help === null ? '' : ' aria-describedby="' . Html::attribute($name . '-help') . '"') . '>';
         foreach ($choices as $id => $text) {
             $html .= '<option value="' . Html::attribute($id) . '"' . ($id === $value ? ' selected' : '') . '>' . Html::text($text) . '</option>';
         }

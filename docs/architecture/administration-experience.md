@@ -211,6 +211,16 @@ removed under `prefers-reduced-motion: reduce`.
 
 ## Page and component behavior
 
+Explanations are folded. A field's hint, a group's purpose and a section's
+explanation are one small `i` control beside the label, legend or heading,
+rendered by the engine's `FieldHelp` component, closed by default; it opens by
+click or keyboard and folds on Escape. The text is always in the page, so the
+control or group it explains describes itself through `aria-describedby`, a
+group keeps its legend's words alone as its name, and without scripts the text
+simply shows inline. Nothing explanatory is visible by default except a page's
+one-line lead; status messages, errors and the text inside an open disclosure
+are not explanations and stay where they are.
+
 ### Login
 
 The login names the installation being signed into, states that the area is
@@ -278,7 +288,10 @@ explaining retained revisions and offering Export. Require a checked confirmatio
 and a danger action. Show resumable progress and a final result. See
 [language operations](../development/conventional-cms-content.md#site-languages).
 
-Required state is present in text. Validation returns a linked summary and
+Required fields carry a star after their label; one `* required fields` line
+per form explains it, the word Required stays in the label for assistive
+technology, and the words Required and Optional do not appear in labels.
+Validation returns a linked summary and
 field-level messages; the affected section is tinted and counts its issues. A
 revision conflict preserves the editor's input, shows the current saved values
 separately, and provides one explicit resubmission action. A failed validation

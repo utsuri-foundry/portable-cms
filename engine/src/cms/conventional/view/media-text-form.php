@@ -32,7 +32,7 @@ final class MediaTextForm
             $translations[$item['locale']] = $item;
         }
         $association = $form === '' ? '' : ' form="' . Html::attribute($form) . '"';
-        $html = '<input type="hidden" name="' . Html::attribute($prefix . '_media_text') . '" value="1"' . $association . '>' . ($instructions ? '<p class="admin-help">' . $t->html('media.text.help', ['locale' => $profile->defaultLocale]) . '</p>' : '')
+        $html = '<input type="hidden" name="' . Html::attribute($prefix . '_media_text') . '" value="1"' . $association . '>' . ($instructions ? FieldHelp::heading('<span class="admin-field__label">' . $t->html('media.descriptions.title') . '</span>', $prefix . 'media-text-help', $t->text('media.descriptions.title'), $t) . FieldHelp::text($prefix . 'media-text-help', $t->html('media.text.help', ['locale' => $profile->defaultLocale])) : '')
             . '<label><input type="checkbox" name="' . Html::attribute($prefix . 'decorative') . '" value="1"' . $association . ($document['decorative'] ? ' checked' : '') . '> ' . $t->html('media.text.decorative') . '</label>';
         foreach ($profile->locales as $locale) {
             $html .= '<fieldset class="admin-section"><legend>' . Html::text(strtoupper($locale)) . '</legend>';

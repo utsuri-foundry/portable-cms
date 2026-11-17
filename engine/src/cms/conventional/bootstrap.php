@@ -85,6 +85,7 @@ require_once __DIR__ . '/view/video-reference-control.php';
 require_once __DIR__ . '/view/vimeo-video-control.php';
 require_once __DIR__ . '/compiler/vimeo-presentation.php';
 require_once __DIR__ . '/compiler/vimeo-player.php';
+require_once __DIR__ . '/view/field-help.php';
 require_once __DIR__ . '/view/field-hint.php';
 require_once __DIR__ . '/content/editorial-form.php';
 require_once __DIR__ . '/content/composition.php';

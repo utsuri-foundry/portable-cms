@@ -71,8 +71,8 @@ final class CompositionEditor
         if (!in_array($active, array_column($value['rows'], 'id'), true)) {
             $active = $value['rows'][0]['id'] ?? '';
         }
-        $markup = '<fieldset class="admin-field admin-composition" id="field-' . Html::attribute($id) . '" tabindex="-1" aria-describedby="' . Html::attribute($id . '-layout-help' . ($error === null ? '' : ' ' . $id . '-layout-error')) . '"' . ($error === null ? '' : ' aria-invalid="true"') . ($this->request->method === 'POST' && ($action[1] ?? '') === $id ? ' autofocus' : '') . ' data-composition-editor data-composition-name="' . Html::attribute($id) . '"><legend>' . Html::text($field->label) . '</legend>'
-            . '<p class="admin-help" id="' . Html::attribute($id . '-layout-help') . '">' . $t->html('composition.help') . '</p>'
+        $markup = '<fieldset class="admin-field admin-composition" id="field-' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-layout-label') . '" tabindex="-1" aria-describedby="' . Html::attribute($id . '-layout-help' . ($error === null ? '' : ' ' . $id . '-layout-error')) . '"' . ($error === null ? '' : ' aria-invalid="true"') . ($this->request->method === 'POST' && ($action[1] ?? '') === $id ? ' autofocus' : '') . ' data-composition-editor data-composition-name="' . Html::attribute($id) . '">' . FieldHelp::legend($id . '-layout-label', Html::text($field->label), $id . '-layout-help', $field->label, $t)
+            . FieldHelp::text($id . '-layout-help', $t->html('composition.help'))
             . ($error === null ? '' : '<p class="admin-field__error" id="' . Html::attribute($id . '-layout-error') . '" role="alert">' . Html::text($error) . '</p>')
             . '<input type="hidden" name="' . Html::attribute($id . '__document') . '" value="' . Html::attribute(json_encode($transport, JSON_THROW_ON_ERROR)) . '">'
             . '<input type="hidden" name="' . Html::attribute($id . '__active') . '" value="' . Html::attribute($active) . '">';
