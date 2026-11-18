@@ -583,6 +583,11 @@ $tests['localized taxonomy terms and typed relationships use the generic form an
         substr_count($edit->body, 'class="admin-selection"') >= 2,
         'saved record and taxonomy selections should remain selected',
     );
+    assertTrueValue(
+        preg_match('/<fieldset[^>]*class="admin-field admin-picker admin-picker--records admin-picker--rows" id="field-featuredEntry"/', $edit->body) === 1
+        && preg_match('/<fieldset[^>]*class="admin-field admin-picker" id="field-topics"/', $edit->body) === 1,
+        'record references are ordered rows while taxonomy terms stay chips',
+    );
 };
 
 $tests['profile-driven record pages require authentication and expose both fixture types'] = static function (): void {

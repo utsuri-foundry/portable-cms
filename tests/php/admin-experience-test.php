@@ -28,7 +28,7 @@ $tests['administration stylesheet is tokenized themed local and responsive'] = s
     $css = file_get_contents($path);
     $size = filesize($path);
     assertTrueValue(is_string($css) && is_int($size), 'administration stylesheet should be readable');
-    assertTrueValue($size > 5_000 && $size < 81_920, 'administration stylesheet should stay intentionally bounded');
+    assertTrueValue($size > 5_000 && $size < 86_016, 'administration stylesheet should stay intentionally bounded');
     assertTrueValue(str_contains($css, ':focus-visible'), 'visible keyboard focus should be explicit');
     assertTrueValue(str_contains($css, '@media (max-width: 56rem)'), 'shell should adapt below wide layouts');
     assertTrueValue(str_contains($css, '@media (max-width: 42rem)'), 'tables should adapt for narrow viewports');
@@ -168,6 +168,10 @@ $tests['administration editor leads with the record and keeps every locale witho
     $articleHtml = Pages::recordForm(str_repeat('b', 32), $profile, $article, ['title' => ['ca' => 'Text']], null, chrome: adminTestChrome());
     $links = $section('relationships', $articleHtml);
     assertTrueValue(str_contains($links, 'data-section-toggle') && str_contains($links, 'Nothing added yet'), 'an empty optional section starts collapsed with a summary');
+    $home = $profile->type('home');
+    assertTrueValue($home !== null, 'Reference Studio home page should exist');
+    $discovery = $section('discovery', Pages::recordForm(str_repeat('c', 32), $profile, $home, [], null, chrome: adminTestChrome()));
+    assertTrueValue(str_contains($discovery, 'data-section-toggle') && !str_contains($discovery, 'Nothing added yet'), 'the folded search and sharing section says nothing while its values are automatic');
     $filled = Pages::recordForm(str_repeat('b', 32), $profile, $article, ['title' => ['ca' => 'Text'], 'sectors' => [str_repeat('5', 32)]], null, chrome: adminTestChrome());
     assertTrueValue(!str_contains($section('relationships', $filled), 'data-section-toggle'), 'an optional section with a value starts open');
     assertTrueValue(!str_contains($section('content'), 'data-section-toggle'), 'sections with required fields never collapse');

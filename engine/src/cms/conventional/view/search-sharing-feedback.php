@@ -81,8 +81,13 @@ final class SearchSharingFeedback
         }
         return $resolved;
     }
-    /** @param array<string, mixed> $values */
-    private static function cover(RecordTypeDefinition $type, array $values, string $id, ProfileManifest $profile): ?string
+    /**
+     * The first image of the named cover field in a record's values, or null when it is empty.
+     *
+     * @param array<string, mixed> $values
+     * @throws \InvalidArgumentException when the type has no usable field by that name
+     */
+    public static function cover(RecordTypeDefinition $type, array $values, string $id, ProfileManifest $profile): ?string
     {
         foreach ($type->fields as $field) {
             if ($field->id !== $id) {

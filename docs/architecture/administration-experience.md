@@ -334,9 +334,10 @@ that PHP validates, and disables the native rows so nothing is submitted twice.
 Paste keeps only the CMS's own semantic clipboard format or plain text; links
 must pass the same allowlist as the server. Without JavaScript the ordered
 native block rows remain the complete editing path. Localized groups follow the
-record language. References render as removable chips with one add
-action whose search opens on demand, and taxonomy term creation lives in the
-same panel; media references render as rows. Booleans are native checkbox
+record language. Media and record references render as ordered rows, a record
+row carrying the picture its type shares when the record has one; taxonomy
+terms render as removable chips. Each has one add action whose search opens on
+demand, and taxonomy term creation lives in the same panel. Booleans are native checkbox
 switches. Lengths attach their unit to the value.
 
 The record shows a Layout summary card; Edit layout opens the workspace, which
@@ -622,9 +623,12 @@ release would publish) or "Everything, drafts included" (for review only), plus
 the languages in preparation when the site has some, with one button, "Preview
 the website". The list names each preview by its time in the site's zone, says
 who made it and tags drafts or languages in preparation, and offers Open, Share
-and a quiet Delete; a preview that is still building shows its state instead.
+and a quiet Delete on one line at one size, Share folding its panel open under
+the row; a preview that is still building shows its state instead. On a phone
+the words take their own height and the actions sit under them.
 The notice about records not yet marked as ready appears only when there are
-some. Bulk selection is not on the page: "Select several" turns it on, and
+some. Bulk selection is not on the page: "Select several" turns it on from the
+links at the list's right, and
 pages beyond the first keep it reachable. A preview's own page is titled by its
 time and offers the same Open, Share and Delete. No identity or hash names a
 preview anywhere.
