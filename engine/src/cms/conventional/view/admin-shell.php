@@ -78,9 +78,9 @@ final readonly class AdminChrome
 
 final class AdminShell
 {
-    public const STYLESHEET_VERSION = '27';
+    public const STYLESHEET_VERSION = '28';
     public const GROUP_STYLESHEET_VERSION = '3';
-    public const SCRIPT_VERSION = '7';
+    public const SCRIPT_VERSION = '8';
 
     public static function translator(?AdminChrome $chrome): Translator
     {

@@ -167,6 +167,71 @@ test("mounted help controls answer clicks and Escape only for their own toggle",
 	);
 });
 
+test("with popovers the text floats over the page and the browser owns the toggle", () => {
+	const toggle = Object.assign(
+		new EventTarget(),
+		element({ "aria-expanded": "false", "aria-controls": "hint-title" }),
+	);
+	toggle.closest = (selector) => (selector === "[data-help-toggle]" ? toggle : null);
+	const text = Object.assign(new EventTarget(), element({ id: "hint-title" }));
+	text.dataset = {};
+	text.matches = (selector) => selector === "[popover]" && text.has("popover");
+	const root = new EventTarget();
+	root.getElementById = (id) => (id === "hint-title" ? text : null);
+	root.querySelectorAll = () => [toggle];
+	const view = {
+		HTMLElement: { prototype: { showPopover() {} } },
+		matchMedia: () => ({ matches: false }),
+	};
+	const unmount = mountHelpControls(root, view);
+	assert.equal(
+		text.getAttribute("popover"),
+		"auto",
+		"the text becomes a light-dismiss popover",
+	);
+	assert.equal(
+		toggle.popoverTargetElement,
+		text,
+		"the control is the popover's invoker",
+	);
+	const click = new Event("click", { cancelable: true });
+	Object.defineProperty(click, "target", { value: toggle });
+	root.dispatchEvent(click);
+	assert.equal(
+		toggle.getAttribute("aria-expanded"),
+		"false",
+		"the script leaves the toggle to the browser",
+	);
+	assert.equal(click.defaultPrevented, false);
+	text.dispatchEvent(Object.assign(new Event("toggle"), { newState: "open" }));
+	assert.equal(
+		toggle.getAttribute("aria-expanded"),
+		"true",
+		"the popover's state is mirrored on the control",
+	);
+	assert.equal(text.has("data-open"), true);
+	text.dataset.hover = "";
+	const pin = new Event("click", { cancelable: true });
+	Object.defineProperty(pin, "target", { value: toggle });
+	root.dispatchEvent(pin);
+	assert.equal(
+		pin.defaultPrevented,
+		true,
+		"a click on a hover-opened text keeps it open",
+	);
+	assert.equal("hover" in text.dataset, false);
+	text.dispatchEvent(Object.assign(new Event("toggle"), { newState: "closed" }));
+	assert.equal(toggle.getAttribute("aria-expanded"), "false");
+	assert.equal(text.has("data-open"), false);
+	unmount();
+	text.dispatchEvent(Object.assign(new Event("toggle"), { newState: "open" }));
+	assert.equal(
+		toggle.getAttribute("aria-expanded"),
+		"false",
+		"nothing listens after unmount",
+	);
+});
+
 test("copy buttons write their own value and say so for a moment", async () => {
 	const button = new EventTarget();
 	button.dataset = {

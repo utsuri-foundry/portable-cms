@@ -186,4 +186,7 @@ $tests['field help folds behind a named control and required fields carry a star
     $form = Pages::recordForm(str_repeat('b', 32), $profile, $project, []);
     $required = array_filter($project->fields, static fn(FieldDefinition $definition): bool => $definition->required) !== [];
     assertSameValue($required, str_contains($form, '<p class="admin-form__required"><span class="admin-field__required" aria-hidden="true">*</span> required fields</p>'), 'one legend per form explains the star exactly when a field needs it');
+    $xpath = quietEditorDom($form);
+    assertSameValue(0, $xpath->query('//div[contains(@class,"admin-editor__main")]//p[@class="admin-form__required"]')->length, 'the star legend is not the first line of the white body');
+    assertSameValue($required ? 1 : 0, $xpath->query('//form//div[contains(@class,"admin-editor")]/following-sibling::p[@class="admin-form__required"]')->length, 'the star legend is a footnote under the editor, inside its form');
 };

@@ -5,6 +5,17 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.2
+
+- Explanations behind an "i" open over the page instead of in it. In browsers
+  with popovers the text appears just under its control, within the page's
+  side gutters, and nothing in the form moves; a click toggles it, a pointer
+  resting on the control shows it until it leaves, and Escape, a click
+  elsewhere or another control folds it. Other browsers keep the inline text,
+  and without scripts the text still shows in the page.
+- The record form's `* required fields` line is a footnote under the form,
+  outside the white body, rather than its first line.
+
 ## 0.14.1
 
 - The record page follows the agreed design more closely. Image fields show

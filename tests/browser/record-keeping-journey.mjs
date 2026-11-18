@@ -52,6 +52,41 @@ try {
 		"required fields carry a star, one legend explains it, the state stays exposed and nothing explanatory is visible by default",
 	);
 	assert.equal(
+		await evaluate(
+			"document.querySelector('.admin-editor__main .admin-form__required') === null && document.querySelector('.admin-form .admin-editor ~ .admin-form__required') !== null",
+		),
+		true,
+		"the star legend is a footnote under the editor, not its first line",
+	);
+	assert.deepEqual(
+		await evaluate(
+			`(() => {
+				const toggle = document.querySelector('[data-help-toggle]');
+				const details = toggle.closest('details');
+				if (details) details.open = true;
+				const text = document.getElementById(toggle.getAttribute('aria-controls'));
+				const field = document.querySelector('[name=title__en]');
+				const before = field.getBoundingClientRect().top;
+				toggle.click();
+				const rect = text.getBoundingClientRect();
+				const anchor = toggle.getBoundingClientRect();
+				return [text.getAttribute('popover'), text.matches(':popover-open'), text.checkVisibility(), field.getBoundingClientRect().top === before, rect.top > anchor.bottom && rect.left >= 16 && rect.right <= innerWidth - 16];
+			})()`,
+		),
+		["auto", true, true, true, true],
+		"an explanation opens over the page under its control, inside the gutters, without moving the form",
+	);
+	for (const type of ["keyDown", "keyUp"])
+		await command("Input.dispatchKeyEvent", {
+			type,
+			key: "Escape",
+			code: "Escape",
+			windowsVirtualKeyCode: 27,
+		});
+	await ready(
+		"(() => { const toggle = document.querySelector('[data-help-toggle]'); const text = document.getElementById(toggle.getAttribute('aria-controls')); return !text.matches(':popover-open') && toggle.getAttribute('aria-expanded') === 'false' && !text.hasAttribute('data-open'); })()",
+	);
+	assert.equal(
 		await evaluate("document.querySelector('[data-record-save]').hidden"),
 		true,
 		"scripted editor has no visible Save button",
@@ -213,9 +248,12 @@ try {
 		mobile: false,
 	});
 	await navigate("/records/article/new", '[data-keeping="true"]');
+	// The keeper first rewrites the address of the new draft in place, then replaces the
+	// page with the saved record; the mark on the old document tells the two apart.
+	await evaluate("document.documentElement.setAttribute('data-browser-reloading', '')");
 	await type(browser, "title__en", "A newly kept draft");
 	await ready(
-		"/^\\/records\\/article\\/[a-f0-9]{32}$/.test(location.pathname) && document.querySelector('[data-keeping=true]') && document.readyState==='complete'",
+		"!document.documentElement.hasAttribute('data-browser-reloading') && /^\\/records\\/article\\/[a-f0-9]{32}$/.test(location.pathname) && document.querySelector('[data-keeping=true]') && document.readyState==='complete'",
 	);
 	assert.equal(
 		await evaluate("document.querySelector('[name=title__en]').value"),
