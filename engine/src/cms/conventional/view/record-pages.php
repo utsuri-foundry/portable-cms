@@ -40,7 +40,7 @@ final readonly class RecordListing
 
 final class RecordPages
 {
-    public const EDITOR_SCRIPT_VERSION = '18';
+    public const EDITOR_SCRIPT_VERSION = '19';
     private const MEDIA_UPLOAD_ASSET_VERSION = '7';
     private const LIVE_PREVIEW_STYLE_VERSION = '2';
 
@@ -164,14 +164,16 @@ final class RecordPages
         $conflictMarkup = $conflict === null ? '' : self::conflict($profile, $type, $record, $conflict, $submittedRevision, $referenceControls, $t);
         $compositionEditor ??= new CompositionEditor($profile, $type, new Request('GET', $action), null, $profile->designRegistries, translator: $t);
         $uploads = $editing && $mediaUploadEnabled;
-        // Each image field owns its upload intent; unbound library/video uploads keep their panel.
+        // Each image and video field owns its upload; the library panel appears only when no field does.
         $tileFields = [];
+        $videoTiles = false;
         foreach ($uploads && $referenceControls !== null ? $type->fields : [] as $candidate) {
             if ($candidate->type === 'media_references' && !$candidate->localized) {
                 $tileFields[] = $candidate->id;
             }
+            $videoTiles = $videoTiles || $candidate->type === 'video_reference';
         }
-        $unbound = $uploads && ($tileFields === [] || \Utsuri\PortableCms\Conventional\Media\MediaContract::videoFieldMaximum($type->fields) > 0);
+        $unbound = $uploads && $tileFields === [] && !$videoTiles;
         $parts = EditorialRecordLayout::parts(
             $type,
             $values,
@@ -199,17 +201,20 @@ final class RecordPages
             : ($conflict !== null ? $t->text('editor.status.conflict')
             : ($structureChanged ? $t->text('client.editor.unsaved')
             : ($pendingControls ? $t->text('editor.status.pending')
-            : ($editing ? $t->text('editor.status.saved', ['revision' => (string) $record->revisionNumber]) : $t->text('editor.status.new')))));
+            : ($editing ? $t->text('editor.status.saved', ['time' => self::lowered(AdminShell::timeText($record->updatedAt, $chrome?->now, $t))]) : $t->text('editor.status.new')))));
+        // The state with one sentence on what it means; the header already says when the record was saved.
+        $state = $record === null ? '' : ($record->hasUnpublishedChanges() ? 'published_changes' : $record->workflowState);
+        $stateHelp = match ($state) {
+            'draft' => $t->html('editor.state_help.draft'),
+            'published' => $t->html('editor.state_help.published'),
+            'published_changes' => $t->html('editor.state_help.published_changes'),
+            'archived' => $t->html('editor.state_help.archived'),
+            default => '',
+        };
         $facts = $editing
-            ? '<dl class="admin-facts"><dt>' . $t->html('editor.facts.status') . '</dt><dd data-record-state>' . Html::text(AdminShell::stateLabel($record->hasUnpublishedChanges() ? 'published_changes' : $record->workflowState, $t)) . '</dd>'
-                . '<dt>' . $t->html('editor.facts.revision') . '</dt><dd data-record-revision-number>' . $record->revisionNumber . '</dd><dt>' . $t->html('editor.facts.saved') . '</dt><dd>' . AdminShell::time($record->updatedAt, $chrome?->now, $t) . '</dd></dl>'
+            ? '<div class="admin-rail-state"><span class="admin-rail-state__label">' . $t->html('editor.state') . '</span><strong data-record-state>' . Html::text(AdminShell::stateLabel($state, $t)) . '</strong>'
+                . '<span class="admin-meta" data-record-state-help>' . $stateHelp . '</span></div>'
             : '';
-        if ($record?->publishedRevisionNumber !== null) {
-            $facts .= '<p class="admin-meta" data-published-revision="' . $record->publishedRevisionNumber . '">' . $t->html('workflow.published_revision', ['revision' => (string) $record->publishedRevisionNumber]) . ' ' . AdminShell::time($record->publishedAt, $chrome?->now, $t) . '</p>';
-            if ($record->hasUnpublishedChanges()) {
-                $facts .= '<p class="admin-notice" data-unpublished-changes>' . $t->html('workflow.pending') . ' ' . $t->html('workflow.changed_at') . ' ' . AdminShell::time($record->updatedAt, $chrome?->now, $t) . '</p>';
-            }
-        }
         $localized = count($profile->locales) > 1 && LocaleCoverage::localized($type);
         $live = $chrome !== null && !in_array('live-preview', $chrome->unavailable, true);
         $liveEndpoint = '/records/' . $type->id . '/' . ($editing ? $record->id : 'new') . '/live-preview';
@@ -227,10 +232,12 @@ final class RecordPages
             ? $t->text('client.keep.saved', ['time' => $t->date($record->updatedAt, 'format.time', $chrome?->now?->getTimezone() ?? $record->updatedAt->getTimezone())]) : null;
         $statusMarkup = $scriptStatus === null ? Html::text($status)
             : '<span data-script-fallback="editor">' . Html::text($status) . '</span><span data-script-control="editor" hidden>' . Html::text($scriptStatus) . '</span>';
+        // One card for saving and the state with its next step, one for the two previews, then the sections and languages.
         $rail = '<aside class="admin-editor__rail" aria-label="' . $t->html('editor.rail') . '"><div class="admin-save-bar"><p id="record-save-status" tabindex="-1" class="admin-save-bar__status" role="status" data-save-status>' . $statusMarkup . '</p>'
             . '<button type="submit" class="admin-button--primary" data-record-save' . ($conflict === null ? ' data-script-fallback="editor"' : '') . '>' . ($conflict === null ? $t->html($record !== null && $record->workflowState !== 'draft' ? 'workflow.save' : 'editor.save') : $t->html('editor.save_over', ['revision' => (string) $conflict->revisionNumber])) . '</button>'
             . '<button type="button" data-keep-retry hidden>' . $t->html('client.keep.retry') . '</button><span class="admin-visually-hidden" role="status" aria-live="polite" data-keep-announcement></span>'
-            . $previewControls . $facts . '</div>' . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::controls($record, $t, allowDelete: $type->kind === 'collection')) . $parts['properties']
+            . $facts . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::controls($record, $t, allowDelete: $type->kind === 'collection')) . '</div>'
+            . ($previewControls === '' ? '' : '<div class="admin-rail-card admin-preview-card">' . $previewControls . '</div>') . $parts['properties']
             . '<nav class="admin-outline admin-rail-card" aria-label="' . $t->html('editor.sections') . '"><h2>' . $t->html('editor.outline') . '</h2><ul>' . $parts['outline'] . '</ul></nav>'
             . ($localized ? self::coverageCard($type, $values, $profile, $t) : '') . '</aside>';
         $switcher = '';
@@ -242,7 +249,7 @@ final class RecordPages
             $switcher = '<div class="admin-segmented admin-record-locales" role="group" aria-label="' . $t->html('editor.language') . '" data-record-locale-switcher data-script-control="editor" hidden>' . $switcher . '</div>';
         }
         $meta = $editing
-            ? '<p class="admin-meta-line">' . AdminShell::status($record->hasUnpublishedChanges() ? 'published_changes' : $record->workflowState, null, $t) . '<span>' . $t->html('editor.meta.revision', ['revision' => (string) $record->revisionNumber]) . '</span><span aria-hidden="true">·</span><span>'
+            ? '<p class="admin-meta-line">' . AdminShell::status($state, null, $t) . '<span aria-hidden="true">·</span><span>'
                 . $t->markup('editor.meta.saved', [], ['time' => AdminShell::time($record->updatedAt, $chrome?->now, $t)]) . '</span></p>'
             : '<p class="admin-meta-line">' . $t->html('editor.meta.unsaved', ['type' => $type->singularLabel]) . '</p>';
         $trail = [[self::groupLabel($type, $t), null]];
@@ -254,10 +261,6 @@ final class RecordPages
             . '<input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_revision" value="' . $record->revisionNumber . '"></form>' : '';
         if ($unbound && !in_array('media', $parts['placed'], true)) {
             $upload .= '<section class="admin-section" aria-label="' . $t->html('editor.upload.section') . '">' . self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls?->videoUploads()) . '</section>';
-        }
-        if ($uploads) {
-            $upload .= '<details class="admin-section"><summary>' . $t->html('media.descriptions.title') . '</summary><p class="admin-help">'
-                . $t->html('media.text.help', ['locale' => $profile->defaultLocale]) . '</p><noscript><p class="admin-help">' . $t->html('media.descriptions.keep_record') . '</p></noscript></details>';
         }
         $body = AdminShell::breadcrumbs($trail, $t) . AdminShell::header($label, $meta, $switcher) . $summary . $conflictMarkup
             . ($mediaNotice === null ? '' : '<p class="admin-notice" role="status" data-media-upload-result>' . Html::text($t->message($mediaNotice)) . '</p>')
@@ -463,6 +466,12 @@ final class RecordPages
                 . Html::attribute($text) . '"' . $required . $invalid . '>';
         return '<div class="admin-field' . ($multiline || $field->maximumLength > 160 ? '' : ' admin-field--short') . '"><label for="' . Html::attribute($fieldId) . '">' . $label . '</label>'
             . $control . $errorMarkup . '</div>';
+    }
+
+    /** A relative day in the middle of a sentence: "today, 17:53" rather than "Today, 17:53". */
+    private static function lowered(string $text): string
+    {
+        return mb_strtolower(mb_substr($text, 0, 1)) . mb_substr($text, 1);
     }
 
     /** Filled by the editorial island with the active language; absent without script. */

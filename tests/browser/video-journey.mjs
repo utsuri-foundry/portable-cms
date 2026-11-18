@@ -27,14 +27,14 @@ async function submitNative(expression) {
 		"document.readyState==='complete' && !document.querySelector('[data-video-submission]') && document.querySelector('[data-editorial-form] [name=_editorial_end]')?.value==='1'",
 	);
 }
-// Each row's name is the topmost thing at its own position: no badge or card is drawn over it.
-async function rowsReadPlainly(width) {
+// Each visible row names its file plainly: no badge or card is drawn over the name.
+async function rowsReadPlainly(width, names) {
 	const rows = await evaluate(
-		`[...document.querySelectorAll('#field-trailer [data-video-row]')].map(row => {const kind=row.querySelector('.admin-video-row__kind');const box=kind.getBoundingClientRect();kind.scrollIntoView({block:'center'});const after=kind.getBoundingClientRect();const top=document.elementFromPoint(after.left+4,after.top+after.height/2);return {text:kind.textContent,before:getComputedStyle(row,'::before').content,visible:box.width>0&&box.height>0,covered:!(top===kind||kind.contains(top))}})`,
+		`[...document.querySelectorAll('#field-trailer [data-video-row]:not([hidden])')].map(row => {const name=row.querySelector('.admin-video-row__name');const box=name.getBoundingClientRect();name.scrollIntoView({block:'center'});const after=name.getBoundingClientRect();const top=document.elementFromPoint(after.left+4,after.top+after.height/2);return {text:name.textContent,before:getComputedStyle(row,'::before').content,visible:box.width>0&&box.height>0,covered:!(top===name||name.contains(top))}})`,
 	);
 	assert.deepEqual(
-		rows.map((row) => row.text),
-		["Video", "Poster image"],
+		rows.map((row, index) => (names[index] === null ? null : row.text)),
+		names,
 		`rows are plainly named at ${width}px`,
 	);
 	for (const row of rows) {
@@ -87,13 +87,13 @@ try {
 		null,
 	);
 	assert.match(
-		await evaluate("document.querySelector('#media-upload-files').accept"),
+		await evaluate("document.querySelector('#media-upload-files-trailer').accept"),
 		/video\/mp4/,
 	);
 	const { root } = await command("DOM.getDocument");
 	const { nodeId } = await command("DOM.querySelector", {
 		nodeId: root.nodeId,
-		selector: "#media-upload-files",
+		selector: "#media-upload-files-trailer",
 	});
 	await command("DOM.setFileInputFiles", {
 		nodeId,
@@ -102,12 +102,14 @@ try {
 			resolve("tests/fixtures/video/prepared.webm"),
 		],
 	});
-	await evaluate("document.querySelector('#media-upload-form').requestSubmit()");
+	await evaluate(
+		"document.querySelector('[data-editorial-form]').requestSubmit(document.querySelector('[data-upload-field=\"trailer\"] [data-native-upload-start]'))",
+	);
 	await ready(
-		"location.pathname.endsWith('/upload') && document.querySelector('[role=status]')",
+		"document.readyState==='complete' && document.querySelector('[data-media-upload-result]')",
 	);
 	assert.match(
-		await evaluate("document.querySelector('[role=status]').textContent"),
+		await evaluate("document.querySelector('[data-media-upload-result]').textContent"),
 		/2 file\(s\) accepted/,
 	);
 	worker();
@@ -116,7 +118,6 @@ try {
 		"Object.fromEntries([...document.querySelectorAll('#field-trailer [data-video-choose=video]')].map(o=>[o.dataset.mediaName,o.dataset.mediaId]))",
 	);
 	assert.ok(media["prepared.mp4"] && media["prepared.webm"]);
-	await rowsReadPlainly(await evaluate("innerWidth"));
 	// Native picker actions update the transient form without saving its revision.
 	const nativeRevision = await evaluate(
 		"document.querySelector('[name=_revision]').value",
@@ -132,8 +133,11 @@ try {
 		nativeRevision,
 	);
 	assert.equal(
-		await evaluate("document.querySelector('#field-trailer video').preload"),
-		"none",
+		await evaluate(
+			"document.querySelector('#field-trailer [data-video-name=video]').textContent",
+		),
+		"prepared.mp4",
+		"the chosen clip is named in its row",
 	);
 	const poster = "d0000000000000000000000000000003";
 	await submitNative(
@@ -143,9 +147,12 @@ try {
 		`document.readyState==='complete' && document.querySelector('[name=trailer__poster]').value==='${poster}'`,
 	);
 	assert.match(
-		await evaluate("document.querySelector('#field-trailer video').poster"),
+		await evaluate(
+			"document.querySelector('#field-trailer [data-video-thumb=poster] img').src",
+		),
 		new RegExp(`/media/${poster}/thumbnail$`),
 	);
+	await rowsReadPlainly(await evaluate("innerWidth"), ["prepared.mp4", null]);
 	await submitNative(
 		`document.querySelector('[name=trailer__video]').value=${JSON.stringify(media["prepared.mp4"])};document.querySelector('[name=trailer__poster]').value='${poster}';document.querySelector('[data-editorial-form]').requestSubmit()`,
 	);
@@ -220,7 +227,7 @@ try {
 		await evaluate("document.documentElement.scrollWidth<=innerWidth"),
 		true,
 	);
-	await rowsReadPlainly(360);
+	await rowsReadPlainly(360, ["prepared.webm", null]);
 	const savedRevision = await evaluate(
 		"document.querySelector('[name=_revision]').value",
 	);
@@ -264,7 +271,7 @@ try {
 		`!document.querySelector('[data-validation-summary]') && !document.querySelector('[data-conflict-summary]') && document.readyState!=='loading' && document.querySelector('[name=_revision]').value===${JSON.stringify(String(Number(restoreRevision) + 1))} && document.querySelector('[name=trailer__video]').value===${JSON.stringify(original.trailer__video ?? "")} && document.querySelector('[name=trailer__poster]').value===${JSON.stringify(original.trailer__poster ?? "")}`,
 	);
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
-	await navigate(record, "#media-upload-files");
+	await navigate(record, "#media-upload-files-trailer");
 	assert.deepEqual(
 		await evaluate(
 			"[document.querySelector('[name=trailer__video]').value, document.querySelector('[name=trailer__poster]').value, document.querySelector('[name=_revision]').value]",
@@ -299,36 +306,24 @@ try {
 		`document.querySelector('#field-trailer [data-video-browse=poster]').open=true;document.querySelector('[value="select-poster:trailer:${poster}"]').click()`,
 	);
 	assert.match(
-		await evaluate("document.querySelector('#field-trailer video').poster"),
+		await evaluate(
+			"document.querySelector('#field-trailer [data-video-thumb=poster] img').src",
+		),
 		new RegExp(`/media/${poster}/thumbnail$`),
 	);
 	assert.equal(
-		await evaluate("document.querySelector('#field-trailer video').muted"),
-		true,
+		await evaluate(
+			"document.querySelector('#field-trailer [data-video-row=poster]').hidden",
+		),
+		false,
+		"the poster row appears with the choice",
 	);
 	assert.equal(videoRequests.length, 0, "choosing a poster must not fetch the clip");
 	assert.equal(
-		await evaluate(
-			"document.querySelector('#field-trailer video').hasAttribute('autoplay')",
-		),
-		false,
+		await evaluate("document.querySelector('#field-trailer video')"),
+		null,
+		"the field draws no player; its thumbnails stand for the files",
 	);
-	await evaluate("document.querySelector('#field-trailer video').focus()");
-	assert.equal(await evaluate("document.activeElement.tagName"), "VIDEO");
-	await command("Input.dispatchKeyEvent", {
-		type: "keyDown",
-		key: " ",
-		code: "Space",
-		windowsVirtualKeyCode: 32,
-	});
-	await command("Input.dispatchKeyEvent", {
-		type: "keyUp",
-		key: " ",
-		code: "Space",
-		windowsVirtualKeyCode: 32,
-	});
-	await ready("document.querySelector('#field-trailer video').currentTime>0");
-	assert.ok(videoRequests.length > 0, "native keyboard playback requests the clip");
 	await ready(
 		"document.querySelector('[data-save-status]').textContent.startsWith('Saved at ')",
 	);
@@ -355,10 +350,6 @@ try {
 			throw failure;
 		}
 	}
-	assert.match(
-		await evaluate("document.querySelector('main').textContent"),
-		/Video.*0:01/s,
-	);
 	assert.equal(
 		await evaluate(
 			"document.querySelector('[data-video-thumbnail]').textContent.includes('…')",
@@ -370,8 +361,12 @@ try {
 		await evaluate("document.querySelector('[data-video-player]').preload"),
 		"metadata",
 	);
-	assert.match(await evaluate("document.querySelector('main').textContent"), /H\.264/);
-	await navigate(record, "#media-upload-files");
+	// The item page states the size facts once: kind, duration, pixels and bytes.
+	assert.match(
+		await evaluate("document.querySelector('main').textContent"),
+		/Video · 0:01 · 160 × 90 · /,
+	);
+	await navigate(record, "#media-upload-files-trailer");
 	assert.equal(
 		await evaluate("document.querySelector('[name=trailer__video]').value"),
 		media["prepared.mp4"],
@@ -386,24 +381,34 @@ try {
 	const enhancedRoot = await command("DOM.getDocument");
 	const enhancedInput = await command("DOM.querySelector", {
 		nodeId: enhancedRoot.root.nodeId,
-		selector: "#media-upload-files",
+		selector: "#media-upload-files-trailer",
 	});
 	await command("DOM.setFileInputFiles", {
 		nodeId: enhancedInput.nodeId,
 		files: [resolve("tests/fixtures/video/prepared.webm")],
 	});
 	await evaluate(
-		"document.querySelector('[data-upload-field=\"\"] [data-media-upload-start]').click()",
+		"document.querySelector('[data-upload-field=\"trailer\"] [data-media-upload-start]').click()",
 	);
+	// A field upload hands its completed session to the record form, which answers with a receipt.
 	await ready(
-		"/prepared; derivative processing|file uploaded and prepared/.test(document.querySelector('[data-upload-field=\"\"] [data-media-upload-status]').textContent)",
+		"document.readyState==='complete' && document.querySelector('[data-media-upload-result]') && document.querySelector('[data-editorial-form] [name=_editorial_end]')?.value==='1'",
+	);
+	assert.match(
+		await evaluate("document.querySelector('[data-media-upload-result]').textContent"),
+		/1 file\(s\) accepted/,
 	);
 	worker();
-	await ready(
-		"document.querySelector('[data-upload-field=\"\"] [data-media-upload-status]').textContent.includes('file uploaded and prepared')",
+	await navigate(record, "#media-upload-files-trailer");
+	assert.equal(
+		await evaluate(
+			"[...document.querySelectorAll('#field-trailer [data-video-choose=video]')].filter(o=>o.dataset.mediaName==='prepared.webm').length",
+		),
+		2,
+		"the enhanced upload joins the library and is offered to the field",
 	);
 	assert.equal(
-		await evaluate("document.querySelector('#media-upload-files').disabled"),
+		await evaluate("document.querySelector('#media-upload-files-trailer').disabled"),
 		false,
 	);
 	assert.deepEqual(browserErrors, []);

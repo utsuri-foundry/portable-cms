@@ -5,8 +5,6 @@ declare(strict_types=1);
 return [
     'video.upload_limits' => 'MP4, WebM · jusqu’à {limit} Mio.',
     'video.native_upload_limit' => 'Sans scripts : {limit} Mio.',
-    'video.video' => 'Vidéo',
-    'video.poster' => 'Image d’affiche',
     'video.unavailable' => 'Le profil ou le serveur ne prend pas en charge les vidéos préparées.',
     'video.missing' => 'Ressource indisponible',
     'video.selection_invalid' => 'Choisissez une vidéo prête et une image d’affiche prête séparée.',
@@ -32,7 +30,7 @@ return [
     'video.codec_unknown' => 'Codec inconnu',
     'video.frame_invalid' => 'L’aperçu doit être une petite image WebP aux dimensions attendues.',
     'video.none' => 'Pas encore choisie',
-    'video.open' => 'Ouvrir',
+    'video.details' => 'Détails de la vidéo',
     'video.remove_video' => 'Retirer la vidéo',
     'video.remove_poster' => 'Retirer l’image d’affiche',
     'video.change_video' => 'Changer de vidéo',

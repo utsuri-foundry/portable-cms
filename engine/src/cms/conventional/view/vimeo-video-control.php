@@ -16,21 +16,24 @@ use Utsuri\PortableCms\Conventional\Media\MediaLibrary;
 /** Native controls only: the administration never embeds a Vimeo frame. */
 final class VimeoVideoControl
 {
+    /**
+     * The address and title as plain inputs, a small link to the video, then the poster as one
+     * row like an image field's. "Choose poster image" ("Change" once chosen) folds the library
+     * search, its paging and the radio list, per language. The engine's own explanation gives
+     * way to the profile's hint when there is one, so a label carries one help control.
+     */
     public static function field(FieldDefinition $field, mixed $value, ?string $error, ProfileManifest $profile, Request $request, ?MediaLibrary $library, Translator $t): string
     {
         $value = EditorialControls::structured($value);
-        $query = mb_substr($request->formValue('_query_' . $field->id), 0, 100);
-        $page = max(1, min(1000, (int) $request->formValue('_page_' . $field->id)));
         $action = explode(':', $request->formValue('_editor_action'));
-        if (($action[1] ?? '') === $field->id) {
-            $page = ($action[0] ?? '') === 'page' ? max(1, min(1000, (int) ($action[2] ?? 1))) : 1;
-        }
-        $results = $library?->search($query, $page);
         $id = 'field-' . $field->id;
         $invalid = $error === null ? '' : ' aria-invalid="true" aria-describedby="' . Html::attribute($id . '-error') . '"';
-        $html = '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-label') . '" aria-describedby="' . Html::attribute($id . '-help') . '">'
-            . FieldHelp::legend($id . '-label', Html::text($field->label), $id . '-help', $field->label, $t) . FieldHelp::text($id . '-help', $t->html('vimeo.help'))
-            . '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
+        $label = Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '');
+        $html = $field->hint === null
+            ? '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-label') . '" aria-describedby="' . Html::attribute($id . '-help') . '">'
+                . FieldHelp::legend($id . '-label', $label, $id . '-help', $field->label, $t) . FieldHelp::text($id . '-help', $t->html('vimeo.help'))
+            : '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '"><legend>' . $label . '</legend>';
+        $html .= '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
         foreach ($field->localized ? $profile->localeDefinitions : [null] as $definition) {
             $locale = $definition->id ?? '';
             $entry = $field->localized && is_array($value) ? ($value[$locale] ?? null) : $value;
@@ -55,14 +58,30 @@ final class VimeoVideoControl
                 if ($url !== '') {
                     $address = VimeoVideo::address($url);
                     $canonical = 'https://vimeo.com/' . $address['videoId'] . ($address['privacyHash'] === null ? '' : '/' . $address['privacyHash']);
-                    $html .= '<p><a href="' . Html::url($canonical) . '" target="_blank" rel="noopener noreferrer">' . $t->html('vimeo.open') . '</a></p>';
+                    $html .= '<p class="admin-meta"><a href="' . Html::url($canonical) . '" target="_blank" rel="noopener noreferrer">' . $t->html('vimeo.open') . '</a></p>';
                 }
             } catch (\InvalidArgumentException) {
             }
-            $html .= '<p class="admin-meta">' . $t->html('vimeo.poster') . ': ' . Html::text($poster->name ?? ($posterId === '' ? $t->text('field.none') : $t->text('video.missing'))) . '</p>'
-                . ($poster === null ? '' : ReferenceControls::thumbnail($poster))
-                . '<details class="admin-picker__browse"><summary>' . $t->html('vimeo.choose_poster') . '</summary><ul class="admin-picker__results">'
-                . '<li><label><input type="radio" name="' . Html::attribute($prefix . '__poster') . '" value=""' . ($posterId === '' ? ' checked' : '') . '>' . $t->html('field.none') . '</label></li>';
+            if ($poster !== null) {
+                $html .= '<ol class="admin-selections"><li class="admin-selection">' . ReferenceControls::thumbnail($poster) . '<span>' . Html::text($poster->name)
+                    . '<a class="admin-selection__link" href="' . Html::url('/media/' . $poster->id) . '">' . $t->html('picker.image_details') . '</a></span></li></ol>';
+            } elseif ($posterId !== '') {
+                $html .= '<p class="admin-field__error">' . $t->html('video.missing') . '</p>';
+            }
+            // Each language searches on its own; the disclosure stays open while its search or paging is in progress.
+            $query = mb_substr($request->formValue('_query_' . $prefix), 0, 100);
+            $page = max(1, min(1000, (int) $request->formValue('_page_' . $prefix)));
+            $browsing = ($action[1] ?? '') === $field->id && (($action[0] === 'search' && ($action[2] ?? '') === $locale) || ($action[0] === 'page' && ($action[3] ?? '') === $locale));
+            if ($browsing) {
+                $page = $action[0] === 'page' ? max(1, min(1000, (int) ($action[2] ?? 1))) : 1;
+            }
+            $results = $library?->search($query, $page);
+            $pageAction = static fn(int $number): string => 'page:' . $field->id . ':' . $number . ($locale === '' ? '' : ':' . $locale);
+            $html .= '<details class="admin-picker__browse"' . ($browsing ? ' open' : '') . '><summary>' . $t->html($poster === null ? 'vimeo.choose_poster' : 'vimeo.change_poster') . '</summary>'
+                . '<div class="admin-picker__search"><label for="vimeo-query-' . Html::attribute($prefix) . '">' . $t->html('picker.find') . '</label><input id="vimeo-query-' . Html::attribute($prefix) . '" name="_query_' . Html::attribute($prefix) . '" type="search" maxlength="100" value="' . Html::attribute($query) . '">'
+                . '<input type="hidden" name="_page_' . Html::attribute($prefix) . '" value="' . $page . '">' . ReferenceControls::button('search:' . $field->id . ($locale === '' ? '' : ':' . $locale), $t->text('picker.search')) . '</div>'
+                . '<ul class="admin-picker__results">'
+                . '<li><label><input type="radio" name="' . Html::attribute($prefix . '__poster') . '" value=""' . ($posterId === '' ? ' checked' : '') . '>' . $t->html('vimeo.no_poster') . '</label></li>';
             $items = [];
             if ($poster !== null) {
                 $items[$poster->id] = $poster;
@@ -80,12 +99,10 @@ final class VimeoVideoControl
             if ($posterId !== '' && $poster === null) {
                 $html .= '<li><label><input type="radio" name="' . Html::attribute($prefix . '__poster') . '" value="' . Html::attribute($posterId) . '" checked>' . $t->html('video.missing') . '</label></li>';
             }
-            $html .= '</ul></details>' . ($definition === null ? '' : '</div>');
+            $html .= '</ul><div class="admin-picker__pagination"><span>' . $t->html('records.pages.current', ['page' => (string) $page]) . '</span>'
+                . ($page > 1 ? ReferenceControls::button($pageAction($page - 1), $t->text('records.pages.previous')) : '')
+                . ($results?->hasNext === true ? ReferenceControls::button($pageAction($page + 1), $t->text('records.pages.next')) : '') . '</div></details>' . ($definition === null ? '' : '</div>');
         }
-        $html .= '<div class="admin-picker__search"><label for="vimeo-query-' . Html::attribute($field->id) . '">' . $t->html('picker.find') . '</label><input id="vimeo-query-' . Html::attribute($field->id) . '" name="_query_' . Html::attribute($field->id) . '" type="search" maxlength="100" value="' . Html::attribute($query) . '">'
-            . '<input type="hidden" name="_page_' . Html::attribute($field->id) . '" value="' . $page . '">' . ReferenceControls::button('search:' . $field->id, $t->text('picker.search'))
-            . ($page > 1 ? ReferenceControls::button('page:' . $field->id . ':' . ($page - 1), $t->text('records.pages.previous')) : '')
-            . ($results?->hasNext === true ? ReferenceControls::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>';
         return $html . ($error === null ? '' : '<p role="alert" class="admin-field__error" id="' . Html::attribute($id . '-error') . '">' . Html::text($error) . '</p>') . '</fieldset>';
     }
 }

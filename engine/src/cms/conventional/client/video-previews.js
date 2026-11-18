@@ -49,40 +49,26 @@ export function mountVideoField(field) {
 			link.hidden = !id;
 			if (id) link.href = `/media/${id}`;
 		}
+		// The row shows the chosen file with the thumbnail its library entry already carries.
+		const row = field.querySelector(`[data-video-row="${kind}"]`);
+		if (row) row.hidden = !id;
+		const thumb = field.querySelector(`[data-video-thumb="${kind}"]`);
+		if (thumb) {
+			const source = id
+				? button.closest("li")?.querySelector(".admin-thumbnail")
+				: null;
+			thumb.replaceChildren(...(source ? [source.cloneNode(true)] : []));
+		}
 		const summary = field.querySelector(`[data-video-browse="${kind}"] > summary`);
 		if (summary)
 			summary.textContent = id
 				? summary.dataset.videoChangeLabel
 				: summary.dataset.videoChooseLabel;
-		const player = field.querySelector("[data-video-player]");
-		const image = field.querySelector("[data-video-poster-preview]");
-		if (kind === "video") {
-			player.pause();
-			player.hidden = !id;
-			if (id) {
-				// Assigning src respects preload=none; an explicit load() can fetch immediately.
-				player.src = `/media/${id}/video`;
-				player.setAttribute("aria-label", button.dataset.mediaName);
-				player.width = Number(button.dataset.mediaWidth);
-				player.height = Number(button.dataset.mediaHeight);
-				player.dataset.mediaId = id;
-				player.dataset.videoChecksum = button.dataset.videoChecksum;
-				player.muted = true;
-			} else {
-				player.removeAttribute("src");
-				delete player.dataset.mediaId;
-				player.load();
-			}
-		} else {
-			image.hidden = !id;
-			if (id) {
-				image.src = `/media/${id}/thumbnail`;
-				player.poster = image.src;
-			} else {
-				image.removeAttribute("src");
-				player.removeAttribute("poster");
-			}
-		}
+		// The poster choice appears once there is a video to go with it.
+		const posterBrowse = field.querySelector('[data-video-browse="poster"]');
+		if (posterBrowse && kind === "video")
+			posterBrowse.hidden =
+				!id && !field.querySelector('[data-video-value="poster"]').value;
 		for (const error of field.querySelectorAll("[data-video-limit-error]"))
 			error.hidden = true;
 		input.dispatchEvent(new document.defaultView.Event("input", { bubbles: true }));

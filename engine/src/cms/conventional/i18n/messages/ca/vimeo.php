@@ -5,9 +5,10 @@ declare(strict_types=1);
 return [
     'vimeo.url' => 'Adreça de Vimeo',
     'vimeo.title' => 'Títol del vídeo',
-    'vimeo.poster' => 'Imatge del pòster',
     'vimeo.choose_poster' => 'Tria una imatge de pòster',
-    'vimeo.open' => 'Obre el vídeo a Vimeo',
+    'vimeo.change_poster' => 'Canvia la imatge de pòster',
+    'vimeo.no_poster' => 'Sense imatge de pòster',
+    'vimeo.open' => 'Obre a Vimeo',
     'vimeo.help' => 'Tria un pòster i un títol propis. Vimeo només es carrega quan el visitant prem Reprodueix.',
     'vimeo.url_required' => 'Introdueix una adreça de Vimeo.',
     'vimeo.scheme' => 'Fes servir una adreça HTTPS de Vimeo.',

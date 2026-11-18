@@ -238,7 +238,7 @@ try {
 		"document.querySelector('[data-editorial-form]').requestSubmit(document.querySelector('[data-record-save]'))",
 	);
 	await ready(
-		"document.readyState==='complete' && document.querySelector('[data-save-status]').textContent.includes('Saved revision')",
+		"document.readyState==='complete' && document.querySelector('[data-save-status]').textContent.startsWith('Saved ')",
 	);
 	await navigate(record, "[data-editorial-form]");
 	assert.equal(

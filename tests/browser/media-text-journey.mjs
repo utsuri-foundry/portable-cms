@@ -44,7 +44,7 @@ try {
 		await evaluate(
 			`document.querySelector('#field-gallery a[href="${path}"]').textContent`,
 		),
-		"Edit image details",
+		"Image details",
 	);
 	await navigate(path, "[name=alternativeText__en]");
 	// Languages by name, a square crop with the numbers folded, and no state word on a ready image.

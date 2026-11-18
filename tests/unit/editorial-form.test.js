@@ -161,7 +161,7 @@ test("one record language switch drives every localized panel", () => {
 		f.panels.map((panel) => panel.hidden),
 		[false, true, true],
 	);
-	assert.equal(f.tags[0].textContent, "CA");
+	assert.equal(f.tags[0].textContent, "· ca");
 	assert.equal(f.tags[0].hidden, false);
 	f.buttons[2].dispatchEvent(new Event("click"));
 	assert.deepEqual(
@@ -169,7 +169,7 @@ test("one record language switch drives every localized panel", () => {
 		[true, true, false],
 	);
 	assert.equal(f.buttons[2].getAttribute("aria-pressed"), "true");
-	assert.equal(f.tags[0].textContent, "EN");
+	assert.equal(f.tags[0].textContent, "· en");
 	const arrow = new Event("keydown", { cancelable: true });
 	Object.defineProperty(arrow, "key", { value: "ArrowRight" });
 	f.buttons[2].dispatchEvent(arrow);

@@ -11,7 +11,6 @@ return [
     'media.text.more' => 'Peu i crèdit',
     'media.text.caption' => 'Peu',
     'media.text.credit' => 'Crèdit',
-    'media.text.edit' => 'Edita els detalls de la imatge',
     'media.text.invalid' => 'Utilitza text pla de fins a 500 caràcters per a cada descripció, peu i crèdit.',
     'media.upload.title' => 'Puja',
     'media.upload.rule' => 'Imatges de fins a {limit} MB.',

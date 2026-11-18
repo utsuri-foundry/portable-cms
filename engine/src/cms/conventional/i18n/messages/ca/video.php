@@ -5,8 +5,6 @@ declare(strict_types=1);
 return [
     'video.upload_limits' => 'MP4, WebM · fins a {limit} MiB.',
     'video.native_upload_limit' => 'Sense scripts: {limit} MiB.',
-    'video.video' => 'Vídeo',
-    'video.poster' => 'Imatge de pòster',
     'video.unavailable' => 'El perfil o el servidor no admet vídeos preparats.',
     'video.missing' => 'Recurs no disponible',
     'video.selection_invalid' => 'Trieu un vídeo preparat i una imatge de pòster preparada separada.',
@@ -32,7 +30,7 @@ return [
     'video.codec_unknown' => 'Còdec desconegut',
     'video.frame_invalid' => 'La previsualització ha de ser un fotograma WebP petit amb les dimensions esperades.',
     'video.none' => 'Encara no s’ha triat',
-    'video.open' => 'Obre',
+    'video.details' => 'Detalls del vídeo',
     'video.remove_video' => 'Treieu el vídeo',
     'video.remove_poster' => 'Treieu la imatge de pòster',
     'video.change_video' => 'Canvieu el vídeo',

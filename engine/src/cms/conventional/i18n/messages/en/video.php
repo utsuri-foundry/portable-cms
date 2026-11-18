@@ -5,8 +5,6 @@ declare(strict_types=1);
 return [
     'video.upload_limits' => 'MP4, WebM · up to {limit} MiB.',
     'video.native_upload_limit' => 'Without scripts: {limit} MiB.',
-    'video.video' => 'Video',
-    'video.poster' => 'Poster image',
     'video.unavailable' => 'Prepared video support is unavailable for this profile or host.',
     'video.missing' => 'Unavailable asset',
     'video.selection_invalid' => 'Choose a ready video and a separate ready image poster.',
@@ -32,7 +30,7 @@ return [
     'video.codec_unknown' => 'Unknown codec',
     'video.frame_invalid' => 'The video preview must be a small WebP frame with the expected dimensions.',
     'video.none' => 'Not chosen yet',
-    'video.open' => 'Open',
+    'video.details' => 'Video details',
     'video.remove_video' => 'Remove the video',
     'video.remove_poster' => 'Remove the poster image',
     'video.change_video' => 'Change video',

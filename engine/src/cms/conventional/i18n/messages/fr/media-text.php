@@ -11,7 +11,6 @@ return [
     'media.text.more' => 'Légende et crédit',
     'media.text.caption' => 'Légende',
     'media.text.credit' => 'Crédit',
-    'media.text.edit' => 'Modifier les détails de l’image',
     'media.text.invalid' => 'Utilisez du texte brut de 500 caractères maximum pour chaque description, légende et crédit.',
     'media.upload.title' => 'Importer',
     'media.upload.rule' => 'Images jusqu’à {limit} Mo.',

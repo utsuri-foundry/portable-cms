@@ -5,6 +5,29 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.1
+
+- The record page follows the agreed design more closely. Image fields show
+  each image as one row, thumbnail, name, "Image details" and a quiet remove
+  control, instead of a numbered card; a field that holds one image says
+  "Choose image" and offers nothing more once it is full, except right after
+  an upload it received. Video fields draw the same rows for the video and its
+  poster image, with the rule folded into "Choose video", the two choices side
+  by side, the poster choice appearing once there is a video, empty rows
+  waiting hidden and no inline player. A Vimeo field with a profile hint carries
+  one help control, folds its search inside "Choose poster image" per
+  language, and links "Open on Vimeo" quietly. The language tag reads as part
+  of the label ("Title · Català") instead of a badge. The rail is two cards:
+  the saved time, the state with one sentence on what it means and Mark as
+  ready as the primary action with Change status folded quietly, then "Preview
+  while editing" and "Preview the website". Revision numbers, the facts list
+  and the ready-revision notices are gone, the header says the state and the
+  saved time, and the rail's saved time keeps the 24-hour clock. The library
+  upload panel at the foot of Media appears only when no field carries its own
+  upload, and the Description disclosure after the form is gone. Every changed
+  string is in each administration language. Field values, actions, limits and
+  upload rules are unchanged.
+
 ## 0.14.0
 
 - The Wording page is folded by where each text appears. A search box at the

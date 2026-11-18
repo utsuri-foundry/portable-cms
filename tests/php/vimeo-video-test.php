@@ -95,7 +95,7 @@ $tests['vimeo profile and value schemas are additive and localized titles retain
     }
     foreach (['en', 'ca', 'es', 'fr', 'de'] as $locale) {
         $t = Translator::load($locale);
-        foreach (['url', 'title', 'poster', 'choose_poster', 'help', 'hash', 'scheme', 'value_invalid'] as $key) {
+        foreach (['url', 'title', 'open', 'choose_poster', 'change_poster', 'no_poster', 'help', 'hash', 'scheme', 'value_invalid'] as $key) {
             assertTrueValue($t->text('vimeo.' . $key) !== '', 'every new administration message is translated');
         }
     }

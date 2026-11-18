@@ -5,9 +5,10 @@ declare(strict_types=1);
 return [
     'vimeo.url' => 'Adresse Vimeo',
     'vimeo.title' => 'Titre de la vidéo',
-    'vimeo.poster' => 'Image d’affiche',
     'vimeo.choose_poster' => 'Choisir une image d’affiche',
-    'vimeo.open' => 'Ouvrir la vidéo sur Vimeo',
+    'vimeo.change_poster' => 'Changer l’image d’affiche',
+    'vimeo.no_poster' => 'Aucune image d’affiche',
+    'vimeo.open' => 'Ouvrir sur Vimeo',
     'vimeo.help' => 'Choisissez votre affiche et votre titre. Vimeo ne se charge que lorsque le visiteur appuie sur Lire.',
     'vimeo.url_required' => 'Saisissez une adresse Vimeo.',
     'vimeo.scheme' => 'Utilisez une adresse Vimeo en HTTPS.',

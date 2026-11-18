@@ -17,11 +17,12 @@ use Utsuri\PortableCms\Conventional\Media\MediaContract;
 use Utsuri\PortableCms\Conventional\Media\MediaLibrary;
 
 /**
- * A video field: the rule in one line, the player, then the video and the poster image as two
- * named rows with a link to each media page and a quiet remove control. Each choice has one
- * disclosure, "Choose video" or "Choose poster image" ("Change" once chosen), that holds the
- * library search, its paging and, for the video, the upload, as image fields do. Native
- * buttons do the work; the island only mirrors a choice without a round trip.
+ * A video field: the chosen video and poster image as rows like an image field's, each with its
+ * thumbnail, name, a link to its details page and a quiet remove control; an empty row waits
+ * hidden. Each choice has one disclosure, "Choose video" or "Choose poster image" ("Change" once
+ * chosen), that holds the rule, the library search, its paging and, for the video, the upload,
+ * as image fields do. Native buttons do the work; the island only mirrors a choice without a
+ * round trip.
  */
 final class VideoReferenceControl
 {
@@ -36,24 +37,25 @@ final class VideoReferenceControl
         $uploading = $upload !== '' && ($request->formValue('_upload_field') === $field->id || ($acting && ($action[0] ?? '') === 'uploaded-media'));
         $markup = '<fieldset class="admin-field admin-picker admin-video-field" id="field-' . Html::attribute($field->id) . '" data-video-reference data-video-none="' . $t->html('video.none') . '" tabindex="-1"' . ($acting ? ' autofocus' : '') . '><legend>' . Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '') . '</legend>'
             . ($error === null ? '' : '<p role="alert" class="admin-field__error">' . Html::text($error) . '</p>')
-            . ($library !== null ? '<p class="admin-meta" data-video-rule>' . self::rule($field, $library, $t) . '</p><input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">' : '<p class="admin-meta">' . $t->html('video.unavailable') . '</p>');
+            . ($library !== null ? '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">' : '<p class="admin-meta">' . $t->html('video.unavailable') . '</p>');
         foreach ($field->localized ? $profile->locales : [''] as $locale) {
             $selected = $field->localized && is_array($value) ? ($value[$locale] ?? null) : $value;
             $prefix = $field->id . ($locale === '' ? '' : '__' . $locale);
             $ids = ['video' => is_array($selected) && is_string($selected['mediaId'] ?? null) ? $selected['mediaId'] : '', 'poster' => is_array($selected) && is_string($selected['posterId'] ?? null) ? $selected['posterId'] : ''];
             $items = ['video' => $library?->find($ids['video']), 'poster' => $library?->find($ids['poster'])];
-            $markup .= '<div class="admin-video-selection" data-video-selection>' . VideoPreview::player($items['video'], $items['poster'])
-                // The poster shows once: on the player when a video is ready, else as an image of its own.
-                . '<img class="admin-thumbnail admin-video-poster" data-video-poster-preview width="80" height="64" alt=""' . ($items['poster']?->status === 'ready' && $items['poster']->thumbnail?->mime === 'image/webp' ? ' src="' . Html::url('/media/' . $items['poster']->id . '/thumbnail') . '"' . ($items['video'] !== null && VideoPreview::ready($items['video']) ? ' hidden' : '') : ' hidden') . '>';
+            $markup .= '<div class="admin-video-selection" data-video-selection>';
             $rows = '';
             $retained = '';
             foreach (['video', 'poster'] as $kind) {
                 $item = $items[$kind];
                 $name = $prefix . '__' . $kind;
                 $markup .= '<input type="hidden" name="' . Html::attribute($name) . '" value="' . Html::attribute($ids[$kind]) . '" data-video-value="' . $kind . '">';
-                $rows .= '<li class="admin-video-row" data-video-row="' . $kind . '"><span class="admin-video-row__kind">' . $t->html('video.' . $kind) . '</span>'
-                    . '<span class="admin-video-row__name" data-video-name="' . $kind . '">' . Html::text($item->name ?? ($ids[$kind] === '' ? $t->text('video.none') : $t->text('video.missing'))) . '</span>'
-                    . '<span class="admin-selection__actions"><a data-video-link="' . $kind . '"' . ($item === null ? ' hidden' : ' href="' . Html::url('/media/' . $item->id) . '"') . '>' . $t->html('video.open') . '</a>'
+                // A chosen file is one row like an image: thumbnail, name, its details page, remove. An empty row waits hidden.
+                $rows .= '<li class="admin-video-row" data-video-row="' . $kind . '"' . ($ids[$kind] === '' ? ' hidden' : '') . '>'
+                    . '<span class="admin-video-row__thumb" data-video-thumb="' . $kind . '">' . ($item === null ? '' : ReferenceControls::thumbnail($item)) . '</span>'
+                    . '<span class="admin-video-row__text"><span class="admin-video-row__name" data-video-name="' . $kind . '">' . Html::text($item->name ?? ($ids[$kind] === '' ? $t->text('video.none') : $t->text('video.missing'))) . '</span>'
+                    . '<a data-video-link="' . $kind . '"' . ($item === null ? ' hidden' : ' href="' . Html::url('/media/' . $item->id) . '"') . '>' . $t->html($kind === 'video' ? 'video.details' : 'picker.image_details') . '</a></span>'
+                    . '<span class="admin-selection__actions">'
                     . ($enabled ? '<button type="submit" name="_editor_action" value="' . Html::attribute('clear-' . $kind . ':' . $field->id) . '" formnovalidate data-video-clear="' . $kind . '" aria-label="' . $t->html('video.remove_' . $kind) . '"' . ($ids[$kind] === '' ? ' hidden' : '') . '>×</button>' : '') . '</span></li>';
                 $reason = $item === null || $kind !== 'video' ? null : self::reason($field, $item, $library, $t);
                 if ($reason !== null) {
@@ -62,9 +64,12 @@ final class VideoReferenceControl
             }
             $markup .= '<ul class="admin-video-rows">' . $rows . '</ul>' . $retained . '</div>';
             if ($library !== null) {
+                // The two choices sit side by side; the poster one appears once there is a video to go with it.
+                $markup .= '<div class="admin-video-choosers">';
                 foreach (['video', 'poster'] as $kind) {
-                    $markup .= self::chooser($field, $kind, $ids[$kind], $library, $request, $t, $browsing === $kind, $kind === 'video' ? $upload : '', $uploading);
+                    $markup .= self::chooser($field, $kind, $ids[$kind], $library, $request, $t, $browsing === $kind, $kind === 'video' ? $upload : '', $uploading, $kind === 'poster' && $ids['video'] === '' && $ids['poster'] === '');
                 }
+                $markup .= '</div>';
                 // A localized field uploads once; the files land in the shared library for every language.
                 $upload = '';
                 $uploading = false;
@@ -95,8 +100,8 @@ final class VideoReferenceControl
         return $t->html('video.rule', ['video' => implode(', ', $parts)]);
     }
 
-    /** One disclosure per choice: the upload (video only), then the library with its own search and paging. */
-    private static function chooser(FieldDefinition $field, string $kind, string $selected, MediaLibrary $library, Request $request, Translator $t, bool $browsing, string $upload, bool $uploading): string
+    /** One disclosure per choice: the rule and the upload (video only), then the library with its own search and paging. */
+    private static function chooser(FieldDefinition $field, string $kind, string $selected, MediaLibrary $library, Request $request, Translator $t, bool $browsing, string $upload, bool $uploading, bool $hidden = false): string
     {
         $suffix = $field->id . '__' . $kind;
         $query = mb_substr($request->formValue('_query_' . $suffix), 0, 100);
@@ -107,7 +112,8 @@ final class VideoReferenceControl
         }
         $results = $library->search($query, $page);
         $id = Html::attribute('video-query-' . $suffix);
-        $markup = '<details class="admin-picker__browse" data-video-browse="' . $kind . '"' . ($browsing || $uploading ? ' open' : '') . '><summary data-video-choose-label="' . $t->html('video.choose_' . $kind) . '" data-video-change-label="' . $t->html('video.change_' . $kind) . '">' . $t->html('video.' . ($selected === '' ? 'choose_' : 'change_') . $kind) . '</summary>';
+        $markup = '<details class="admin-picker__browse" data-video-browse="' . $kind . '"' . ($browsing || $uploading ? ' open' : '') . ($hidden && !$browsing && !$uploading ? ' hidden' : '') . '><summary data-video-choose-label="' . $t->html('video.choose_' . $kind) . '" data-video-change-label="' . $t->html('video.change_' . $kind) . '">' . $t->html('video.' . ($selected === '' ? 'choose_' : 'change_') . $kind) . '</summary>'
+            . ($kind === 'video' ? '<p class="admin-meta" data-video-rule>' . self::rule($field, $library, $t) . '</p>' : '');
         if ($upload !== '') {
             $markup .= '<details class="admin-picker__upload"' . ($uploading ? ' open' : '') . '><summary>' . $t->html('video.upload_files') . '</summary><div class="admin-upload-tile">' . $upload . '</div></details>'
                 . '<details class="admin-picker__library"' . ($browsing ? ' open' : '') . '><summary>' . $t->html('picker.choose_library') . '</summary>';

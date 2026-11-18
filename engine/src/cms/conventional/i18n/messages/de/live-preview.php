@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'live.toggle' => 'Live-Vorschau',
+    'live.toggle' => 'Vorschau beim Bearbeiten',
     'live.fallback' => 'Änderungen ansehen',
     'live.region' => 'Live-Vorschau',
     'live.page.label' => 'Seite',

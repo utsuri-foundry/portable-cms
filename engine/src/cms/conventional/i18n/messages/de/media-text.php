@@ -11,7 +11,6 @@ return [
     'media.text.more' => 'Bildunterschrift und Nachweis',
     'media.text.caption' => 'Bildunterschrift',
     'media.text.credit' => 'Bildnachweis',
-    'media.text.edit' => 'Bilddetails bearbeiten',
     'media.text.invalid' => 'Verwenden Sie Klartext mit höchstens 500 Zeichen für jede Beschreibung, Bildunterschrift und jeden Nachweis.',
     'media.upload.title' => 'Hochladen',
     'media.upload.rule' => 'Bilder bis {limit} MB.',
