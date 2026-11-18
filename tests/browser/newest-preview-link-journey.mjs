@@ -51,12 +51,13 @@ export async function verifyNewestPreviewLink(
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	await command("Page.navigate", { url: link });
 	await ready(
-		"document.querySelector('[data-share-notice]') && document.querySelector('iframe[data-share-renew]')",
+		"document.querySelector('iframe[data-share-renew]')",
 	);
 	assert.equal(await evaluate("location.hash"), "");
-	assert.match(
-		await evaluate("document.querySelector('[data-share-notice] p').textContent"),
-		/not public, shared by /,
+	assert.equal(
+		await evaluate("document.querySelector('header')"),
+		null,
+		"nothing sits above the frame",
 	);
 	const frameBefore = await evaluate("document.querySelector('iframe').src");
 	assert.match(
