@@ -248,9 +248,12 @@ try {
 		mobile: false,
 	});
 	await navigate("/records/article/new", '[data-keeping="true"]');
+	// The keeper first rewrites the address of the new draft in place, then replaces the
+	// page with the saved record; the mark on the old document tells the two apart.
+	await evaluate("document.documentElement.setAttribute('data-browser-reloading', '')");
 	await type(browser, "title__en", "A newly kept draft");
 	await ready(
-		"/^\\/records\\/article\\/[a-f0-9]{32}$/.test(location.pathname) && document.querySelector('[data-keeping=true]') && document.readyState==='complete'",
+		"!document.documentElement.hasAttribute('data-browser-reloading') && /^\\/records\\/article\\/[a-f0-9]{32}$/.test(location.pathname) && document.querySelector('[data-keeping=true]') && document.readyState==='complete'",
 	);
 	assert.equal(
 		await evaluate("document.querySelector('[name=title__en]').value"),
