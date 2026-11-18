@@ -214,8 +214,12 @@ removed under `prefers-reduced-motion: reduce`.
 
 Explanations are folded. A field's hint, a group's purpose and a section's
 explanation are one small `i` control beside the label, legend or heading,
-rendered by the engine's `FieldHelp` component, closed by default; it opens by
-click or keyboard and folds on Escape. The text is always in the page, so the
+rendered by the engine's `FieldHelp` component, closed by default. In browsers
+with popovers the text opens over the page just under its control, within the
+page's side gutters, so nothing in the form moves: a click or keyboard toggles
+it, a pointer resting on the control shows it until it leaves, and Escape, a
+click elsewhere or another control folds it. Other browsers open the text
+inline and fold it on Escape. The text is always in the page, so the
 control or group it explains describes itself through `aria-describedby`, a
 group keeps its legend's words alone as its name, and without scripts the text
 simply shows inline. Nothing explanatory is visible by default except a page's
@@ -313,8 +317,9 @@ and a danger action. Show resumable progress and a final result. See
 [language operations](../development/conventional-cms-content.md#site-languages).
 
 Required fields carry a star after their label; one `* required fields` line
-per form explains it, the word Required stays in the label for assistive
-technology, and the words Required and Optional do not appear in labels.
+per form explains it as a footnote under the form, outside the white body, the
+word Required stays in the label for assistive technology, and the words
+Required and Optional do not appear in labels.
 Validation returns a linked summary and
 field-level messages; the affected section is tinted and counts its issues. A
 revision conflict preserves the editor's input, shows the current saved values

@@ -10,8 +10,9 @@ transfer; changing a stored content rule may require a migration.
 Add optional `hint` text beside a field's `label`, in profile
 v1/v2/v3 fields, group children, block children and v3 group references. It is
 one nonblank plain-text line of up to 160 Unicode characters, with no control
-characters. The editor escapes it, places it below the name in muted text and
-connects it to the native control or group with `aria-describedby`. Omit it for
+characters. The editor escapes it, folds it behind an "i" beside the name that
+opens it over the page, and connects it to the native control or group with
+`aria-describedby`. Omit it for
 fields that need no explanation. Hints never change content validation or limits.
 
 For a decorative video loop, keep the name short and put the brief in the hint:

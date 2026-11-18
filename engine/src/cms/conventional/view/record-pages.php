@@ -266,7 +266,8 @@ final class RecordPages
             . ($mediaNotice === null ? '' : '<p class="admin-notice" role="status" data-media-upload-result>' . Html::text($t->message($mediaNotice)) . '</p>')
             . '<form class="admin-form" data-editorial-form data-autosave="true" data-saved-at="' . ($record === null ? '' : Html::attribute($record->updatedAt->format(DATE_ATOM))) . '" data-messages="' . $t->bundleAttribute('client') . '" data-pending-input="' . ($errors !== [] || $conflict !== null || $pendingControls || $structureChanged ? 'true' : 'false') . '" method="post" action="' . Html::url($action) . '">'
             . '<input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">' . $revision
-            . '<div class="admin-editor"><div class="admin-editor__main">' . (array_filter($type->fields, static fn(FieldDefinition $field): bool => $field->required) === [] ? '' : FieldHelp::requiredLegend($t)) . $parts['sections'] . $assistancePanel . '</div>' . $rail . '</div>'
+            . '<div class="admin-editor"><div class="admin-editor__main">' . $parts['sections'] . $assistancePanel . '</div>' . $rail . '</div>'
+            . (array_filter($type->fields, static fn(FieldDefinition $field): bool => $field->required) === [] ? '' : FieldHelp::requiredLegend($t))
             . '<input type="hidden" name="_editorial_end" value="1"></form>'
             . ($exact ? '<form id="record-exact-preview-form" method="post" action="' . Html::url('/records/' . $type->id . '/' . ($record->id ?? 'new') . '/exact-preview') . '" target="_blank" rel="noopener"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_exact_locale" value="' . Html::attribute($profile->defaultLocale) . '"></form>' : '')
             . ($live ? self::livePane($liveEndpoint, $profile, $t) : '') . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::form($record, $csrfToken)) . $upload

@@ -130,12 +130,13 @@ try {
 			text: type === "keyDown" ? "\r" : undefined,
 		});
 	}
+	await ready(`${help}.getAttribute('aria-expanded') === 'true'`);
 	assert.deepEqual(
 		await evaluate(
-			`[getComputedStyle(${text}).display !== 'none', ${help}.getAttribute('aria-expanded'), document.activeElement === ${help}]`,
+			`[getComputedStyle(${text}).display !== 'none', ${text}.matches(':popover-open'), document.activeElement === ${help}]`,
 		),
-		[true, "true", true],
-		"the keyboard opens the explanation without moving focus",
+		[true, true, true],
+		"the keyboard opens the explanation over the page without moving focus",
 	);
 	for (const type of ["keyDown", "keyUp"]) {
 		await command("Input.dispatchKeyEvent", {
@@ -145,10 +146,8 @@ try {
 			windowsVirtualKeyCode: 27,
 		});
 	}
-	assert.equal(
-		await evaluate(`${help}.getAttribute('aria-expanded')`),
-		"false",
-		"Escape folds it again",
+	await ready(
+		`${help}.getAttribute('aria-expanded') === 'false' && !${text}.matches(':popover-open')`,
 	);
 	assert.deepEqual(
 		await liveLabels(),
