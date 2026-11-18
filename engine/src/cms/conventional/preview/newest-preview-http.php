@@ -14,18 +14,10 @@ use Utsuri\PortableCms\Conventional\View\PreviewSharePage;
 /** The guest side of a newest preview link: secret exchange, the viewer, pinned downloads and files. Links are made on the Previews page. */
 final class NewestPreviewHttp
 {
-    /**
-     * @param (\Closure(): ?string)|null $siteName
-     * @param (\Closure(string): ?string)|null $actorName
-     * @param array<string, string> $languageLabels Locale to label, in the site's order.
-     */
     public function __construct(
         private readonly NewestPreviewLinkService $links,
         private readonly PreviewService $previews,
         private readonly OriginPolicy $originPolicy,
-        private readonly ?\Closure $siteName = null,
-        private readonly ?\Closure $actorName = null,
-        private readonly array $languageLabels = [],
     ) {}
 
     public function guest(Request $request, Translator $t): Response
@@ -108,8 +100,7 @@ final class NewestPreviewHttp
         $mount = $base . 'pinned/' . $resolution->previewId . '/artifact/';
         if ($suffix === '/') {
             $files = (new PreviewFileHttp($this->previews, 'newest-preview-files'))->base($id, $this->links->createFiles($resolution));
-            $sharer = $resolution->link->createdBy === null || $this->actorName === null ? null : ($this->actorName)($resolution->link->createdBy);
-            return (new Response(200, PreviewSharePage::viewer($base, $t, $files, $this->siteName === null ? null : ($this->siteName)(), $sharer, PreviewLanguages::of($this->previews->find($resolution->previewId), $this->languageLabels))))
+            return (new Response(200, PreviewSharePage::viewer($base, $t, $files)))
                 ->withVimeoWorkspace()->withHeader('content-type', 'text/html; charset=utf-8');
         }
         if ($pinned === null) {

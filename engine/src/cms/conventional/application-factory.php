@@ -100,13 +100,6 @@ final class ApplicationFactory
         $previewShares = new Preview\PreviewShareService(new Preview\MariaDbPreviewShareRepository($pdo), new MariaDbIdentityRepository($pdo), $clock, $random, $configuration->throttleSecret);
         $newestLinks = new Preview\NewestPreviewLinkService(new Preview\MariaDbNewestPreviewLinkRepository($pdo), new MariaDbIdentityRepository($pdo), $clock, $random, $configuration->throttleSecret);
         $accounts = new Identity\AccountService(new Identity\MariaDbAccountRepository($pdo), $clock, $random);
-        // A shared viewer names the site and the person who shared, and lists the preview's languages as the site names them.
-        $siteName = static fn(): string => View\AdminShell::installationName($profile, self::websitePublication($profile, $pdo)->load()->identity());
-        $actorName = static fn(string $id): ?string => $accounts->name($id);
-        $languageLabels = [];
-        foreach ($profile->localeDefinitions as $definition) {
-            $languageLabels[$definition->id] = $definition->label;
-        }
         return new IdentityApplication(
             $identity,
             new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback),
@@ -144,7 +137,7 @@ final class ApplicationFactory
             $design,
             self::assistance($configuration, $profile, $pdo),
             $package?->administrationLabels,
-            $previews === null ? null : new Preview\PreviewShareHttp($previewShares, $previews, new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback), $siteName, $actorName, $languageLabels),
+            $previews === null ? null : new Preview\PreviewShareHttp($previewShares, $previews, new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback)),
             $previews === null ? null : self::publication($configuration, $profile, $previews, $pdo),
             self::websitePublication($profile, $pdo),
             $accounts,
@@ -168,7 +161,7 @@ final class ApplicationFactory
             self::siteWording($profile, $pdo),
             self::languageText($profile, $pdo, $siteLanguages, $mediaLibrary, $design),
             $installedReleaseId,
-            $previews === null ? null : new Preview\NewestPreviewHttp($newestLinks, $previews, new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback), $siteName, $actorName, $languageLabels),
+            $previews === null ? null : new Preview\NewestPreviewHttp($newestLinks, $previews, new OriginPolicy($configuration->origin, $configuration->allowInsecureLoopback)),
             new Content\RecordHistoryService(new Content\MariaDbRecordHistory($pdo), $clock, $random),
             $previews === null ? null : new Preview\EditorExactPreview($previews, $previewRepository, new Preview\MariaDbEditorPreviewFiles($pdo), $profile, $clock, $random),
             $configuration->mediaWakeStrategy === 'cron_only',

@@ -79,14 +79,14 @@ from login; forwarded headers do not replace the observed remote address.
 
 ### The viewer
 
-A thin bar above the page says "Preview of <site>, not public, shared by <name>"
-and offers the preview's languages; choosing one moves the frame to that
-language's start page. The iframe receives unchanged, checksum-verified artifact
+The preview fills the window with nothing above it; the browser tab carries the
+private preview title, and visitors change language through the site's own
+links, as on the published site. The iframe receives unchanged, checksum-verified artifact
 bytes, including deep relative navigation and assets, through
 `/shared-preview-files/<link-id>/<file-token>/`. It runs the website's own scripts
 under the published site's CSP, with only the frozen Vimeo frame permission when
 present. The page matches the published design and interactions, but has a private
-address and the surrounding bar. The opaque-origin sandbox prevents
+address. The opaque-origin sandbox prevents
 CMS cookie and storage access, CMS response reads, forms, top-level navigation and
 popups; scripts relying on these browser powers cannot use them in a review page.
 The engine's enhanced Vimeo fallback has one narrow exception: the shell opens
@@ -134,7 +134,7 @@ Vimeo pages: a private file token must never become a provider referrer. The
 shell's sibling Vimeo player uses only the CMS origin; domain restrictions must
 allow that origin.
 The cookie-protected signed-in artifact endpoint keeps its existing policy. The link
-landing and bar use the visitor's interface language preference.
+landing uses the visitor's interface language preference.
 Creation, successful use, extension and stopping are audited; creation,
 extension and stopping roll back if their audit cannot be stored.
 

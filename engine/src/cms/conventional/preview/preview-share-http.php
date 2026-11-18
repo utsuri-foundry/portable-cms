@@ -14,18 +14,10 @@ use Utsuri\PortableCms\Conventional\View\PreviewSharePage;
 /** The guest side of a fixed share link: secret exchange, the viewer and its files. Links are made on the Previews page. */
 final class PreviewShareHttp
 {
-    /**
-     * @param (\Closure(): ?string)|null $siteName
-     * @param (\Closure(string): ?string)|null $actorName
-     * @param array<string, string> $languageLabels Locale to label, in the site's order.
-     */
     public function __construct(
         private readonly PreviewShareService $shares,
         private readonly PreviewService $previews,
         private readonly OriginPolicy $originPolicy,
-        private readonly ?\Closure $siteName = null,
-        private readonly ?\Closure $actorName = null,
-        private readonly array $languageLabels = [],
     ) {}
 
     public function guest(Request $request, Translator $t): Response
@@ -86,8 +78,7 @@ final class PreviewShareHttp
         }
         if ($suffix === '/') {
             $files = (new PreviewFileHttp($this->previews, 'shared-preview-files'))->base($id, $this->shares->createFiles($share));
-            $sharer = $share->createdBy === null || $this->actorName === null ? null : ($this->actorName)($share->createdBy);
-            return (new Response(200, PreviewSharePage::viewer($base, $t, $files, $this->siteName === null ? null : ($this->siteName)(), $sharer, PreviewLanguages::of($this->previews->find($share->previewId), $this->languageLabels))))
+            return (new Response(200, PreviewSharePage::viewer($base, $t, $files)))
                 ->withVimeoWorkspace()->withHeader('content-type', 'text/html; charset=utf-8');
         }
         if ($suffix === '/artifact') {
@@ -110,35 +101,5 @@ final class PreviewShareHttp
     public static function cookieName(string $id): string
     {
         return '__Host-preview-share-' . $id;
-    }
-}
-
-/** The languages a frozen preview actually contains, named as the site names them. */
-final class PreviewLanguages
-{
-    /**
-     * @param array<string, string> $labels
-     * @return array<string, string>
-     */
-    public static function of(?PreviewStatus $preview, array $labels): array
-    {
-        if ($preview === null || $preview->manifest === null || $labels === []) {
-            return [];
-        }
-        try {
-            $paths = [];
-            foreach (PreviewBuild::fromManifest($preview->manifest)->artifacts as $artifact) {
-                $paths[$artifact->path] = true;
-            }
-        } catch (\InvalidArgumentException) {
-            return [];
-        }
-        $languages = [];
-        foreach ($labels as $locale => $label) {
-            if (isset($paths[$locale . '/index.html'])) {
-                $languages[$locale] = $label;
-            }
-        }
-        return $languages;
     }
 }

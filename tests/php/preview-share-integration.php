@@ -37,7 +37,7 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     $origin = 'https://cms.example.test';
     $identity = new IdentityService($identityRepository, $clock, $random, str_repeat('s', 32));
     $policy = new OriginPolicy($origin);
-    $http = new PreviewShareHttp($shares, $previews, $policy, static fn(): string => 'Reference Studio', static fn(string $id): string => 'Montse', ['en' => 'English', 'ca' => 'Català']);
+    $http = new PreviewShareHttp($shares, $previews, $policy);
     $newest = new \Utsuri\PortableCms\Conventional\Preview\NewestPreviewLinkService(new \Utsuri\PortableCms\Conventional\Preview\MariaDbNewestPreviewLinkRepository($pdo), $identityRepository, $clock, $random, str_repeat('s', 32));
     $sharing = new \Utsuri\PortableCms\Conventional\Preview\PreviewSharingHttp($shares, $newest, $previews, $origin, new DateTimeZone('Europe/Madrid'));
     $app = new IdentityApplication($identity, $policy, $clock, $random, profile: $profile, previews: $previews, previewShares: $http, sharing: $sharing);
@@ -68,8 +68,7 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     assertSameValue(200, $viewer->status, 'authorized viewer opens without an account');
     assertTrueValue(str_contains($viewer->body, '/assets/preview-vimeo.js'), 'shared viewer supplies the sibling player module');
     assertTrueValue(str_contains($viewer->headers()['content-security-policy'][0], "frame-src 'self' https://player.vimeo.com"), 'shared shell admits its page and fixed provider only');
-    assertTrueValue(str_contains($viewer->body, 'data-share-notice') && str_contains($viewer->body, 'sandbox="allow-scripts"'), 'separate shell supplies the bar and a bounded frame');
-    assertTrueValue(str_contains($viewer->body, 'Preview of Reference Studio, not public, shared by Montse') && str_contains($viewer->body, 'data-share-language="en"') && str_contains($viewer->body, 'data-share-language="ca"'), 'the bar names the site and the sharer and offers the languages the build contains');
+    assertTrueValue(str_contains($viewer->body, 'sandbox="allow-scripts"') && !str_contains($viewer->body, '<header') && !str_contains($viewer->body, 'Reference Studio') && !str_contains($viewer->body, 'Montse'), 'the shell is a bounded frame with nothing above it, naming neither the site nor the sharer');
     assertSameValue(1, preg_match('#src="(/shared-preview-files/[a-f0-9]{32}/([a-f0-9]{64})/)"#', $viewer->body, $fileMatch), 'viewer mints a separate file address');
     $fileBase = $fileMatch[1];
     $fileToken = $fileMatch[2];
