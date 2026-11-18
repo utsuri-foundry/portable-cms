@@ -79,7 +79,9 @@ final class ReferenceControls
         }
         $results = $mediaField ? $this->media?->search($query, $page) : $this->content->searchReferences($field, $query, $page, $filter);
         $items = $mediaField ? ($results->items ?? []) : ($results->records ?? []);
-        $markup = '<fieldset class="admin-field admin-picker' . ($mediaField ? ' admin-picker--media' : '') . '" id="field-' . Html::attribute($field->id) . '" data-reference-control' . $this->focusAttributes($field->id) . '><legend>'
+        // Images and records are ordered rows; taxonomy terms stay chips.
+        $recordRows = in_array($field->type, ['record_reference', 'record_references'], true);
+        $markup = '<fieldset class="admin-field admin-picker' . ($mediaField ? ' admin-picker--media admin-picker--rows' : ($recordRows ? ' admin-picker--records admin-picker--rows' : '')) . '" id="field-' . Html::attribute($field->id) . '" data-reference-control' . $this->focusAttributes($field->id) . '><legend>'
             . Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '') . '</legend>'
             . '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
         if ($error !== null) {
@@ -93,7 +95,9 @@ final class ReferenceControls
             $descriptionWarning = $media === null ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
             $name = $mediaField ? ($media->name ?? $t->text('picker.unavailable_image')) : ($record === null ? $t->text('picker.unavailable_record') : RecordLabels::label($record, $this->profile));
             // An image is one row: thumbnail, name, the way to its details, then the remove control.
-            $markup .= '<li class="admin-selection">' . ($media === null ? '' : self::thumbnail($media))
+            // A record row shows the picture its type shares, when it has one.
+            $cover = $recordRows && $record !== null ? $this->coverMedia($record) : null;
+            $markup .= '<li class="admin-selection">' . ($media === null ? ($cover === null ? '' : self::thumbnail($cover)) : self::thumbnail($media))
                 . '<span>' . Html::text($name) . ($media !== null && $media->status !== 'ready' ? '<small class="admin-meta">' . Html::text(self::mediaState($media->status, $t)) . '</small>' : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
                 . ($descriptionWarning === '' ? '' : '<small class="admin-field__error">' . Html::text($descriptionWarning) . '</small>')
                 . ($media === null ? '' : '<a class="admin-selection__link" href="' . Html::url('/media/' . $media->id) . '">' . $t->html('picker.image_details') . '</a>') . '</span>'
@@ -195,6 +199,36 @@ final class ReferenceControls
         }
         $reference = RecordReference::fromToken($token);
         return in_array($reference->typeId, $field->targetTypes, true) ? $this->content->find($reference->typeId, $reference->recordId) : null;
+    }
+
+    /** The image a record's type declares for search and sharing, when the record has one in the library. */
+    private function coverMedia(RecordSnapshot $record): ?LibraryMedia
+    {
+        $type = $this->profile->type($record->typeId);
+        if ($type === null || $this->media === null) {
+            return null;
+        }
+        foreach ($type->fields as $field) {
+            $mapping = $field->settings['searchSharing'] ?? null;
+            if (!is_array($mapping)) {
+                continue;
+            }
+            foreach (['coverImageField', 'coverFallbackField'] as $key) {
+                if (!is_string($mapping[$key] ?? null)) {
+                    continue;
+                }
+                try {
+                    $id = SearchSharingFeedback::cover($type, $record->body, $mapping[$key], $this->profile);
+                } catch (\InvalidArgumentException) {
+                    continue;
+                }
+                if ($id !== null) {
+                    return $this->media->find($id);
+                }
+            }
+            return null;
+        }
+        return null;
     }
 
     private function referenceStatus(FieldDefinition $field, string $token, ?RecordSnapshot $record): string

@@ -78,7 +78,8 @@ try {
 	await navigate(recordPath, "[data-editorial-form]");
 	await ready("!document.querySelector('[data-record-locale-switcher]').hidden");
 	const original = await evaluate(
-		"Object.fromEntries([...document.querySelectorAll('#field-searchSharing input,#field-searchSharing textarea')].filter(c=>c.name && c.type!=='hidden').map(c=>[c.name,c.value]))",
+		// Values only: the picker's search box is a transient control, and a full image field no longer offers it.
+		"Object.fromEntries([...document.querySelectorAll('#field-searchSharing input,#field-searchSharing textarea')].filter(c=>c.name && !c.name.startsWith('_') && c.type!=='hidden').map(c=>[c.name,c.value]))",
 	);
 	const revision = Number(
 		await evaluate("document.querySelector('[name=_revision]').value"),

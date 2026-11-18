@@ -95,10 +95,13 @@ final class EditorialRecordLayout
                 . $issueMarkup . self::changes($id, $pending[$id], $t) . '</a></li>';
             $heading = '<h2 id="section-heading-' . $id . '"><span>' . Html::text($label) . ($localized ? RecordPages::localeTag() : '') . '</span>' . $issueMarkup . '</h2>';
             $collapsed = $issues[$id] === 0 && !isset($extras[$id]) && self::optional($fields[$id], $values);
+            // Search and sharing is automatic until an editor writes something, so its folded
+            // heading says nothing rather than "Nothing added yet".
+            $automatic = array_filter($fields[$id], static fn(FieldDefinition $field): bool => !is_array($field->settings['searchSharing'] ?? null)) === [];
             $body .= '<section class="admin-field-group' . ($issues[$id] === 0 ? '' : ' admin-field-group--issues') . '" id="section-' . $id . '" data-editorial-section="' . $id . '"'
                 . ' data-issue-count="' . $issues[$id] . '" aria-labelledby="section-heading-' . $id . '">'
                 . ($collapsed
-                    ? '<details class="admin-section-toggle" data-section-toggle><summary>' . $heading . '<span class="admin-meta">' . $t->html('editor.optional.empty') . '</span></summary>'
+                    ? '<details class="admin-section-toggle" data-section-toggle><summary>' . $heading . ($automatic ? '' : '<span class="admin-meta">' . $t->html('editor.optional.empty') . '</span>') . '</summary>'
                         . '<div class="admin-section-toggle__body">' . $markup[$id] . '</div></details>'
                     : $heading . $markup[$id])
                 . '</section>';

@@ -34,7 +34,7 @@ final class PreviewCleanupPageView
         }
         $list = $rows === '' ? Pages::previewEmpty($t) : '<ul class="admin-list">' . $rows . '</ul>';
         $query = $selecting ? '&select=1' : '';
-        $nav = '<nav class="preview-cleanup-toolbar" aria-label="' . $t->html('cleanup.pagination') . '">';
+        $nav = '<nav class="preview-cleanup-toolbar preview-cleanup-toolbar--foot" aria-label="' . $t->html('cleanup.pagination') . '">';
         if ($page->next !== null) {
             $nav .= '<a class="admin-button" href="' . Html::url('/previews?before=' . $page->next->value() . $query) . '">' . $t->html('cleanup.older') . '</a>';
         }
@@ -53,7 +53,7 @@ final class PreviewCleanupPageView
                 $nav .= '<a class="admin-button admin-button--quiet" href="' . Html::url('/previews?select=1') . '" data-preview-select>' . $t->html('cleanup.select_several') . '</a>';
             }
         }
-        return '<link rel="stylesheet" href="/assets/preview-cleanup.css?v=2">' . $body . $nav . '</nav>' . ($selecting ? '<script type="module" src="/assets/preview-cleanup.js"></script>' : '');
+        return '<link rel="stylesheet" href="/assets/preview-cleanup.css?v=3">' . $body . $nav . '</nav>' . ($selecting ? '<script type="module" src="/assets/preview-cleanup.js"></script>' : '');
     }
 
     public static function review(PreviewCleanupReview $review, string $csrf, ?ProfileManifest $profile, AdminChrome $chrome): string

@@ -5,6 +5,18 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.3
+
+- Record references are ordered rows, one record per row with the picture its
+  type shares, its name and the remove and order controls, like image fields;
+  taxonomy terms stay chips.
+- On the Previews page, Open, Share and Delete sit on one line at the same
+  size, Share folded reads as the small button it is, and on a phone a
+  preview's words take their own height instead of a fixed one, with the
+  actions under them. The links under the list sit at its right.
+- The folded Search and sharing section no longer says "Nothing added yet"
+  while its values are automatic.
+
 ## 0.14.2
 
 - Explanations behind an "i" open over the page instead of in it. In browsers

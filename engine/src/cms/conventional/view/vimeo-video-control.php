@@ -30,9 +30,9 @@ final class VimeoVideoControl
         $invalid = $error === null ? '' : ' aria-invalid="true" aria-describedby="' . Html::attribute($id . '-error') . '"';
         $label = Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '');
         $html = $field->hint === null
-            ? '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-label') . '" aria-describedby="' . Html::attribute($id . '-help') . '">'
+            ? '<fieldset class="admin-field admin-picker admin-picker--media admin-picker--rows" id="' . Html::attribute($id) . '" aria-labelledby="' . Html::attribute($id . '-label') . '" aria-describedby="' . Html::attribute($id . '-help') . '">'
                 . FieldHelp::legend($id . '-label', $label, $id . '-help', $field->label, $t) . FieldHelp::text($id . '-help', $t->html('vimeo.help'))
-            : '<fieldset class="admin-field admin-picker admin-picker--media" id="' . Html::attribute($id) . '"><legend>' . $label . '</legend>';
+            : '<fieldset class="admin-field admin-picker admin-picker--media admin-picker--rows" id="' . Html::attribute($id) . '"><legend>' . $label . '</legend>';
         $html .= '<input type="hidden" name="_present_' . Html::attribute($field->id) . '" value="1">';
         foreach ($field->localized ? $profile->localeDefinitions : [null] as $definition) {
             $locale = $definition->id ?? '';
