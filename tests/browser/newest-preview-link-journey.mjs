@@ -9,7 +9,7 @@ export async function verifyNewestPreviewLink(
 	managementHeaders,
 	csrf,
 ) {
-	const { command, evaluate, navigate, ready } = browser;
+	const { command, evaluate, navigate, ready, readyPage } = browser;
 	await navigate("/previews", "[data-share-panel]");
 	await evaluate(`(() => {
 		const form = document.querySelector('[data-share-panel] form');
@@ -50,13 +50,12 @@ export async function verifyNewestPreviewLink(
 	await command("Network.clearBrowserCookies");
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	await command("Page.navigate", { url: link });
-	await ready(
-		"document.querySelector('[data-share-notice]') && document.querySelector('iframe[data-share-renew]')",
-	);
+	await readyPage("document.querySelector('iframe[data-share-renew]')");
 	assert.equal(await evaluate("location.hash"), "");
-	assert.match(
-		await evaluate("document.querySelector('[data-share-notice] p').textContent"),
-		/not public, shared by /,
+	assert.equal(
+		await evaluate("document.querySelector('header')"),
+		null,
+		"nothing sits above the frame",
 	);
 	const frameBefore = await evaluate("document.querySelector('iframe').src");
 	assert.match(

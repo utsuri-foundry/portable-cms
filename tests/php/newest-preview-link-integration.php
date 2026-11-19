@@ -26,7 +26,7 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
     $origin = 'https://cms.example.test';
     $policy = new OriginPolicy($origin);
     $identity = new IdentityService($identities, $clock, $random, str_repeat('s', 32));
-    $http = new NewestPreviewHttp($links, $previews, $policy, static fn(): string => 'Reference Studio', static fn(string $id): string => 'Montse', ['en' => 'English']);
+    $http = new NewestPreviewHttp($links, $previews, $policy);
     $sharing = new \Utsuri\PortableCms\Conventional\Preview\PreviewSharingHttp(new \Utsuri\PortableCms\Conventional\Preview\PreviewShareService(new \Utsuri\PortableCms\Conventional\Preview\MariaDbPreviewShareRepository($pdo), $identities, $clock, $random, str_repeat('s', 32)), $links, $previews, $origin, new DateTimeZone('UTC'));
     $app = new IdentityApplication($identity, $policy, $clock, $random, profile: $profile, previews: $previews, newestPreviews: $http, sharing: $sharing);
     $states = $pdo->query('SELECT id, status, build_kind FROM cms_previews')->fetchAll(PDO::FETCH_ASSOC);
@@ -147,8 +147,7 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
         $viewer = $app->handle(new Request('GET', $base, cookies: $cookie));
         assertTrueValue(str_contains($viewer->body, '/assets/preview-vimeo.js'), 'newest viewers share the sibling player runtime');
         assertTrueValue(str_contains($viewer->headers()['content-security-policy'][0], "frame-src 'self' https://player.vimeo.com"), 'newest shell permits only its page and Vimeo provider');
-        assertTrueValue(str_contains($viewer->body, 'data-share-notice') && str_contains($viewer->body, 'sandbox="allow-scripts"'), 'viewer keeps the bar outside an opaque scripted frame');
-        assertTrueValue(str_contains($viewer->body, 'Preview of Reference Studio, not public, shared by Montse'), 'the bar names the site and who shared the newest link');
+        assertTrueValue(str_contains($viewer->body, 'sandbox="allow-scripts"') && !str_contains($viewer->body, '<header') && !str_contains($viewer->body, 'Montse'), 'the newest viewer is a bounded frame with nothing above it');
         assertSameValue(1, preg_match('#src="(/newest-preview-files/[a-f0-9]{32}/([a-f0-9]{64})/)"#', $viewer->body, $newFile), 'reload mints a new file address');
         $newFiles = $newFile[1];
         assertSameValue($newer, $links->authorizeFiles($link->id, $newFile[2], 'reloaded')?->previewId, 'reload follows the newer preview');

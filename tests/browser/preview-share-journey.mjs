@@ -4,7 +4,7 @@ import { isolatedPreviewBrowser } from "./isolated-preview-browser.mjs";
 import { verifyNewestPreviewLink } from "./newest-preview-link-journey.mjs";
 
 export async function verifySharedPreview(browser, origin, preview) {
-	const { command, evaluate, navigate, ready } = browser;
+	const { command, evaluate, navigate, ready, readyPage } = browser;
 	async function create(note, days = "7") {
 		await navigate(preview, "[data-share-panel]");
 		await evaluate(`(() => {
@@ -76,14 +76,12 @@ export async function verifySharedPreview(browser, origin, preview) {
 	await command("Network.clearBrowserCookies");
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	await command("Page.navigate", { url: link });
-	await ready(
-		"document.querySelector('[data-share-notice]') && document.querySelector('iframe[data-share-renew]')",
-	);
+	await readyPage("document.querySelector('iframe[data-share-renew]')");
 	assert.equal(await evaluate("location.hash"), "");
-	assert.match(
-		await evaluate("document.querySelector('[data-share-notice] p').textContent"),
-		/not public, shared by /,
-		"the bar names the site as not public and says who shared it",
+	assert.equal(
+		await evaluate("document.querySelector('header')"),
+		null,
+		"nothing sits above the frame",
 	);
 	const guest = await command("Network.getCookies", { urls: [origin] });
 	assert.ok(
@@ -104,20 +102,11 @@ export async function verifySharedPreview(browser, origin, preview) {
 	});
 	assert.ok(
 		await evaluate(
-			"document.documentElement.scrollWidth <= innerWidth && document.querySelector('iframe').getBoundingClientRect().width === innerWidth",
+			"document.documentElement.scrollWidth <= innerWidth && (r => r.x === 0 && r.y === 0 && r.width === innerWidth && r.height === innerHeight)(document.querySelector('iframe').getBoundingClientRect())",
 		),
+		"the frame fills the window",
 	);
 	const files = await evaluate("document.querySelector('iframe').src");
-	assert.ok(
-		(await evaluate("document.querySelectorAll('[data-share-language]').length")) >= 2,
-		"the bar offers the preview's languages",
-	);
-	await evaluate("document.querySelector('[data-share-language=\"ca\"]').click()");
-	assert.equal(
-		await evaluate("document.querySelector('iframe').src"),
-		`${files}ca/`,
-		"a language choice moves the frame without leaving the viewer",
-	);
 	assert.equal(
 		await evaluate(`fetch(${JSON.stringify(new URL("renew", link).href)}, {
 			method: 'POST',
@@ -215,7 +204,7 @@ export async function verifySharedPreview(browser, origin, preview) {
 		404,
 	);
 	await command("Page.navigate", { url: retained });
-	await ready("document.querySelector('iframe[data-share-renew]')");
+	await readyPage("document.querySelector('iframe[data-share-renew]')");
 	const retainedFiles = await evaluate("document.querySelector('iframe').src");
 	const deleted = await fetch(`${origin}${preview}/delete`, {
 		method: "POST",

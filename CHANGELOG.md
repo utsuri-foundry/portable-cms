@@ -5,6 +5,13 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.4
+
+- A shared preview, from a fixed link or a newest link, fills the window with
+  nothing above it. The bar that named the site and the sharer and listed the
+  preview's languages is gone; the browser tab keeps the private preview
+  title and visitors change language through the site's own links.
+
 ## 0.14.3
 
 - Record references are ordered rows, one record per row with the picture its

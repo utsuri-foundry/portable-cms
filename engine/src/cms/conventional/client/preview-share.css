@@ -1,11 +1,5 @@
 html, body { margin: 0; width: 100%; height: 100%; }
 body { display: flex; flex-direction: column; font: 14px system-ui, sans-serif; background: white; color: #222; }
-.share-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .25rem 1rem; padding: .375rem 1rem; font-size: .8125rem; line-height: 1.4; color: #4a4536; background: #f6f3eb; border-bottom: 1px solid #d8d2c2; }
-.share-bar p { margin: 0; }
-.share-bar nav { display: flex; flex-wrap: wrap; gap: .75rem; }
-.share-bar a { color: inherit; text-decoration: none; }
-.share-bar a:hover, .share-bar a:focus-visible { text-decoration: underline; }
-.share-bar a[aria-current] { font-weight: 600; }
 [hidden] { display: none; }
 button, input { font: inherit; }
 button { cursor: pointer; }
