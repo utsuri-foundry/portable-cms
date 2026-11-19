@@ -4,7 +4,7 @@ import { isolatedPreviewBrowser } from "./isolated-preview-browser.mjs";
 import { verifyNewestPreviewLink } from "./newest-preview-link-journey.mjs";
 
 export async function verifySharedPreview(browser, origin, preview) {
-	const { command, evaluate, navigate, ready } = browser;
+	const { command, evaluate, navigate, ready, readyPage } = browser;
 	async function create(note, days = "7") {
 		await navigate(preview, "[data-share-panel]");
 		await evaluate(`(() => {
@@ -76,9 +76,7 @@ export async function verifySharedPreview(browser, origin, preview) {
 	await command("Network.clearBrowserCookies");
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	await command("Page.navigate", { url: link });
-	await ready(
-		"document.querySelector('iframe[data-share-renew]')",
-	);
+	await readyPage("document.querySelector('iframe[data-share-renew]')");
 	assert.equal(await evaluate("location.hash"), "");
 	assert.equal(
 		await evaluate("document.querySelector('header')"),
@@ -206,7 +204,7 @@ export async function verifySharedPreview(browser, origin, preview) {
 		404,
 	);
 	await command("Page.navigate", { url: retained });
-	await ready("document.querySelector('iframe[data-share-renew]')");
+	await readyPage("document.querySelector('iframe[data-share-renew]')");
 	const retainedFiles = await evaluate("document.querySelector('iframe').src");
 	const deleted = await fetch(`${origin}${preview}/delete`, {
 		method: "POST",
