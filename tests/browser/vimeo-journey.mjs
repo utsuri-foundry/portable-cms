@@ -86,7 +86,7 @@ const settled =
 const posterVisible =
 	"getComputedStyle(document.querySelector('[data-vimeo-video] > img')).visibility==='visible'";
 const fallbackVisible =
-	"document.querySelector('.cms-vimeo__link').hidden===false && !document.querySelector('[data-vimeo-play]') && !document.querySelector('[data-vimeo-video] iframe')";
+	"document.querySelector('.cms-vimeo__link').hidden===false && document.querySelector('[data-vimeo-play]')?.hidden===true && !document.querySelector('[data-vimeo-video] iframe')";
 async function releasePlayer() {
 	for (let i = 0; i < 100 && held.length === 0; i++)
 		await new Promise((resolve) => setTimeout(resolve, 50));
@@ -301,11 +301,15 @@ try {
 		),
 		true,
 	);
+	// The workspace resized: its player closes and the page offers Play again, not the link.
+	const playAgain =
+		"document.querySelector('[data-vimeo-play]')?.hidden===false && document.querySelector('.cms-vimeo__link').hidden===true && !document.querySelector('[data-vimeo-video] iframe')";
 	await evaluate("dispatchEvent(new Event('resize'))");
-	for (let i = 0; i < 100 && !(await live(fallbackVisible)); i++)
+	for (let i = 0; i < 100 && !(await live(playAgain)); i++)
 		await new Promise((resolve) => setTimeout(resolve, 50));
-	assert.equal(await live(fallbackVisible), true);
+	assert.equal(await live(playAgain), true);
 	assert.equal(await live(posterVisible), true);
+	assert.equal(await evaluate("document.querySelector('[data-live-vimeo]')"), null);
 	await workspace.close();
 	await navigate(path, "#record-publish-form");
 	const silentWorkspace = await openLive();
@@ -403,9 +407,22 @@ try {
 	const exact = await isolatedPreviewBrowser(browser, exactSource);
 	assert.equal(await exact.evaluate("self.origin"), "null");
 	await playInShell(exact);
-	await exact.evaluate("dispatchEvent(new Event('scroll'))");
-	await exact.ready(fallbackVisible);
-	assert.equal(await evaluate("document.querySelector('[data-preview-vimeo]')"), null);
+	// The page scrolls under the player: the player follows and keeps playing.
+	await exact.evaluate("scrollTo(0, 40); dispatchEvent(new Event('scroll'))");
+	await ready(
+		"(()=>{const p=document.querySelector('[data-preview-vimeo]');return !!p && p.style.clipPath!==''})()",
+	);
+	assert.equal(
+		await exact.evaluate(
+			"document.querySelector('[data-vimeo-video]').dataset.vimeoPlaying",
+		),
+		"true",
+		"scrolling keeps the shell player",
+	);
+	assert.equal(
+		await exact.evaluate("document.querySelector('[data-vimeo-play]').hidden"),
+		true,
+	);
 	await exact.evaluate("location.reload()");
 	await playInShell(exact, "silent");
 	await exact.close();
@@ -473,9 +490,19 @@ try {
 	assert.equal(requests.length, beforeShared, "shared preview waits for Play");
 	assert.equal(await shared.evaluate("self.origin"), "null");
 	await playInShell(shared);
+	// The viewer resizing does not end the player: the page reports its own rectangle.
 	await evaluate("dispatchEvent(new Event('resize'))");
-	await shared.ready(fallbackVisible);
-	assert.equal(await shared.evaluate(posterVisible), true);
+	await new Promise((resolve) => setTimeout(resolve, 200));
+	assert.notEqual(
+		await evaluate("document.querySelector('[data-preview-vimeo]')"),
+		null,
+	);
+	assert.equal(
+		await shared.evaluate(
+			"document.querySelector('[data-vimeo-video]').dataset.vimeoPlaying",
+		),
+		"true",
+	);
 	await shared.evaluate("location.reload()");
 	await playInShell(shared, "silent");
 	// Exercise the real popup permission with a local blank destination; record

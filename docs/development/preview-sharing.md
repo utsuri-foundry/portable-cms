@@ -104,8 +104,11 @@ activation, video identifier/hash, title and finite visible poster rectangle.
 It creates only a `player.vimeo.com` sibling iframe, scaled to the page and
 clipped within the preview viewport. The poster stays until Vimeo acknowledges
 readiness, then focus moves to the player. A five-second wait or error restores
-the poster and link. Child/outer scrolling, resizing, page navigation, hiding or
-leaving the viewer closes the overlay rather than leaving it over another place.
+the poster and link. While it plays, the page reports where its poster goes as
+it scrolls or resizes and the player follows, clipped to the viewer; a hidden
+viewer pauses it and a returning one resumes it. A page navigation or a left
+viewer closes it, and the page shows its Play button again rather than the
+link, so playing again stays in place.
 The provider receives only the CMS origin as referrer. Preview file tokens,
 cookies and private paths never reach it. File responses retain their own
 no-referrer policy and sandbox; the viewer alone admits the fixed provider host.

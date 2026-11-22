@@ -15,6 +15,7 @@ function fixture(kind) {
 	window.clearTimeout = (fn) => timers.delete(fn);
 	const states = [];
 	const players = [];
+	const told = [];
 	const document = Object.assign(new EventTarget(), {
 		defaultView: window,
 		hidden: false,
@@ -22,7 +23,7 @@ function fixture(kind) {
 			Object.assign(new EventTarget(), {
 				dataset: {},
 				style: {},
-				contentWindow: { postMessage() {} },
+				contentWindow: { postMessage: (data, origin) => told.push([data, origin]) },
 				remove() {
 					this.removed = true;
 				},
@@ -77,6 +78,7 @@ function fixture(kind) {
 		frame,
 		states,
 		players,
+		told,
 		timers,
 		dispatch,
 		play,
@@ -145,17 +147,8 @@ for (const kind of ["exact", "shared"]) {
 		f.controller.destroy();
 	});
 
-	test(`${kind} shell clips to its page and clears on timeout, errors, scroll, resize, navigation and disposal`, () => {
-		for (const cause of [
-			"timeout",
-			"error",
-			"scroll",
-			"resize",
-			"load",
-			"hidden",
-			"pagehide",
-			"destroy",
-		]) {
+	test(`${kind} shell clips to its page and ends the player on timeout, errors, page scroll, navigation and disposal`, () => {
+		for (const cause of ["timeout", "error", "scroll", "load", "pagehide", "destroy"]) {
 			const f = fixture(kind);
 			f.play({ rect: { x: 0, y: -100, width: 1000, height: 300 } });
 			const [player] = f.players;
@@ -163,23 +156,67 @@ for (const kind of ["exact", "shared"]) {
 			if (cause === "timeout") for (const fn of [...f.timers.values()]) fn();
 			if (cause === "error") player.dispatchEvent(new Event("error"));
 			if (cause === "scroll") f.play({ event: "scroll" });
-			if (cause === "resize") f.window.dispatchEvent(new Event("resize"));
 			if (cause === "load") f.frame.dispatchEvent(new Event("load"));
-			if (cause === "hidden") {
-				f.document.hidden = true;
-				f.document.dispatchEvent(new Event("visibilitychange"));
-			}
 			if (cause === "pagehide") f.window.dispatchEvent(new Event("pagehide"));
 			if (cause === "destroy") f.controller.destroy();
 			assert.equal(player.removed, true, cause);
+			const expected = cause === "timeout" || cause === "error" ? "failed" : "closed";
 			assert.ok(
-				f.states.some(([data]) => data.state === "failed"),
-				cause,
+				f.states.some(([data]) => data.state === expected),
+				`${cause} reports ${expected}`,
 			);
 			assert.equal(f.timers.size, 0);
 			f.ready();
 			assert.equal(player.focused, undefined);
 			f.controller.destroy();
 		}
+	});
+
+	test(`${kind} shell follows the poster as the page reports its moves, and pauses while hidden`, () => {
+		const f = fixture(kind);
+		f.play();
+		const [player] = f.players;
+		f.ready();
+		// The page scrolled: the poster now starts above the frame and the player follows, clipped.
+		f.play({ event: "vimeo-move", rect: { x: 100, y: -50, width: 600, height: 300 } });
+		assert.deepEqual(
+			[player.style.left, player.style.top, player.style.clipPath],
+			["70px", "15px", "inset(25px 0px 0px 0px)"],
+		);
+		assert.equal(player.removed, undefined, "a move keeps the player");
+		// Moves of another request, of a bad rectangle or from a stranger are ignored.
+		for (const [patch, event] of [
+			[
+				{
+					event: "vimeo-move",
+					request: "2",
+					rect: { x: 0, y: 0, width: 600, height: 300 },
+				},
+				{},
+			],
+			[{ event: "vimeo-move", rect: { x: 0, y: 0, width: 0, height: 300 } }, {}],
+			[
+				{ event: "vimeo-move", rect: { x: 0, y: 0, width: 600, height: 300 } },
+				{ origin: "https://evil.test" },
+			],
+		])
+			f.play(patch, event);
+		assert.equal(player.style.left, "70px");
+		// The shell's own window resizing does not end the player; the page reports its rectangle.
+		f.window.dispatchEvent(new Event("resize"));
+		assert.equal(player.removed, undefined);
+		// A hidden viewer pauses the player in place; a returning one resumes it.
+		f.document.hidden = true;
+		f.document.dispatchEvent(new Event("visibilitychange"));
+		assert.equal(player.removed, undefined);
+		assert.deepEqual(f.told.at(-1), [{ method: "pause" }, "https://player.vimeo.com"]);
+		f.document.hidden = false;
+		f.document.dispatchEvent(new Event("visibilitychange"));
+		assert.deepEqual(f.told.at(-1), [{ method: "play" }, "https://player.vimeo.com"]);
+		assert.ok(
+			!f.states.some(([data]) => data.state === "failed" || data.state === "closed"),
+		);
+		f.controller.destroy();
+		assert.equal(player.removed, true);
 	});
 }

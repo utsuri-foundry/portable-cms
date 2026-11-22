@@ -87,19 +87,43 @@ export function watchVimeo(frame, window, ready, failed) {
 	return cancel;
 }
 
-/** Keep the child poster/link in sync with the trusted sibling player. */
-function workspaceVimeo(root, window, id, hash, ready, failed, shell = false) {
+/**
+ * Keep the child poster/link in sync with the trusted sibling player. In a shell the player
+ * sits over this page and follows the poster as the page scrolls or resizes, so playback
+ * goes on while the visitor reads around it; the parent says when it closed the player
+ * (a hidden or left viewer), and the Play button comes back, or when it failed.
+ */
+function workspaceVimeo(root, window, id, hash, ready, closed, failed, shell = false) {
 	const request = String(++workspaceRequest);
 	const origin = new URL(root.ownerDocument.URL).origin;
 	const send = (event, fields = {}) =>
 		window.parent.postMessage({ type: "cms-live", event, request, ...fields }, origin);
-	const fail = () => {
+	const box = () => {
+		const rect = root.getBoundingClientRect();
+		return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+	};
+	let pending = false;
+	const move = () => {
+		if (pending) return;
+		pending = true;
+		const frame = () => {
+			pending = false;
+			send("vimeo-move", { rect: box() });
+		};
+		if (typeof window.requestAnimationFrame === "function")
+			window.requestAnimationFrame(frame);
+		else frame();
+	};
+	const letGo = () => {
 		window.clearTimeout(timeout);
 		window.removeEventListener("message", message);
 		if (shell) {
-			window.removeEventListener("scroll", fail, true);
-			window.removeEventListener("resize", fail);
+			window.removeEventListener("scroll", move, true);
+			window.removeEventListener("resize", move);
 		}
+	};
+	const fail = () => {
+		letGo();
 		send("vimeo-cancel");
 		failed();
 	};
@@ -114,6 +138,10 @@ function workspaceVimeo(root, window, id, hash, ready, failed, shell = false) {
 		)
 			return;
 		if (data.state === "failed") fail();
+		if (data.state === "closed") {
+			letGo();
+			closed();
+		}
 		if (data.state === "ready") {
 			window.clearTimeout(timeout);
 			ready();
@@ -122,16 +150,10 @@ function workspaceVimeo(root, window, id, hash, ready, failed, shell = false) {
 	const timeout = window.setTimeout(fail, LOAD_WAIT);
 	window.addEventListener("message", message);
 	if (shell) {
-		window.addEventListener("scroll", fail, true);
-		window.addEventListener("resize", fail);
+		window.addEventListener("scroll", move, true);
+		window.addEventListener("resize", move);
 	}
-	const rect = root.getBoundingClientRect();
-	send("vimeo-play", {
-		id,
-		hash,
-		title: root.dataset.vimeoTitle,
-		rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
-	});
+	send("vimeo-play", { id, hash, title: root.dataset.vimeoTitle, rect: box() });
 }
 
 /** No provider SDK, storage, preconnect or iframe exists before the visitor's choice. */
@@ -155,9 +177,15 @@ export function mountVimeoPlayer(root) {
 	button.addEventListener("click", () => {
 		if (started) return;
 		started = true;
-		button.remove();
+		// The button hides while the player runs and returns when a sibling player closes.
+		button.hidden = true;
 		const ready = () => {
 			root.dataset.vimeoPlaying = "true";
+		};
+		const closed = () => {
+			delete root.dataset.vimeoPlaying;
+			started = false;
+			button.hidden = false;
 		};
 		const failed = () => {
 			delete root.dataset.vimeoPlaying;
@@ -173,7 +201,7 @@ export function mountVimeoPlayer(root) {
 			(document.querySelector?.("script[data-vimeo-workspace]") &&
 				window.parent !== window)
 		) {
-			workspaceVimeo(root, window, id, hash, ready, failed, support.player);
+			workspaceVimeo(root, window, id, hash, ready, closed, failed, support.player);
 			return;
 		}
 		const frame = document.createElement("iframe");
