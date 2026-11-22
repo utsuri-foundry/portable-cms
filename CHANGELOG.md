@@ -5,6 +5,15 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.5
+
+- In an exact or shared preview, the Vimeo player keeps playing while the page
+  scrolls or resizes: the page reports where its poster goes and the player
+  follows, clipped to the viewer. A hidden viewer pauses it and a returning one
+  resumes it. When the viewer leaves or the page moves on, the Play button
+  comes back in place of the link to Vimeo, which now appears only when the
+  provider does not answer.
+
 ## 0.14.4
 
 - A shared preview, from a fixed link or a newest link, fills the window with

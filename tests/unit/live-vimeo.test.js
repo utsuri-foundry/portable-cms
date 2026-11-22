@@ -158,7 +158,7 @@ test("live Vimeo requires the visible opaque frame, a current gesture, bounded i
 	});
 	f.send({ event: "scroll" });
 	assert.equal(player.removed, true);
-	assert.equal(f.states.at(-1)[0].state, "failed");
+	assert.equal(f.states.at(-1)[0].state, "closed");
 	f.send({ hash: "" });
 	assert.equal(
 		f.players.at(-1).src,
@@ -182,7 +182,7 @@ test("live player timeout, error and correlated cancellation remove overlays and
 		if (cause === "cancel") f.send({ event: "vimeo-cancel" });
 		if (cause === "destroy") f.controller.destroy();
 		assert.equal(player.removed, true);
-		assert.equal(f.states.at(-1)[0].state, "failed");
+		assert.equal(f.states.at(-1)[0].state, cause === "destroy" ? "closed" : "failed");
 		assert.equal(f.timers.size, 0);
 		f.loaded();
 		assert.equal(player.focused, undefined);

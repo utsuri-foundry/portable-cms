@@ -103,7 +103,7 @@ test("Vimeo keeps its poster and focus until the exact player acknowledges readi
 	assert.equal(frame.focused, undefined);
 	assert.equal(frame.style.visibility, "hidden");
 	assert.equal(f.root.dataset.vimeoPlaying, undefined);
-	assert.equal(f.button.removed, true);
+	assert.equal(f.button.hidden, true);
 	frame.dispatchEvent(new Event("load"));
 	assert.deepEqual(f.messages, [[{ method: "ping" }, "https://player.vimeo.com"]]);
 	for (const [data, patch] of [
@@ -147,7 +147,7 @@ test("Vimeo timeout, iframe error and provider error restore the link without re
 		assert.equal(f.link.focused, true);
 		assert.equal(frame.removed, true);
 		assert.equal(f.root.dataset.vimeoPlaying, undefined);
-		assert.equal(f.button.removed, true);
+		assert.equal(f.button.hidden, true);
 		assert.equal(f.timers.size, 0);
 		f.message({ event: "ready" });
 		frame.dispatchEvent(new Event("load"));
@@ -242,7 +242,7 @@ test("workspace messages require the parent, origin and request; close and timeo
 		const [[request, target]] = f.messages;
 		assert.equal(target, "https://cms.test");
 		assert.equal(request.event, "vimeo-play");
-		assert.equal(f.button.removed, true);
+		assert.equal(f.button.hidden, true);
 		const state = {
 			type: "cms-live",
 			event: "vimeo-state",
@@ -274,8 +274,8 @@ test("workspace messages require the parent, origin and request; close and timeo
 	}
 });
 
-test("opaque pages delegate only after trusted shell support, and scrolling cancels the sibling player", () => {
-	for (const cancel of ["scroll", "resize", "timeout"]) {
+test("opaque pages delegate only after trusted shell support; scrolling moves the sibling player, a closed one brings Play back", () => {
+	for (const cause of ["scroll", "resize", "closed", "timeout"]) {
 		const f = fixture();
 		f.window.origin = "null";
 		mountVimeoPlayer(f.root);
@@ -288,22 +288,42 @@ test("opaque pages delegate only after trusted shell support, and scrolling canc
 		assert.equal(f.frames.length, 0);
 		const request = f.messages.at(-1)[0];
 		assert.equal(request.event, "vimeo-play");
-		if (cancel === "timeout") f.expire();
-		else {
+		const state = (state) =>
 			f.message(
-				{
-					type: "cms-live",
-					event: "vimeo-state",
-					request: request.request,
-					state: "ready",
-				},
+				{ type: "cms-live", event: "vimeo-state", request: request.request, state },
 				{ origin: "https://cms.test", source: f.window.parent },
 			);
-			assert.equal(f.root.dataset.vimeoPlaying, "true");
-			f.window.dispatchEvent(new Event(cancel));
+		if (cause === "timeout") {
+			f.expire();
+			assert.equal(f.link.hidden, false);
+			assert.equal(f.messages.at(-1)[0].event, "vimeo-cancel");
+			continue;
 		}
-		assert.equal(f.link.hidden, false);
-		assert.equal(f.root.dataset.vimeoPlaying, undefined);
-		assert.equal(f.messages.at(-1)[0].event, "vimeo-cancel");
+		state("ready");
+		assert.equal(f.root.dataset.vimeoPlaying, "true");
+		if (cause === "closed") {
+			state("closed");
+			assert.equal(f.root.dataset.vimeoPlaying, undefined);
+			assert.equal(
+				f.button.hidden,
+				false,
+				"a closed player brings the Play button back",
+			);
+			assert.equal(f.link.hidden, true);
+			f.click();
+			assert.equal(
+				f.messages.at(-1)[0].event,
+				"vimeo-play",
+				"Play asks for a new player",
+			);
+			continue;
+		}
+		f.window.dispatchEvent(new Event(cause));
+		const moved = f.messages.at(-1)[0];
+		assert.equal(moved.event, "vimeo-move", `${cause} moves the player`);
+		assert.deepEqual(moved.rect, { x: 0, y: 20, width: 960, height: 540 });
+		assert.equal(moved.request, request.request);
+		assert.equal(f.root.dataset.vimeoPlaying, "true", "the player keeps playing");
+		assert.equal(f.link.hidden, true);
 	}
 });

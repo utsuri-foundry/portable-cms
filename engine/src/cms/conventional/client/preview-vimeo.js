@@ -24,8 +24,10 @@ export function mountPreviewVimeo(frame) {
 		player.clear();
 		announce();
 	};
+	// A hidden viewer pauses the player where it is; a returning one resumes it.
 	const visibility = () => {
-		if (document.hidden) player.clear();
+		if (document.hidden) player.pause();
+		else player.resume();
 	};
 	const pagehide = () => player.clear();
 	frame.addEventListener("load", load);
