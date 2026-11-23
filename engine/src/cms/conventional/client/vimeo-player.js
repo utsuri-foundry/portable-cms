@@ -102,25 +102,42 @@ function workspaceVimeo(root, window, id, hash, ready, closed, failed, shell = f
 		const rect = root.getBoundingClientRect();
 		return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
 	};
+	// A page that swaps its content in place, as a profile's own navigation may, removes the
+	// poster without leaving the document: the player outside the page must go with it.
+	const gone = () => root.isConnected === false;
 	let pending = false;
 	const move = () => {
+		if (gone()) return leave();
 		if (pending) return;
 		pending = true;
 		const frame = () => {
 			pending = false;
+			if (gone()) return leave();
 			send("vimeo-move", { rect: box() });
 		};
 		if (typeof window.requestAnimationFrame === "function")
 			window.requestAnimationFrame(frame);
 		else frame();
 	};
+	const MutationObserver = window.MutationObserver;
+	const watch =
+		typeof MutationObserver === "function"
+			? new MutationObserver(() => {
+					if (gone()) leave();
+				})
+			: null;
 	const letGo = () => {
 		window.clearTimeout(timeout);
 		window.removeEventListener("message", message);
+		watch?.disconnect();
 		if (shell) {
-			window.removeEventListener("scroll", move, true);
+			window.removeEventListener("scroll", move, { capture: true });
 			window.removeEventListener("resize", move);
 		}
+	};
+	const leave = () => {
+		letGo();
+		send("vimeo-close");
 	};
 	const fail = () => {
 		letGo();
@@ -150,9 +167,11 @@ function workspaceVimeo(root, window, id, hash, ready, closed, failed, shell = f
 	const timeout = window.setTimeout(fail, LOAD_WAIT);
 	window.addEventListener("message", message);
 	if (shell) {
-		window.addEventListener("scroll", move, true);
+		window.addEventListener("scroll", move, { capture: true });
 		window.addEventListener("resize", move);
 	}
+	const body = root.ownerDocument.body;
+	if (watch && body) watch.observe(body, { childList: true, subtree: true });
 	send("vimeo-play", { id, hash, title: root.dataset.vimeoTitle, rect: box() });
 }
 

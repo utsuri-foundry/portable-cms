@@ -172,6 +172,14 @@ function verifyNewestPreviewLinks(PDO $pdo, PreviewService $previews, string $fi
         assertSameValue(2, $uses(), 'renewal does not resolve or audit the newer preview');
         $clock->current = $clock->current->modify('+1 hour');
         assertSameValue(200, $app->handle(new Request('GET', $firstFiles))->status, 'renewed address survives its original deadline');
+        // A viewer left open past its lease keeps asking for files: those answers stay 404 and do not
+        // count against its visitor, who can still open a link from the same address.
+        $clock->current = $clock->current->modify('+3 hours');
+        for ($stale = 0; $stale < 12; ++$stale) {
+            assertSameValue(404, $app->handle(new Request('GET', $firstFiles . 'index.html', remoteAddress: 'newest-stale-viewer'))->status, 'a file request from a stale viewer stays unavailable');
+        }
+        assertTrueValue($links->authorize($other['link']->id, $other['token'], 'newest-stale-viewer') !== null, 'expired browser addresses never lock their visitor out');
+        $clock->current = $clock->current->modify('-3 hours');
         assertSameValue($first, $links->authorizeFiles($link->id, $firstFileToken, 'still-pinned')?->previewId, 'renewal stays on the original preview');
         $clock->current = $clock->current->modify('+1 hour');
         assertSameValue(404, $app->handle(new Request('GET', $firstFiles, remoteAddress: 'idle-file-expiry'))->status, 'idle file lease closes at its exact deadline');

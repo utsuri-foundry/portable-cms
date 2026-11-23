@@ -327,3 +327,33 @@ test("opaque pages delegate only after trusted shell support; scrolling moves th
 		assert.equal(f.link.hidden, true);
 	}
 });
+
+test("a shell player leaves when the page swaps its poster away in place", () => {
+	const f = fixture();
+	f.window.origin = "null";
+	mountVimeoPlayer(f.root);
+	f.message(
+		{ type: "cms-vimeo", event: "player-support" },
+		{ origin: "https://cms.test", source: f.window.parent },
+	);
+	f.click();
+	const request = f.messages.at(-1)[0];
+	f.message(
+		{
+			type: "cms-live",
+			event: "vimeo-state",
+			request: request.request,
+			state: "ready",
+		},
+		{ origin: "https://cms.test", source: f.window.parent },
+	);
+	// The profile's navigation replaced the page's content: the poster is no longer in it.
+	f.root.isConnected = false;
+	f.window.dispatchEvent(new Event("scroll"));
+	const closing = f.messages.at(-1)[0];
+	assert.equal(closing.event, "vimeo-close");
+	assert.equal(closing.request, request.request);
+	const count = f.messages.length;
+	f.window.dispatchEvent(new Event("scroll"));
+	assert.equal(f.messages.length, count, "a player that left reports nothing more");
+});

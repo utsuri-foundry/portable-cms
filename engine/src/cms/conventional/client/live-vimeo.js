@@ -10,8 +10,7 @@ export function mountLiveVimeo(root, activeFrame, { shell = false } = {}) {
 	let cancel = null;
 	let notify = null;
 	let request = null;
-	let paused = false;
-	// A player leaves with its state: "closed" when the viewer hid, left or moved on, so
+	// A player leaves with its state: "closed" when the viewer left or moved on, so
 	// the page brings its Play button back; "failed" when the provider did not answer.
 	const clear = (state = "closed") => {
 		cancel?.();
@@ -21,7 +20,6 @@ export function mountLiveVimeo(root, activeFrame, { shell = false } = {}) {
 		request = null;
 		player?.remove();
 		player = null;
-		paused = false;
 	};
 	const close = () => clear("closed");
 	const validRect = (rect) =>
@@ -54,7 +52,6 @@ export function mountLiveVimeo(root, activeFrame, { shell = false } = {}) {
 		player.style.top = `${box.top + rect.y * scale}px`;
 		player.style.clipPath = `inset(${Math.max(0, -rect.y * scale)}px ${Math.max(0, (rect.x + rect.width) * scale - box.width)}px ${Math.max(0, (rect.y + rect.height) * scale - box.height)}px ${Math.max(0, -rect.x * scale)}px)`;
 	};
-	const tell = (method) => player?.contentWindow?.postMessage({ method }, VIMEO_ORIGIN);
 	const message = (event) => {
 		const frame = activeFrame();
 		const data = event.data;
@@ -66,6 +63,8 @@ export function mountLiveVimeo(root, activeFrame, { shell = false } = {}) {
 			return;
 		if (data.event === "scroll") close();
 		if (data.event === "vimeo-cancel" && data.request === request) clear("failed");
+		// The page took its poster away, by swapping its content in place: the player leaves too.
+		if (data.event === "vimeo-close" && data.request === request) close();
 		// The page reports where its poster went; the player follows while it plays.
 		if (data.event === "vimeo-move") {
 			if (player && data.request === request && validRect(data.rect))
@@ -147,27 +146,16 @@ export function mountLiveVimeo(root, activeFrame, { shell = false } = {}) {
 	// elsewhere any movement of the workspace ends the player.
 	if (!shell) {
 		window.addEventListener("resize", close);
-		window.addEventListener("scroll", close, true);
+		window.addEventListener("scroll", close, { capture: true });
 	}
 	return {
 		clear,
-		// A hidden viewer pauses the player and a returning one resumes it, in place.
-		pause() {
-			if (player === null || paused) return;
-			paused = true;
-			tell("pause");
-		},
-		resume() {
-			if (player === null || !paused) return;
-			paused = false;
-			tell("play");
-		},
 		destroy() {
 			close();
 			window.removeEventListener("message", message);
 			if (!shell) {
 				window.removeEventListener("resize", close);
-				window.removeEventListener("scroll", close, true);
+				window.removeEventListener("scroll", close, { capture: true });
 			}
 		},
 	};

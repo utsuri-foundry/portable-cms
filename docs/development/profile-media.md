@@ -155,7 +155,7 @@ policy. Do not add arbitrary frame origins or load the provider SDK.
 Exact and shared previews use an engine-controlled player outside the opaque page
 frame. The shell validates the source window, user activation, video identity and
 visible poster rectangle. It sends only the CMS origin to Vimeo, follows the
-poster as the page scrolls or resizes, pauses while the viewer is hidden, and
+poster as the page scrolls or resizes, keeps it playing in a hidden tab, and
 closes the player on navigation or failure. Fallback clicks may open
 only the validated Vimeo page, without an opener or referrer. Other popups remain
 blocked. See [preview sharing](preview-sharing.md) for the access boundary.

@@ -66,7 +66,12 @@ if (frame instanceof HTMLIFrameElement) {
 					body: new URLSearchParams({ token: match[1] }),
 					signal: pending.signal,
 				});
-				if (response.status === 404) stop();
+				// The lease is gone, after the tab slept past it or the link changed: the page
+				// loads again, which mints a fresh address, or shows the link as unavailable.
+				if (response.status === 404) {
+					stop();
+					window.location.reload();
+				}
 			} catch {
 				// A temporary connection failure keeps the last bounded lease.
 			} finally {

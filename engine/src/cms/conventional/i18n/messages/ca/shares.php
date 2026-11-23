@@ -34,4 +34,5 @@ return [
     'share.open' => 'Obre la previsualització',
     'share.landing_help' => 'Obre l’enllaç complet que has rebut. Sense JavaScript, enganxa la part que hi ha després de # en aquest camp.',
     'share.unavailable' => 'Aquest enllaç de previsualització no està disponible.',
+    'share.rate_limited' => 'Massa intents des de la vostra connexió. Torneu-ho a provar d’aquí a uns minuts.',
 ];

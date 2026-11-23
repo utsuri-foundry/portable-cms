@@ -72,9 +72,12 @@ Every viewer request checks the secret hash in constant time, ready status,
 expiry and revocation. Browser file requests instead check their separate
 short-lived capability and the same parent state. Preview deletion cascades to
 its links. No token can select a different preview, a CMS page, an undeclared
-file or a write operation. Failed authorization is limited to ten attempts per
-remote client address in five minutes across all link IDs, with a five-minute
-block and a 429 response. The durable throttle uses a separate keyed namespace
+file or a write operation. Failed link secrets, by exchange, cookie or bearer,
+are limited to ten attempts per remote client address in five minutes across
+all link IDs, with a five-minute block and a 429 response that says so. Failed
+requests on a browser file address do not count: those addresses are minted
+by the server and short-lived, so a failure there is a viewer left open past
+its lease, which must not lock its visitor out of every link. The durable throttle uses a separate keyed namespace
 from login; forwarded headers do not replace the observed remote address.
 
 ### The viewer
@@ -105,8 +108,10 @@ It creates only a `player.vimeo.com` sibling iframe, scaled to the page and
 clipped within the preview viewport. The poster stays until Vimeo acknowledges
 readiness, then focus moves to the player. A five-second wait or error restores
 the poster and link. While it plays, the page reports where its poster goes as
-it scrolls or resizes and the player follows, clipped to the viewer; a hidden
-viewer pauses it and a returning one resumes it. A page navigation or a left
+it scrolls or resizes and the player follows, clipped to the viewer, and it
+keeps playing in a hidden tab, as on the published site. When the page swaps its
+content in place and its poster leaves the document, the page says so and the
+player goes with it. A page navigation or a left
 viewer closes it, and the page shows its Play button again rather than the
 link, so playing again stays in place.
 The provider receives only the CMS origin as referrer. Preview file tokens,
@@ -125,7 +130,9 @@ Each viewer gets an independent 256-bit token lasting at most two hours and neve
 past the link expiry. The shell renews that same address every 15 visible minutes
 and when returning to a visible tab, using a same-origin POST with the link's
 HttpOnly cookie. Renewal never reloads the frame or loses its current page. An
-expired token cannot be revived; reopen the link to obtain a fresh address.
+expired token cannot be revived: when renewal finds the address gone, after a
+tab slept past its lease or the link changed, the viewer loads again, which
+mints a fresh address or shows the link as unavailable.
 Every file request rechecks the parent link and ready preview, so stopping or
 deletion closes issued addresses immediately. No per-file audit is written;
 viewing and renewal use the existing secret-free audit. At most 50 unexpired
