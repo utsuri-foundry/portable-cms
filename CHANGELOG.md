@@ -5,6 +5,14 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.7
+
+- A website whose pages embed Vimeo's player can be published. Its build freezes
+  the player's frame permission in the artifact and in its Apache rules, but the
+  release check and the public `.htaccess` regenerated the rules without it, so
+  every release of such a site was refused with `artifact_inventory_mismatch`.
+  They now regenerate the rules with the permission the build froze.
+
 ## 0.14.6
 
 - A review link left open in a background tab past its two-hour lease no longer
