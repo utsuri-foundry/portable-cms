@@ -30,6 +30,9 @@ final readonly class ReleaseArtifact
 
     private ?string $speculationRulesPath;
 
+    /** The site embeds Vimeo's player, so its public rules let that one origin be framed. */
+    private bool $vimeo;
+
     /** @var array<string, mixed> */
     public array $document;
 
@@ -44,6 +47,12 @@ final readonly class ReleaseArtifact
             || ($value['delivery']['target'] ?? null) !== 'apache24' || ($value['delivery']['path'] ?? null) !== 'delivery/apache24.conf') {
             throw new PublicationFailure('artifact_not_releasable');
         }
+        // A release carries the frame permission its build froze: none, or Vimeo's player alone.
+        $frameSources = $value['frameSources'] ?? [];
+        if ($frameSources !== [] && $frameSources !== [\Utsuri\PortableCms\Conventional\Compiler\VimeoPresentation::ORIGIN]) {
+            throw new PublicationFailure('artifact_not_releasable');
+        }
+        $this->vimeo = $frameSources !== [];
         $this->checksum = hash('sha256', $json);
         $this->document = $value;
         $this->files = $value['files'];
@@ -116,7 +125,7 @@ final readonly class ReleaseArtifact
 
     public function rules(): string
     {
-        return ApachePublicDelivery::configuration($this->routes->context ?? throw new PublicationFailure('public_context_missing'), $this->redirects, $this->publicPaths, $this->speculationRulesPath);
+        return ApachePublicDelivery::configuration($this->routes->context ?? throw new PublicationFailure('public_context_missing'), $this->redirects, $this->publicPaths, $this->speculationRulesPath, $this->vimeo);
     }
 
     public function holding(): bool

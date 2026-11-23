@@ -150,3 +150,28 @@ $tests['publication target refuses unsafe roots locks foreign paths and forged r
         rmdir($state);
     }
 };
+
+$tests['a release of a site embedding Vimeo keeps the player frame in its public rules'] = static function (): void {
+    $fixture = publicationFixture();
+    $rules = str_replace("form-action 'self'", "form-action 'self'; frame-src https://player.vimeo.com", $fixture->rules());
+    assertTrueValue(str_contains($rules, 'frame-src https://player.vimeo.com'), 'the fixture rules carry a Content-Security-Policy to extend');
+    $changed = $fixture->document;
+    $changed['frameSources'] = ['https://player.vimeo.com'];
+    $changed['delivery']['sha256'] = hash('sha256', $rules);
+    foreach ($changed['files'] as $index => $file) {
+        if ($file['path'] === 'delivery/apache24.conf') {
+            $changed['files'][$index] = [...$file, 'byteSize' => strlen($rules), 'sha256' => hash('sha256', $rules)];
+        }
+    }
+    $artifact = publicationFixture($changed);
+    assertSameValue($rules, $artifact->rules(), 'verification and the public .htaccess regenerate the frozen frame permission');
+    assertSameValue($fixture->rules(), publicationFixture()->rules(), 'a site without Vimeo keeps rules without a frame source');
+    $without = $changed;
+    unset($without['frameSources']);
+    try {
+        publicationFixture($without);
+        throw new RuntimeException('Rules with an undeclared frame source accepted');
+    } catch (PublicationFailure $error) {
+        assertSameValue('artifact_inventory_mismatch', $error->codeName, 'a frame source the build did not freeze cannot be published');
+    }
+};
