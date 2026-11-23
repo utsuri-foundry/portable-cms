@@ -5,6 +5,18 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.14.6
+
+- A review link left open in a background tab past its two-hour lease no longer
+  locks its visitor out: failed requests on a viewer's file address do not
+  count toward the throttle any more, and a viewer whose address is gone
+  loads itself again for a fresh one. The throttle's own answer now says
+  there were too many attempts instead of calling the link unavailable.
+- In a review link the Vimeo player keeps playing in a hidden tab, as on the
+  published site, and it leaves with its poster when the site swaps its page
+  in place, as a profile's own navigation may, instead of staying over the
+  next page.
+
 ## 0.14.5
 
 - In an exact or shared preview, the Vimeo player keeps playing while the page

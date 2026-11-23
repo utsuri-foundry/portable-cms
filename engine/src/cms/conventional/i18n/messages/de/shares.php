@@ -34,4 +34,5 @@ return [
     'share.open' => 'Vorschau öffnen',
     'share.landing_help' => 'Öffnen Sie den vollständigen Link, den Sie erhalten haben. Ohne JavaScript fügen Sie den Teil nach # in dieses Feld ein.',
     'share.unavailable' => 'Dieser Vorschaulink ist nicht verfügbar.',
+    'share.rate_limited' => 'Zu viele Versuche von Ihrer Verbindung. Versuchen Sie es in einigen Minuten erneut.',
 ];

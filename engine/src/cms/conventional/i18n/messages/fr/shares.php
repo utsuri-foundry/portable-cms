@@ -34,4 +34,5 @@ return [
     'share.open' => 'Ouvrir l’aperçu',
     'share.landing_help' => 'Ouvrez le lien complet que vous avez reçu. Sans JavaScript, collez la partie qui suit # dans ce champ.',
     'share.unavailable' => 'Ce lien d’aperçu est indisponible.',
+    'share.rate_limited' => 'Trop de tentatives depuis votre connexion. Réessayez dans quelques minutes.',
 ];

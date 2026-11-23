@@ -34,8 +34,14 @@ function viewer(fetch, kind = "shared") {
 	const windowListeners = new Map();
 	let tick;
 	let cleared = 0;
+	let reloads = 0;
 	const window = {
-		location: { hash: "" },
+		location: {
+			hash: "",
+			reload: () => {
+				reloads++;
+			},
+		},
 		navigator: { userActivation: { isActive: true } },
 		open: (...args) => tabs.push(args),
 		addEventListener: (name, fn) => windowListeners.set(name, fn),
@@ -87,6 +93,7 @@ function viewer(fetch, kind = "shared") {
 		hide: (persisted = false) => windowListeners.get("pagehide")({ persisted }),
 		show: () => windowListeners.get("pageshow")(),
 		cleared: () => cleared,
+		reloads: () => reloads,
 	};
 }
 
@@ -124,7 +131,7 @@ test("share viewer renews only while visible, keeps its page and releases reques
 	assert.equal(requests.length, 1, "disposed viewer cannot renew");
 });
 
-test("share viewer retries transient failures and stops at a revoked or expired address", async () => {
+test("share viewer retries transient failures and reloads once its address is gone", async () => {
 	let calls = 0;
 	const page = viewer(async () => {
 		if (++calls === 1) throw new Error("fixture connection interruption");
@@ -132,8 +139,14 @@ test("share viewer retries transient failures and stops at a revoked or expired 
 	});
 	await page.tick();
 	assert.equal(page.cleared(), 0);
+	assert.equal(page.reloads(), 0, "a connection failure keeps the page");
 	await page.tick();
 	assert.equal(page.cleared(), 1);
+	assert.equal(
+		page.reloads(),
+		1,
+		"a lost lease loads the viewer again for a fresh address",
+	);
 	await page.tick();
 	assert.equal(calls, 2);
 });

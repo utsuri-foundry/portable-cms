@@ -202,7 +202,10 @@ final class PreviewShareService
             $share = $files ? $this->repository->files($id, hash('sha256', $token), $now)
                 : $this->repository->use($id, hash('sha256', $token), $this->id(), $now);
         }
-        if ($share === null) {
+        // A browser file address is minted by the server, unguessable and short-lived: a failure
+        // there is a viewer left open past its lease, not a guess, and must not lock its visitor
+        // out of every review link. The link secret itself keeps its budget.
+        if ($share === null && !$files) {
             $this->abuse->recordLoginFailure([$key], $now, 300, 10, 300);
         }
         return $share;

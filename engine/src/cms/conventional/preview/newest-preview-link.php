@@ -158,7 +158,9 @@ final class NewestPreviewLinkService
                 : ($files ? $this->repository->files($id, hash('sha256', $token), $now)
                     : $this->repository->resolve($id, hash('sha256', $token), $pinnedPreview, $this->id(), $now));
         }
-        if ($resolution === null) {
+        // Browser file addresses are server-minted, unguessable and short-lived; a failure there is
+        // a viewer left open past its lease and never counts toward the visitor's budget.
+        if ($resolution === null && !$files) {
             $this->abuse->recordLoginFailure([$key], $now, 300, 10, 300);
         }
         return $resolution;

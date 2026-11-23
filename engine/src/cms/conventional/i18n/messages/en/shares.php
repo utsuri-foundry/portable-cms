@@ -35,4 +35,5 @@ return [
     'share.open' => 'Open the preview',
     'share.landing_help' => 'Open the complete link you received. Without JavaScript, paste the part after # into this field.',
     'share.unavailable' => 'This preview link is unavailable.',
+    'share.rate_limited' => 'Too many attempts from your connection. Try again in a few minutes.',
 ];

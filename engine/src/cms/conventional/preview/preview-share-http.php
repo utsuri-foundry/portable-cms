@@ -30,7 +30,7 @@ final class PreviewShareHttp
         } catch (ShareUnavailable) {
             return new Response(404, $t->html('share.unavailable'));
         } catch (ShareRateLimited) {
-            return (new Response(429, $t->html('share.unavailable')))->withHeader('retry-after', '300');
+            return (new Response(429, $t->html('share.rate_limited')))->withHeader('retry-after', '300');
         }
     }
 

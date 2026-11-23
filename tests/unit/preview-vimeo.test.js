@@ -172,7 +172,21 @@ for (const kind of ["exact", "shared"]) {
 		}
 	});
 
-	test(`${kind} shell follows the poster as the page reports its moves, and pauses while hidden`, () => {
+	test(`${kind} shell removes the player when the page reports its poster gone`, () => {
+		const f = fixture(kind);
+		f.play();
+		const [player] = f.players;
+		f.ready();
+		f.play({ event: "vimeo-close", request: "2" });
+		assert.equal(player.removed, undefined, "another request cannot close it");
+		f.play({ event: "vimeo-close", request: "2" }, { origin: "https://evil.test" });
+		f.play({ event: "vimeo-close" });
+		assert.equal(player.removed, true);
+		assert.equal(f.states.at(-1)[0].state, "closed");
+		f.controller.destroy();
+	});
+
+	test(`${kind} shell follows the poster as the page reports its moves and keeps playing while hidden`, () => {
 		const f = fixture(kind);
 		f.play();
 		const [player] = f.players;
@@ -205,14 +219,14 @@ for (const kind of ["exact", "shared"]) {
 		// The shell's own window resizing does not end the player; the page reports its rectangle.
 		f.window.dispatchEvent(new Event("resize"));
 		assert.equal(player.removed, undefined);
-		// A hidden viewer pauses the player in place; a returning one resumes it.
+		// A hidden viewer leaves the player playing, as the published site does.
 		f.document.hidden = true;
 		f.document.dispatchEvent(new Event("visibilitychange"));
 		assert.equal(player.removed, undefined);
-		assert.deepEqual(f.told.at(-1), [{ method: "pause" }, "https://player.vimeo.com"]);
+		assert.deepEqual(f.told, [], "the shell never pauses or resumes the provider");
 		f.document.hidden = false;
 		f.document.dispatchEvent(new Event("visibilitychange"));
-		assert.deepEqual(f.told.at(-1), [{ method: "play" }, "https://player.vimeo.com"]);
+		assert.equal(player.removed, undefined);
 		assert.ok(
 			!f.states.some(([data]) => data.state === "failed" || data.state === "closed"),
 		);

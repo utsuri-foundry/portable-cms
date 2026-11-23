@@ -268,6 +268,12 @@ function verifyPreviewSharing(PDO $pdo, PreviewService $previews, string $previe
     assertSameValue(200, $app->handle(new Request('GET', $longBase))->status, 'renewed lease survives original deadline');
     $clock->current = $clock->current->modify('+1 hour');
     assertSameValue(404, $app->handle(new Request('GET', $longBase, remoteAddress: 'idle-expiry'))->status, 'lease expires exactly after two idle hours');
+    // A viewer left open past its lease keeps asking for files: those answers stay 404, and its
+    // visitor can still open every review link from the same address.
+    for ($stale = 0; $stale < 12; ++$stale) {
+        assertSameValue(404, $app->handle(new Request('GET', $longBase . 'index.html', remoteAddress: 'stale-viewer'))->status, 'a file request from a stale viewer stays unavailable');
+    }
+    assertSameValue(303, $app->handle(new Request('POST', '/shared-previews/' . $long['share']->id . '/open', $headers, ['token' => $long['token']], remoteAddress: 'stale-viewer'))->status, 'expired browser addresses never lock their visitor out');
     assertSameValue(false, $shares->renewFiles($long['share'], $longToken), 'database cannot revive expired file tokens');
     $shares->createFiles($long['share']);
     $remaining = $pdo->prepare('SELECT COUNT(*) FROM cms_preview_share_files WHERE share_id = :id');
