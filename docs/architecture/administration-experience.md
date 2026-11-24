@@ -610,7 +610,9 @@ sizes it becomes, and a chooser that lists only images that qualify. "Before
 launch" asks what the next release publishes as two explained choices, then the
 message and contact per public language, headed by the language's name; the
 confirmation for going back to the coming soon page appears only when the
-website is the saved choice. "Administration appearance" comes last with the
+website is the saved choice. "For AI assistants" switches the website's llms.txt on or off,
+with one sentence saying what it is and what it is made from, and offers an
+optional introduction per public language. "Administration appearance" comes last with the
 logo and its dark mode variant on their backings. One Save; afterwards the page
 says it saved and names Releases as the next step. Every failure is a sentence.
 Editors read the page without its controls; owners and administrators change it.

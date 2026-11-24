@@ -11,5 +11,14 @@
       "message": "Coming soon.",
       "contact": "hello@example.test"
     }
-  ]
+  ],
+  "llmsTxt": {
+    "enabled": true,
+    "introductions": [
+      {
+        "locale": "en",
+        "text": "A fictional studio for architecture and research."
+      }
+    ]
+  }
 }

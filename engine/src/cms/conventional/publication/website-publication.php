@@ -13,12 +13,12 @@ use Utsuri\PortableCms\Conventional\Identity\SessionContext;
 final readonly class WebsitePublication
 {
     /** @param array{formatVersion: int, profileId: string, revision: int, mode: string, websiteName: string, iconMediaId: string|null, translations: list<array{locale: string, message: string, contact: string}>} $value */
-    private function __construct(private array $value, public ?IdentityUpgradeNote $identityUpgrade = null, public AdministrationBranding $administrationBranding = new AdministrationBranding()) {}
+    private function __construct(private array $value, public ?IdentityUpgradeNote $identityUpgrade = null, public AdministrationBranding $administrationBranding = new AdministrationBranding(), private ?\Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings $llmsTxt = null) {}
 
     public static function from(mixed $value): self
     {
-        if (!is_array($value) || count($value) !== 7 + (int) array_key_exists('identityUpgrade', $value) + (int) array_key_exists('administrationBranding', $value)
-            || array_diff(array_keys($value), ['formatVersion', 'profileId', 'revision', 'mode', 'websiteName', 'iconMediaId', 'translations', 'identityUpgrade', 'administrationBranding']) !== [] || ($value['formatVersion'] ?? null) !== 1
+        if (!is_array($value) || count($value) !== 7 + (int) array_key_exists('identityUpgrade', $value) + (int) array_key_exists('administrationBranding', $value) + (int) array_key_exists('llmsTxt', $value)
+            || array_diff(array_keys($value), ['formatVersion', 'profileId', 'revision', 'mode', 'websiteName', 'iconMediaId', 'translations', 'identityUpgrade', 'administrationBranding', 'llmsTxt']) !== [] || ($value['formatVersion'] ?? null) !== 1
             || (array_key_exists('administrationBranding', $value) && $value['administrationBranding'] === null)
             || !is_string($value['profileId'] ?? null) || !ProfileManifest::canonicalId($value['profileId'])
             || !is_int($value['revision'] ?? null) || $value['revision'] < 0 || $value['revision'] > 4_294_967_294
@@ -46,8 +46,14 @@ final readonly class WebsitePublication
             $seen[$entry['locale']] = true;
             $translations[] = ['locale' => $entry['locale'], 'message' => $entry['message'], 'contact' => $entry['contact']];
         }
+        try {
+            // Introductions follow the languages: one for a language no longer installed is dropped.
+            $llmsTxt = array_key_exists('llmsTxt', $value) ? \Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings::from($value['llmsTxt'])->only(array_keys($seen)) : null;
+        } catch (\InvalidArgumentException) {
+            throw new PublicationFailure('website_publication_invalid');
+        }
         return new self(['formatVersion' => 1, 'profileId' => $value['profileId'], 'revision' => $value['revision'],
-            'mode' => $value['mode'], 'websiteName' => $value['websiteName'], 'iconMediaId' => $value['iconMediaId'], 'translations' => $translations], array_key_exists('identityUpgrade', $value) ? IdentityUpgradeNote::from($value['identityUpgrade']) : null, AdministrationBranding::from($value['administrationBranding'] ?? null));
+            'mode' => $value['mode'], 'websiteName' => $value['websiteName'], 'iconMediaId' => $value['iconMediaId'], 'translations' => $translations], array_key_exists('identityUpgrade', $value) ? IdentityUpgradeNote::from($value['identityUpgrade']) : null, AdministrationBranding::from($value['administrationBranding'] ?? null), $llmsTxt === null || $llmsTxt->isDefault() ? null : $llmsTxt);
     }
 
     /** @param list<string> $locales */
@@ -79,11 +85,12 @@ final readonly class WebsitePublication
         return self::from([...$this->document(), 'translations' => array_map(static fn(string $locale): array => $translations[$locale] ?? ['locale' => $locale, 'message' => self::defaultMessage($locale), 'contact' => ''], $locales)]);
     }
 
-    /** @return array{formatVersion: int, profileId: string, revision: int, mode: string, websiteName: string, iconMediaId: string|null, translations: list<array{locale: string, message: string, contact: string}>, identityUpgrade?: array{kept: string, previous: list<array{typeId: string, recordId: string, name: ?string, iconMediaId: ?string}>}, administrationBranding?: array{logoMediaId: ?string, darkLogoMediaId: ?string}} */
+    /** @return array{formatVersion: int, profileId: string, revision: int, mode: string, websiteName: string, iconMediaId: string|null, translations: list<array{locale: string, message: string, contact: string}>, identityUpgrade?: array{kept: string, previous: list<array{typeId: string, recordId: string, name: ?string, iconMediaId: ?string}>}, administrationBranding?: array{logoMediaId: ?string, darkLogoMediaId: ?string}, llmsTxt?: array{enabled: bool, introductions: list<array{locale: string, text: string}>}} */
     public function document(): array
     {
         return [...$this->value, ...($this->identityUpgrade === null ? [] : ['identityUpgrade' => $this->identityUpgrade->document()]),
-            ...($this->administrationBranding->logoMediaId === null ? [] : ['administrationBranding' => $this->administrationBranding->document()])];
+            ...($this->administrationBranding->logoMediaId === null ? [] : ['administrationBranding' => $this->administrationBranding->document()]),
+            ...($this->llmsTxt === null ? [] : ['llmsTxt' => $this->llmsTxt->document()])];
     }
 
     /** @param list<string> $locales */
@@ -107,6 +114,12 @@ final readonly class WebsitePublication
         return self::from([...$this->document(), 'translations' => array_values(array_map(static fn(string $locale): array => $translations[$locale] ?? throw new PublicationFailure('website_publication_scope_changed'), $locales))]);
     }
 
+    /** Whether the website publishes an llms.txt, on unless turned off, and its introductions. */
+    public function llmsTxt(): \Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings
+    {
+        return $this->llmsTxt ?? new \Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings();
+    }
+
     public function mode(): string
     {
         return $this->value['mode'];
@@ -119,13 +132,13 @@ final readonly class WebsitePublication
 
     public function identity(): \Utsuri\PortableCms\Conventional\Content\WebsiteIdentity
     {
-        return new \Utsuri\PortableCms\Conventional\Content\WebsiteIdentity($this->value['websiteName'], $this->value['iconMediaId']);
+        return new \Utsuri\PortableCms\Conventional\Content\WebsiteIdentity($this->value['websiteName'], $this->value['iconMediaId'], $this->llmsTxt());
     }
 
     /** Public builds must not receive administration-only media selections. */
     public function forWebsite(): self
     {
-        return new self($this->value, $this->identityUpgrade);
+        return new self($this->value, $this->identityUpgrade, llmsTxt: $this->llmsTxt);
     }
 
     private static function text(mixed $value, int $maximum, bool $required): bool

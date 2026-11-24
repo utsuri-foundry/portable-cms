@@ -175,6 +175,16 @@ For a subdirectory installation, robots.txt is included for inspection but the
 operator must publish the host-root robots policy or add the sitemap to the
 existing host policy. A robots file under a subdirectory is not site-wide policy.
 
+A website build with a public context also writes `llms.txt`
+(<https://llmstxt.org>) unless Website settings turn it off: an H1 with the
+website name, the primary language's introduction as the summary, then one
+section per public language, headed by the language's own name, with that
+language's introduction and its pages as Markdown links. It lists exactly the
+sitemap's pages, each with the `<title>` and meta description the page itself
+declares, so it never says what a page does not. Introductions are plain text
+edited in Website settings and frozen into the snapshot with the website
+identity; preparation languages and holding builds never get the file.
+
 PHP graph tests cover sparse translations, fallbacks, collisions and invalid
 URLs. MariaDB integration changes worker configuration after enqueue and proves
 that the artifact still uses the stored context. Chromium verifies canonical and

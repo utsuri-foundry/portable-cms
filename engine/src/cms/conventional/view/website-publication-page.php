@@ -14,7 +14,8 @@ use Utsuri\PortableCms\Conventional\Publication\WebsitePublication;
 
 /**
  * Website settings in the order of an editor's tasks: what the website is called and its icon,
- * what visitors see before launch, and last the administration's own appearance. One line under
+ * what visitors see before launch, what AI assistants read, and last the administration's own
+ * appearance. One line under
  * the heading says what the public website shows now; saving names the next step, which is a
  * release. Editors read the page; owners and administrators change it.
  */
@@ -91,6 +92,14 @@ final class WebsitePublicationPage
         }
         $body .= '</section>';
 
+        // For AI assistants: the llms.txt each release writes from the pages, and its introductions.
+        $llms = $saved->llmsTxt();
+        $body .= '<section class="admin-section" aria-labelledby="settings-llms" aria-describedby="settings-llms-help">'
+            . FieldHelp::heading('<h2 id="settings-llms">' . $t->html('llms.title') . '</h2>', 'settings-llms-help', $t->text('llms.title'), $t)
+            . FieldHelp::text('settings-llms-help', $t->html('llms.help'))
+            . '<div class="admin-field"><label class="admin-checkbox"><input type="checkbox" name="llmsTxt" value="1"' . ($value('llmsTxt', $llms->enabled ? '1' : '') === '1' ? ' checked' : '') . $disabled . '> <span>' . $t->html('llms.enabled') . '</span></label></div>'
+            . self::llmsIntroductions($profile, $document, $llms, $visibleLocales, $value, $t, $disabled) . '</section>';
+
         // The administration's own appearance, last: it is the agency's part.
         if ($logos !== '') {
             $body .= '<section class="admin-section" aria-labelledby="settings-branding" aria-describedby="settings-branding-help">'
@@ -131,6 +140,35 @@ final class WebsitePublicationPage
                 . '<div class="admin-field"><label for="' . $id . '-contact">' . $t->html('holding.contact') . '</label>'
                 . FieldHelp::toggle($id . '-contact-help', $t->text('holding.contact'), $t) . FieldHelp::text($id . '-contact-help', $t->html('holding.contact_help'))
                 . '<input id="' . $id . '-contact" name="contact_' . Html::attribute($locale) . '" maxlength="240" aria-describedby="' . $id . '-contact-help" value="' . Html::attribute($contactValue) . '"' . $disabled . '></div></fieldset>';
+        }
+        return $html;
+    }
+
+    /**
+     * One optional introduction for AI assistants per public language; the others keep theirs
+     * in hidden fields, as their coming soon texts do.
+     * @param array{translations: list<array{locale: string, message: string, contact: string}>} $document
+     * @param list<string>|null $visibleLocales
+     * @param \Closure(string, string): string $value
+     */
+    private static function llmsIntroductions(ProfileManifest $profile, array $document, \Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings $llms, ?array $visibleLocales, \Closure $value, Translator $t, string $disabled): string
+    {
+        $labels = [];
+        foreach ($profile->localeDefinitions as $definition) {
+            $labels[$definition->id] = $definition->label;
+        }
+        $html = '';
+        foreach (array_column($document['translations'], 'locale') as $locale) {
+            $text = $value('llms_' . $locale, $llms->introductions[$locale] ?? '');
+            if ($visibleLocales !== null && !in_array($locale, $visibleLocales, true)) {
+                $html .= '<input type="hidden" name="llms_' . Html::attribute($locale) . '" value="' . Html::attribute($text) . '">';
+                continue;
+            }
+            $id = 'llms-' . $locale;
+            $label = $t->text('llms.introduction', ['language' => $labels[$locale] ?? $locale]);
+            $html .= '<div class="admin-field" lang="' . Html::attribute($locale) . '"><label for="' . $id . '">' . Html::text($label) . '</label>'
+                . FieldHelp::toggle($id . '-help', $label, $t) . FieldHelp::text($id . '-help', $t->html('llms.introduction_help'))
+                . '<textarea id="' . $id . '" name="llms_' . Html::attribute($locale) . '" maxlength="' . \Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings::INTRODUCTION_LENGTH . '" rows="4" aria-describedby="' . $id . '-help"' . $disabled . '>' . Html::text($text) . '</textarea></div>';
         }
         return $html;
     }

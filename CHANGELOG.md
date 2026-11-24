@@ -5,6 +5,21 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.15.0
+
+- Every website release publishes `llms.txt`, a plain-text summary for AI
+  assistants: the website name, an optional introduction per language written
+  in Website settings, and each public page as a link with its own title and
+  description, the sitemap's pages in the sitemap's order. Website settings
+  get a "For AI assistants" section to turn it off or write the introductions.
+- Website settings save while a language is off or in preparation. The form
+  sent only the editing languages and the settings require all of them, so
+  every save failed with a generic error.
+- API and formats: `RouteDiscovery::listed()` returns the routes the sitemap lists.
+  Website settings, their export embedding and the frozen snapshot's
+  `websiteIdentity` accept an optional `llmsTxt` object; documents without it
+  keep their meaning, llms.txt on without introductions.
+
 ## 0.14.7
 
 - A website whose pages embed Vimeo's player can be published. Its build freezes

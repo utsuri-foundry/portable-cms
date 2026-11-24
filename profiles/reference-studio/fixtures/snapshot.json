@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "websiteIdentity": {"name":"Reference Studio","iconMediaId":null},
+  "websiteIdentity": {"name":"Reference Studio","iconMediaId":null,"llmsTxt":{"enabled":true,"introductions":[{"locale":"ca","text":"Estudi de disseny de Barcelona que treballa en identitat, editorial i espais.\nAquest lloc recull projectes, notes i contacte."},{"locale":"en","text":"A design studio in Barcelona working on identity, editorial and spaces."}]}},
   "publicUrlContext": {"formatVersion": 1, "baseUrl": "https://reference-studio.example"},
   "snapshotId": "f0000000000000000000000000000001",
   "createdAt": "2026-10-03T09:00:00Z",

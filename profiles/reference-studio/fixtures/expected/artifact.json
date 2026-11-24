@@ -11,7 +11,7 @@
     "compiler": {
         "id": "portable-cms-compiler",
         "version": "0.1.0",
-        "sha256": "958bc7e6ab986d68e6fb696ab954e78060b46ec679369bc562ffafd171f6eb9f"
+        "sha256": "b2ef8d22cdca65c5ac01852c3a16a3f58188813038e21e84161f309827de591a"
     },
     "searchFormatVersion": 1,
     "files": [
@@ -510,6 +510,13 @@
             "mime": "text/html; charset=utf-8",
             "byteSize": 7781,
             "sha256": "04144afc4924bc2850705c9ff4b17976eed3494fcc3e762bc9c122f64ddac89f",
+            "cachePolicy": "route"
+        },
+        {
+            "path": "llms.txt",
+            "mime": "text/plain; charset=utf-8",
+            "byteSize": 9654,
+            "sha256": "4f85446aa4df132f10ec1ce7ed897feb88b5d0ccee593082c90566f28c3c1328",
             "cachePolicy": "route"
         },
         {
