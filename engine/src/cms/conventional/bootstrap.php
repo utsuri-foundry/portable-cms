@@ -125,6 +125,7 @@ require_once __DIR__ . '/compiler/search-sharing-head.php';
 require_once __DIR__ . '/compiler/public-url-context.php';
 require_once __DIR__ . '/compiler/route-discovery.php';
 require_once __DIR__ . '/compiler/llms-txt.php';
+require_once __DIR__ . '/compiler/asset-version.php';
 require_once __DIR__ . '/compiler/published-slug-history.php';
 require_once __DIR__ . '/compiler/apache-public-delivery.php';
 require_once __DIR__ . '/compiler/structured-data.php';
