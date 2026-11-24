@@ -36,9 +36,15 @@ final readonly class WebsitePublicationHttp
         if ($request->method === 'GET') {
             return new Response(200, $this->render($request, $saved, readOnly: $readOnly, justSaved: $request->queryValue('saved') === '1'));
         }
+        // Every installed language, as the saved settings list them: the page sends the ones it
+        // does not show as hidden fields, so a language that is off keeps its text.
+        $locales = array_column($saved->document()['translations'], 'locale');
         $input = [];
-        foreach (['_revision', 'mode', 'websiteName', 'iconMediaId', 'confirmed', ...array_merge(...array_map(static fn(string $locale): array => ['message_' . $locale, 'contact_' . $locale], $this->profile->locales))] as $key) {
+        foreach (['_revision', 'mode', 'websiteName', 'iconMediaId', 'confirmed', 'llmsTxt', ...array_merge(...array_map(static fn(string $locale): array => ['message_' . $locale, 'contact_' . $locale], $locales))] as $key) {
             $input[$key] = $request->formValue($key);
+        }
+        foreach ($locales as $locale) {
+            $input['llms_' . $locale] = array_key_exists('llms_' . $locale, $request->form) ? $request->formValue('llms_' . $locale) : ($saved->llmsTxt()->introductions[$locale] ?? '');
         }
         foreach (['adminLogoMediaId' => $saved->administrationBranding->logoMediaId, 'darkAdminLogoMediaId' => $saved->administrationBranding->darkLogoMediaId] as $field => $id) {
             $input[$field] = array_key_exists($field, $request->form) ? $request->formValue($field) : ($id ?? '');
@@ -71,7 +77,8 @@ final readonly class WebsitePublicationHttp
             }
             $document = ['formatVersion' => 1, 'profileId' => $this->profile->id, 'revision' => $expected + 1, 'mode' => $input['mode'], 'websiteName' => $input['websiteName'], 'iconMediaId' => $input['iconMediaId'] === '' ? null : $input['iconMediaId'],
                 'administrationBranding' => ['logoMediaId' => $input['adminLogoMediaId'] === '' ? null : $input['adminLogoMediaId'], 'darkLogoMediaId' => $input['darkAdminLogoMediaId'] === '' ? null : $input['darkAdminLogoMediaId']],
-                'translations' => array_map(static fn(string $locale): array => ['locale' => $locale, 'message' => $input['message_' . $locale], 'contact' => $input['contact_' . $locale]], $this->profile->locales)];
+                'translations' => array_map(static fn(string $locale): array => ['locale' => $locale, 'message' => $input['message_' . $locale], 'contact' => $input['contact_' . $locale]], $locales),
+                'llmsTxt' => ['enabled' => $input['llmsTxt'] === '1', 'introductions' => array_values(array_filter(array_map(static fn(string $locale): array => ['locale' => $locale, 'text' => \Utsuri\PortableCms\Conventional\Content\LlmsTxtSettings::normalize($input['llms_' . $locale])], $locales), static fn(array $entry): bool => $entry['text'] !== ''))]];
             $this->service->save($document, $expected, $actor, $input['confirmed'] === '1');
         } catch (PublicationConflict) {
             return new Response(409, $this->render($request, $this->service->load(), $input, 'website_publication_changed', true));

@@ -68,9 +68,14 @@ final class LanguageText
         return false;
     }
 
-    /** The holding page settings: a contact, or a message other than the engine's default. */
+    /** The holding page settings: a contact, a message other than the engine's default, or an introduction for AI assistants. */
     public static function holding(mixed $document, string $locale): bool
     {
+        foreach (is_array($document) && is_array($document['llmsTxt']['introductions'] ?? null) ? $document['llmsTxt']['introductions'] : [] as $entry) {
+            if (is_array($entry) && ($entry['locale'] ?? null) === $locale && self::filled($entry['text'] ?? null)) {
+                return true;
+            }
+        }
         foreach (is_array($document) && is_array($document['translations'] ?? null) ? $document['translations'] : [] as $entry) {
             if (is_array($entry) && ($entry['locale'] ?? null) === $locale
                 && (self::filled($entry['contact'] ?? null) || (self::filled($entry['message'] ?? null) && $entry['message'] !== \Utsuri\PortableCms\Conventional\Publication\WebsitePublication::defaultMessage($locale)))) {
@@ -140,8 +145,8 @@ final class LanguageText
     }
 
     /**
-     * Holding page settings with the language's message back to the default and no contact; every
-     * installed language keeps an entry.
+     * Holding page settings with the language's message back to the default, no contact and no
+     * introduction for AI assistants; every installed language keeps an entry.
      * @param array<string, mixed> $document
      * @return array<string, mixed>
      */
@@ -151,6 +156,9 @@ final class LanguageText
             if (is_array($entry) && ($entry['locale'] ?? null) === $locale) {
                 $document['translations'][$index] = ['locale' => $locale, 'message' => \Utsuri\PortableCms\Conventional\Publication\WebsitePublication::defaultMessage($locale), 'contact' => ''];
             }
+        }
+        if (is_array($document['llmsTxt']['introductions'] ?? null)) {
+            $document['llmsTxt']['introductions'] = array_values(array_filter($document['llmsTxt']['introductions'], static fn(mixed $entry): bool => !is_array($entry) || ($entry['locale'] ?? null) !== $locale));
         }
         return $document;
     }

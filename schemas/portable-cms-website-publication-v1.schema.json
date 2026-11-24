@@ -14,6 +14,23 @@
         "darkLogoMediaId": {"type": ["string", "null"], "pattern": "^[a-f0-9]{32}$"}
       }
     },
+    "llmsTxt": {
+      "type": "object", "additionalProperties": false,
+      "required": ["enabled", "introductions"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "introductions": {
+          "type": "array", "maxItems": 16,
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["locale", "text"],
+            "properties": {
+              "locale": {"type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$"},
+              "text": {"type": "string", "minLength": 1, "maxLength": 1500}
+            }
+          }
+        }
+      }
+    },
     "identityUpgrade": {
       "type": "object", "additionalProperties": false, "required": ["kept", "previous"],
       "properties": {

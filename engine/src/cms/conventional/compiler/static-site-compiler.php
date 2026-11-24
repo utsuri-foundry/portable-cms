@@ -126,6 +126,20 @@ final class StaticSiteCompiler
                 $this->writeFile($workingRoot, 'robots.txt', $site->discovery->robots(), 'text/plain; charset=utf-8', 'route', $files);
                 if ($snapshot->publicUrlContext !== null) {
                     $this->writeFile($workingRoot, 'sitemap.xml', $site->discovery->sitemap(), 'application/xml; charset=utf-8', 'route', $files);
+                    // The llms.txt Website settings ask for, over the published languages only.
+                    $identity = $snapshot->websiteIdentity;
+                    $public = array_values(array_diff($snapshot->locales, $snapshot->preparationLocales));
+                    usort($public, static fn(string $a, string $b): int => ($b === $snapshot->defaultLocale) <=> ($a === $snapshot->defaultLocale));
+                    $llms = $identity?->llmsTxt === null ? null : LlmsTxt::render(
+                        $identity->name,
+                        $identity->llmsTxt->only($public),
+                        $public,
+                        $site->discovery,
+                        array_combine(array_map(static fn(CompiledRoute $route): string => $route->route, $site->routes), array_map(static fn(CompiledRoute $route): string => $route->html, $site->routes)),
+                    );
+                    if ($llms !== null) {
+                        $this->writeFile($workingRoot, 'llms.txt', $llms, 'text/plain; charset=utf-8', 'route', $files);
+                    }
                 }
             }
             $speculationRulesPath = null;

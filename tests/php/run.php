@@ -630,6 +630,7 @@ require dirname(__DIR__) . '/php/preview-check-test.php';
 require dirname(__DIR__) . '/php/publication-test.php';
 require dirname(__DIR__) . '/php/release-schedule-test.php';
 require dirname(__DIR__) . '/php/website-publication-test.php';
+require dirname(__DIR__) . '/php/llms-txt-test.php';
 require dirname(__DIR__) . '/php/website-identity-test.php';
 require dirname(__DIR__) . '/php/installation-brand-test.php';
 require dirname(__DIR__) . '/php/administration-logo-test.php';

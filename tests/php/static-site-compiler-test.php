@@ -151,7 +151,7 @@ $tests['static compiler emits the complete multilingual Reference Studio artifac
     try {
         $fixture = staticCompilerFixture();
         $result = staticCompilerBuild($fixture, $root . '/artifact');
-        assertSameValue(88, count($result->files), 'the frozen profile should emit the complete file set including real italic, responsive widths, collage media, composition CSS, discovery, sharing cards, speculation rules and target delivery rules');
+        assertSameValue(89, count($result->files), 'the frozen profile should emit the complete file set including real italic, responsive widths, collage media, composition CSS, discovery, sharing cards, speculation rules and target delivery rules');
         assertTrueValue(array_sum(array_column($result->files, 'byteSize')) <= 2 * 1024 * 1024, 'the complete fictional reference artifact stays within its 2 MiB budget');
         $rasterFiles = array_values(array_filter($result->files, static fn(array $file): bool => str_starts_with($file['path'], 'media/')));
         assertTrueValue(array_sum(array_column($rasterFiles, 'byteSize')) <= 64 * 1024, 'all fictional raster widths stay within their 64 KiB budget');

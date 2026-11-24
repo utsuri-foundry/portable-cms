@@ -183,6 +183,13 @@ the messages of the public languages, with the primary language as its document
 language. New installations default to **Coming soon**. Upgrades with an already active website retain **Live**
 unless settings were explicitly saved. Saving never writes public files.
 
+The same settings hold the website's `llms.txt` choice, on unless turned off,
+and an optional plain-text introduction per language, at most 1500 characters
+([search and sharing](search-sharing-metadata.md#publication-urls-and-route-discovery)).
+The form posts every installed language: the ones that are off or in
+preparation travel as hidden fields and keep their texts, so the settings save
+whatever the languages' states.
+
 In Coming soon mode, **Releases** can build a private holding artifact without
 authored website records. Inspect the frozen page through its private
 `/releases/holding/<id>/artifact/` link, then approve it explicitly. Internal

@@ -143,6 +143,16 @@ final readonly class RouteDiscovery
         return ($this->routes[$path] ?? throw new \InvalidArgumentException('Discovery route is unavailable'))->canonicalPath;
     }
 
+    /**
+     * The routes search engines are invited to: indexable, canonical, in route order, as the
+     * sitemap lists them.
+     * @return list<DiscoveryRoute>
+     */
+    public function listed(): array
+    {
+        return array_values(array_filter($this->routes, static fn(DiscoveryRoute $route): bool => $route->indexable && $route->path === $route->canonicalPath));
+    }
+
     public function sitemap(): string
     {
         if ($this->context === null) {
