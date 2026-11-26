@@ -58,9 +58,9 @@ $tests['profile preview compiles the frozen website and serves unchanged verifie
             assertSameValue($artifact->checksum, hash('sha256', $body->contents), 'serving must not rewrite artifact bytes');
         }
         $home = $store->artifact($job->previewId, 'index.html', $build);
-        assertTrueValue(str_contains($home->contents ?? '', 'href="./assets/site.css"'), 'root assets must resolve beneath the preview mount');
+        assertTrueValue(preg_match('#href="\./assets/site\.css\?v=[a-f0-9]{12}"#', $home->contents ?? '') === 1, 'root assets must resolve beneath the preview mount, with the build\'s version');
         $page = $store->artifact($job->previewId, 'en/projects/archive-of-mist/index.html', $build);
-        assertTrueValue(str_contains($page->contents ?? '', 'href="../../../assets/site.css"'), 'deep pages must remain mount independent');
+        assertTrueValue(preg_match('#href="\.\./\.\./\.\./assets/site\.css\?v=[a-f0-9]{12}"#', $page->contents ?? '') === 1, 'deep pages must remain mount independent');
         $css = $store->artifact($job->previewId, 'assets/design.css', $build);
         assertTrueValue(str_contains($css->contents ?? '', 'url("../assets/'), 'frozen fonts must resolve relative to the stylesheet');
         $frozen = $fixture['compiler']->freeze($fixture['snapshot']);

@@ -147,7 +147,9 @@ $tests['vimeo frozen helper and conditional site policy preserve old bytes and a
         $fixture = staticCompilerFixture();
         $original = $fixture['compiler']->compile($fixture['package'], $fixture['snapshot'], $fixture['builder'], $fixture['media'], $fixture['request'], $root . '/original');
         $withoutValue = $fixture['compiler']->compile($package, $empty, $package->siteBuilder(), $fixture['media'], $fixture['request'], $root . '/empty');
-        assertSameValue($original->files, $withoutValue->files, 'every public file byte remains unchanged without a Vimeo value');
+        // The two builds come from different packages, so only their asset versions may differ.
+        $unversioned = static fn(string $output, array $files): array => array_map(static fn(array $file): array => [$file['path'], $file['mime'], preg_replace('/\?v=[a-f0-9]{12}/', '', (string) file_get_contents($output . '/' . $file['path']))], $files);
+        assertSameValue($unversioned($root . '/original', $original->files), $unversioned($root . '/empty', $withoutValue->files), 'every public file byte remains unchanged without a Vimeo value, apart from the asset version');
         assertTrueValue(!isset($withoutValue->manifest['frameSources']) && !is_file($root . '/empty/' . VimeoPresentation::SCRIPT), 'no capability flag or unused player assets enter a legacy artifact');
         $document['records'][0]['body']['film'] = vimeoValue();
         $snapshot = FrozenSnapshot::fromDocument($document, $package);

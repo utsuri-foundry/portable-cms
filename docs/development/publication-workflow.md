@@ -259,6 +259,16 @@ Apply every outstanding forward migration in the integrated bundle, not only
 the publication migration. The ledger identifies migrations by their full
 filename and checksum; never rename an already applied migration to renumber it.
 
+The release's `.htaccess` asks browsers to revalidate everything, but some
+hosts put a front server before Apache that serves static files itself and caches
+them for a long time. Every reference a website build makes to its own
+stylesheets, scripts, fonts, icons and other stable-named files therefore carries
+`?v=` and one version per build, derived from the frozen snapshot, the profile
+package and the compiler: in page attributes, in stylesheet `url()` and `@import`,
+and in relative module imports. A release that changes anything changes those
+addresses, so a returning visitor never pairs new pages with old assets.
+Content-named media, pages and the files for crawlers keep their addresses.
+
 The public root must exist, be writable and canonical without symlink
 components, and be separate from the CMS document root and private storage.
 This adapter currently requires separate document roots, for example CMS and

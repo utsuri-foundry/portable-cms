@@ -73,6 +73,8 @@ final class StaticSiteCompiler
 
         try {
             $files = [];
+            // Every reference to a file with a stable name carries this build's version.
+            $assetVersion = AssetVersion::of($snapshot->id, $package->checksum, $request->compiler);
             $sharingImages = [];
             if ($builder instanceof SharingSiteBuilder && $snapshot->publicUrlContext !== null) {
                 $selected = $builder->sharingMediaIds($snapshot);
@@ -144,7 +146,7 @@ final class StaticSiteCompiler
             }
             $speculationRulesPath = null;
             foreach ($vimeo ? VimeoPresentation::assets() : [] as $path => $asset) {
-                $this->writeFile($workingRoot, $path, $asset['body'], $asset['mime'], 'immutable', $files);
+                $this->writeFile($workingRoot, $path, self::versionedText($asset['body'], $path, $asset['mime'], $assetVersion) ?? $asset['body'], $asset['mime'], 'immutable', $files);
             }
             foreach ($package->manifest->assets as $asset) {
                 if (\Utsuri\PortableCms\Conventional\Content\SpeculationRules::asset($asset)) {
@@ -152,14 +154,11 @@ final class StaticSiteCompiler
                     $this->writeFile($workingRoot, $asset->path, \Utsuri\PortableCms\Conventional\Content\SpeculationRules::compile($package->assetBytes($asset->path, \Utsuri\PortableCms\Conventional\Content\SpeculationRules::MAX_BYTES)), $asset->mime, 'route', $files);
                     continue;
                 }
-                $this->copyFile(
-                    $workingRoot,
-                    $asset->path,
-                    $package->assetPath($asset->path),
-                    $asset->mime,
-                    'immutable',
-                    $files,
-                );
+                if (self::versionedText('', $asset->path, $asset->mime, $assetVersion) === null) {
+                    $this->copyFile($workingRoot, $asset->path, $package->assetPath($asset->path), $asset->mime, 'immutable', $files);
+                    continue;
+                }
+                $this->writeFile($workingRoot, $asset->path, (string) self::versionedText(self::read($package->assetPath($asset->path)), $asset->path, $asset->mime, $assetVersion), $asset->mime, 'immutable', $files);
             }
             if ($snapshot->designRegistries !== null) {
                 $fonts = ArtifactStyles::fonts($package, $snapshot);
@@ -176,17 +175,17 @@ final class StaticSiteCompiler
                         throw new \RuntimeException('Copied font differs from its frozen identity');
                     }
                 }
-                $this->writeFile($workingRoot, 'assets/design.css', (string) ArtifactStyles::design($snapshot, $fonts['paths']), 'text/css; charset=utf-8', 'immutable', $files);
+                $this->writeFile($workingRoot, 'assets/design.css', AssetVersion::css((string) ArtifactStyles::design($snapshot, $fonts['paths']), 'assets/design.css', $assetVersion), 'text/css; charset=utf-8', 'immutable', $files);
             }
             $compositionCss = ArtifactStyles::composition($package, $snapshot);
             if ($compositionCss !== '') {
-                $this->writeFile($workingRoot, 'assets/composition.css', $compositionCss, 'text/css; charset=utf-8', 'immutable', $files);
+                $this->writeFile($workingRoot, 'assets/composition.css', AssetVersion::css($compositionCss, 'assets/composition.css', $assetVersion), 'text/css; charset=utf-8', 'immutable', $files);
             }
             foreach ($site->routes as $route) {
                 $this->writeFile(
                     $workingRoot,
                     self::routePath($route->route),
-                    VimeoPresentation::document($route->html, $route->route, $vimeo),
+                    AssetVersion::html(VimeoPresentation::document($route->html, $route->route, $vimeo), $route->route, $assetVersion),
                     'text/html; charset=utf-8',
                     'route',
                     $files,
@@ -232,7 +231,7 @@ final class StaticSiteCompiler
                     ];
                 }
             }
-            $this->writeFile($workingRoot, 'assets/media-focal.css', MediaFocalStyle::stylesheet($focalPoints), 'text/css; charset=utf-8', 'immutable', $files);
+            $this->writeFile($workingRoot, 'assets/media-focal.css', AssetVersion::css(MediaFocalStyle::stylesheet($focalPoints), 'assets/media-focal.css', $assetVersion), 'text/css; charset=utf-8', 'immutable', $files);
             $feed = ContentFeedSnapshot::build($package->manifest, $snapshot);
             if ($feed !== null) {
                 foreach ($feed->documents as $path => $json) {
@@ -333,6 +332,16 @@ final class StaticSiteCompiler
         ) {
             throw new \InvalidArgumentException('Compiler inputs do not identify one profile package');
         }
+    }
+
+    /** A stylesheet or module with its references versioned; null for any other file, copied as is. */
+    private static function versionedText(string $body, string $path, string $mime, string $version): ?string
+    {
+        return match (strtolower(explode(';', $mime)[0])) {
+            'text/css' => AssetVersion::css($body, $path, $version),
+            'text/javascript', 'application/javascript' => AssetVersion::js($body, $path, $version),
+            default => null,
+        };
     }
 
     /**

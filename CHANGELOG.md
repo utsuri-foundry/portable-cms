@@ -5,6 +5,16 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.15.1
+
+- Returning visitors get a release's new stylesheets and scripts even where the
+  host caches static files for a long time regardless of the release's rules:
+  every reference a website build makes to its own stable-named files (pages'
+  href, src, poster and srcset, stylesheet url() and @import, relative module
+  imports) carries `?v=` with one version per build, from the frozen snapshot,
+  the profile package and the compiler. Media keep their content-named
+  addresses; pages, robots.txt, sitemap.xml and llms.txt keep theirs.
+
 ## 0.15.0
 
 - Every website release publishes `llms.txt`, a plain-text summary for AI
