@@ -146,6 +146,8 @@ fi
 if [ "${CMS_TEST_RECORD_KEEPING_ONLY:-0}" = 1 ]; then
   CMS_TEST_SITE_SEQUENCE_DSN="mysql:unix_socket=$socket;dbname=portable_sequence;charset=utf8mb4" \
     php tests/php/record-keeping-integration.php
+  CMS_TEST_SITE_SEQUENCE_DSN="mysql:unix_socket=$socket;dbname=portable_sequence;charset=utf8mb4" \
+    php tests/php/record-slugs-integration.php
   CMS_TEST_WORKFLOW_DSN="mysql:unix_socket=$socket;dbname=portable_workflow;charset=utf8mb4" \
     php tests/php/record-workflow-integration.php
   exit 0
@@ -205,6 +207,9 @@ CMS_TEST_SITE_SEQUENCE_DSN="mysql:unix_socket=$socket;dbname=portable_sequence;c
 
 CMS_TEST_SITE_SEQUENCE_DSN="mysql:unix_socket=$socket;dbname=portable_sequence;charset=utf8mb4" \
   php tests/php/record-keeping-integration.php
+
+CMS_TEST_SITE_SEQUENCE_DSN="mysql:unix_socket=$socket;dbname=portable_sequence;charset=utf8mb4" \
+  php tests/php/record-slugs-integration.php
 
 CMS_TEST_DB_DSN="mysql:unix_socket=$socket;dbname=portable_cms;charset=utf8mb4" \
 CMS_TEST_INSTALL_DSN="mysql:unix_socket=$socket;dbname=portable_install;charset=utf8mb4" \

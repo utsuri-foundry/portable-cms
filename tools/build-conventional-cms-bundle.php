@@ -195,7 +195,7 @@ try {
     copy($repository . '/engine/src/cms/conventional/client/record-keeper.js', $public . '/assets/record-keeper.js');
     copy($repository . '/engine/src/cms/conventional/client/media-descriptions.js', $public . '/assets/media-descriptions.js');
     copy($repository . '/engine/src/cms/conventional/client/media-descriptions-model.js', $public . '/assets/media-descriptions-model.js');
-    foreach (['video-previews.js', 'video-previews.css', 'preview-cleanup.js', 'preview-cleanup.css', 'preview-share.js', 'preview-share.css', 'admin-shell.js', 'admin-start.js', 'focal-point.js', 'focal-point.css', 'messages.js', 'rich-text-editor.js', 'rich-text-model.js', 'rich-text-surface.js', 'rich-text-clipboard.js', 'rich-text-history.js', 'rich-text-selection.js', 'rich-text-preview.js', 'composition-editor.js', 'composition-model.js', 'group-rows.js', 'groups.css', 'live-preview.js', 'live-vimeo.js', 'preview-vimeo.js', 'vimeo-player.js', 'live-preview.css'] as $asset) {
+    foreach (['video-previews.js', 'video-previews.css', 'preview-cleanup.js', 'preview-cleanup.css', 'preview-share.js', 'preview-share.css', 'admin-shell.js', 'admin-start.js', 'focal-point.js', 'focal-point.css', 'messages.js', 'rich-text-editor.js', 'rich-text-model.js', 'rich-text-surface.js', 'rich-text-clipboard.js', 'rich-text-history.js', 'rich-text-selection.js', 'rich-text-preview.js', 'composition-editor.js', 'composition-model.js', 'group-rows.js', 'slug-fields.js', 'groups.css', 'live-preview.js', 'live-vimeo.js', 'preview-vimeo.js', 'vimeo-player.js', 'live-preview.css'] as $asset) {
         copy($repository . '/engine/src/cms/conventional/client/' . $asset, $public . '/assets/' . $asset);
     }
     copy(

@@ -7,7 +7,7 @@ namespace Utsuri\PortableCms\Conventional\Content;
 use PDO;
 use Throwable;
 
-final class MariaDbRecordRepository implements RecordRepository, RecordBrowser, RecordActivity, PublishedRecordRepository, RecordDeletionRepository, EditingRecordRepository
+final class MariaDbRecordRepository implements RecordRepository, RecordBrowser, RecordActivity, PublishedRecordRepository, RecordDeletionRepository, EditingRecordRepository, RecordSlugLookup
 {
     public function __construct(private readonly PDO $pdo)
     {
@@ -132,6 +132,35 @@ SQL);
         $pending->execute(['type' => $typeId]);
         $states['published_changes'] = (int) $pending->fetchColumn();
         return $states;
+    }
+
+    public function slugOwner(string $typeId, ?string $locale, string $slug, ?string $exceptRecordId): ?RecordSnapshot
+    {
+        if ($slug === '') {
+            return null;
+        }
+        // The JSON string narrows the candidates; the decoded slug decides. Wildcards in it are literal.
+        $pattern = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], json_encode($slug, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)) . '%';
+        $statement = $this->pdo->prepare(<<<'SQL'
+SELECT r.id, r.type_id, r.workflow_state, r.current_revision_id,
+       r.current_revision_number, rr.body_json, rr.site_sequence, r.updated_at, r.published_revision_id,
+       pv.revision_number AS published_revision_number, pv.created_at AS published_at
+FROM cms_records r
+JOIN cms_record_revisions rr ON rr.id = r.current_revision_id
+LEFT JOIN cms_record_revisions pv ON pv.id = r.published_revision_id AND pv.record_id = r.id
+WHERE r.type_id = :type_id AND r.id <> :except_id AND rr.body_json LIKE :pattern ESCAPE '!'
+ORDER BY r.updated_at DESC, r.id ASC
+LIMIT 200
+SQL);
+        $statement->execute(['type_id' => $typeId, 'except_id' => $exceptRecordId ?? '', 'pattern' => $pattern]);
+        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $record = $this->hydrate($row);
+            $value = $record->body[RecordSlugs::FIELD] ?? null;
+            if (($locale === null ? $value : (is_array($value) ? ($value[$locale] ?? null) : null)) === $slug) {
+                return $record;
+            }
+        }
+        return null;
     }
 
     public function find(string $typeId, string $recordId): ?RecordSnapshot

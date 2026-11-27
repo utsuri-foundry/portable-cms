@@ -116,7 +116,7 @@ export function mountRecordAutosave(form, window = form.ownerDocument.defaultVie
 			if (!field || !form.contains(field)) continue;
 			const note = document.createElement("p");
 			note.dataset.keepError = "true";
-			note.className = "admin-field-error";
+			note.className = "admin-field__error";
 			note.textContent = message;
 			note.id = `keep-error-${id}`;
 			const control = field.matches("input,textarea,select")

@@ -198,6 +198,12 @@ test("invalid fields remain pending without a retry loop while valid edits recei
 	assert.equal(f.keeper.dirty(), true);
 	assert.deepEqual(f.states.at(-1), ["error", "Not a number"]);
 	assert.equal(f.timers.filter((entry) => !entry.cancelled).length, 0);
+	f.change("invalid count and valid title");
+	assert.deepEqual(
+		f.states.at(-1),
+		["error", "Not a number"],
+		"retyping the refused value keeps the refusal instead of announcing a save",
+	);
 	errors = {};
 	f.change("corrected value");
 	assert.equal(await f.keeper.flush(), true);

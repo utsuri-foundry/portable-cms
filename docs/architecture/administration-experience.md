@@ -277,6 +277,16 @@ only when every field is optional, empty and error-free; validation must never
 focus a hidden required control. Profiles may select the bounded
 `editorialSection` value, but cannot supply section markup.
 
+A record type's `slug` field is its page address, edited inside the address it
+makes (`…/projects/`). Typing folds accents and capitals and turns spaces and
+symbols into single hyphens; leaving the field drops a trailing hyphen. While a
+record is new or a draft, its slug follows the title in each language until the
+editor writes a different one. Save, automatic keeping and Mark as ready refuse
+a slug that is not lowercase letters, digits and single hyphens, proposing the
+one it would make, and a slug another record of the same type uses in that
+language, naming that record. A slug saved before this rule stays while it
+remains a valid route and is unchanged.
+
 Image fields show each image as one row: thumbnail, name, **Image details**
 and a quiet remove control, never a numbered card. One **Add images**
 disclosure (**Choose image** on a field that holds one) offers library

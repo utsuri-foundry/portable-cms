@@ -210,7 +210,7 @@ final class ContentTestMediaJobs implements MediaJobRepository
     }
 }
 
-final class MemoryRecordRepository implements RecordRepository, \Utsuri\PortableCms\Conventional\Content\RecordBrowser, \Utsuri\PortableCms\Conventional\Content\PublishedRecordRepository
+final class MemoryRecordRepository implements RecordRepository, \Utsuri\PortableCms\Conventional\Content\RecordBrowser, \Utsuri\PortableCms\Conventional\Content\PublishedRecordRepository, \Utsuri\PortableCms\Conventional\Content\RecordSlugLookup
 {
     /** @var array<string, RecordSnapshot> */
     public array $records = [];
@@ -233,6 +233,17 @@ final class MemoryRecordRepository implements RecordRepository, \Utsuri\Portable
             && ($state === '' || ($state === 'published_changes' ? $record->hasUnpublishedChanges() : $record->workflowState === $state))
             && ($query === '' || mb_stripos(json_encode($record->body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), $query) !== false)));
         return new \Utsuri\PortableCms\Conventional\Content\RecordPage(array_slice($items, ($page - 1) * 20, 20), count($items) > $page * 20, $page, $query);
+    }
+
+    public function slugOwner(string $typeId, ?string $locale, string $slug, ?string $exceptRecordId): ?RecordSnapshot
+    {
+        foreach ($this->records as $record) {
+            $value = $record->body['slug'] ?? null;
+            if ($record->typeId === $typeId && $record->id !== $exceptRecordId && ($locale === null ? $value : ($value[$locale] ?? null)) === $slug) {
+                return $record;
+            }
+        }
+        return null;
     }
 
     public function stateCounts(string $typeId): array

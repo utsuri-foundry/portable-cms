@@ -174,6 +174,11 @@ final class RecordPages
             $videoTiles = $videoTiles || $candidate->type === 'video_reference';
         }
         $unbound = $uploads && $tileFields === [] && !$videoTiles;
+        // The slug is edited inside the address it makes; a draft's slug follows its title until the editor writes one.
+        $slugField = \Utsuri\PortableCms\Conventional\Content\RecordSlugs::field($type);
+        $titleField = \Utsuri\PortableCms\Conventional\Content\RecordSlugs::titleField($type);
+        $addressPrefix = '…/' . ($type->route === null ? '' : $type->route . '/');
+        $slugFrom = $titleField !== null && ($record === null || $record->workflowState === 'draft') ? 'field-' . $titleField->id . ($titleField->localized ? '-' : '') : '';
         $parts = EditorialRecordLayout::parts(
             $type,
             $values,
@@ -182,7 +187,7 @@ final class RecordPages
                 $uploads && $field->type === 'video_reference' && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision)), $field, $t),
                 in_array($field->id, $tileFields, true) && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision, $uploadDescriptions[$field->id] ?? [])), $field, $t),
                 $field->type === 'group' && isset($field->settings['searchSharing']) && $referenceControls !== null => FieldHint::render($referenceControls->searchSharing($type, $field, $values, $error, static fn(FieldDefinition $child, mixed $childValue): string => self::field($child, $childValue, null, $profile, [], $referenceControls, null, $t)), $field, $t),
-                default => self::field($field, $value, $error, $profile, $choices[$field->id] ?? [], $referenceControls, $compositionEditor, $t, $field->id === 'slug' && $type->route !== null ? '…/' . $type->route . '/' : '', $errors),
+                default => self::field($field, $value, $error, $profile, $choices[$field->id] ?? [], $referenceControls, $compositionEditor, $t, $field === $slugField ? $addressPrefix : '', $errors, $field === $slugField ? $slugFrom : ''),
             },
             $technicalData,
             $errors !== [] || $conflict !== null ? ($record === null ? [] : $record->body) : null,
@@ -324,14 +329,15 @@ final class RecordPages
         ?Translator $translator = null,
         string $addressPrefix = '',
         array $errors = [],
+        string $slugFrom = '',
     ): string {
-        return self::languageVisibility(FieldHint::render(self::control($field, $value, $error, $profile, $choices, $referenceControls, $compositionEditor, $translator, $addressPrefix, $errors), $field, $translator), $profile);
+        return self::languageVisibility(FieldHint::render(self::control($field, $value, $error, $profile, $choices, $referenceControls, $compositionEditor, $translator, $addressPrefix, $errors, $slugFrom), $field, $translator), $profile);
     }
 
     /** @param list<RecordSnapshot> $choices
      * @param array<string, Message> $errors
      */
-    private static function control(FieldDefinition $field, mixed $value, ?string $error, ProfileManifest $profile, array $choices, ?ReferenceControls $referenceControls, ?CompositionEditor $compositionEditor, ?Translator $translator, string $addressPrefix, array $errors): string
+    private static function control(FieldDefinition $field, mixed $value, ?string $error, ProfileManifest $profile, array $choices, ?ReferenceControls $referenceControls, ?CompositionEditor $compositionEditor, ?Translator $translator, string $addressPrefix, array $errors, string $slugFrom = ''): string
     {
         $t = $translator ?? Translator::english();
         if ($field->type === 'blocks') {
@@ -379,6 +385,9 @@ final class RecordPages
         $invalid = $error !== null ? ' aria-invalid="true" aria-describedby="error-' . Html::attribute($field->id) . '"' : '';
         $errorMarkup = $error !== null ? '<p class="admin-field__error" id="error-' . Html::attribute($field->id) . '">' . Html::text($error) . '</p>' : '';
         $label = Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '');
+        // A slug control normalizes as it is typed and, with a source, proposes the address from a title control (`field-title-` takes the language).
+        $slug = static fn(string $locale): string => $addressPrefix === '' ? '' : ' data-slug spellcheck="false" autocapitalize="off" autocomplete="off"'
+            . ($slugFrom === '' ? '' : ' data-slug-from="' . Html::attribute(str_ends_with($slugFrom, '-') ? $slugFrom . ($locale === '' ? $profile->defaultLocale : $locale) : $slugFrom) . '"');
 
         if ($field->localized && in_array($field->type, ['localized_short_text', 'multiline_text'], true)) {
             $localized = is_array($value) ? $value : [];
@@ -391,7 +400,7 @@ final class RecordPages
                     ? '<textarea id="' . Html::attribute($controlId) . '" name="' . Html::attribute($field->id . '__' . $locale) . '" maxlength="'
                         . $field->maximumLength . '" rows="5"' . ($localeDefinition->preparation ? '' : $required) . $invalid . '>' . Html::text($localeValue) . '</textarea>'
                     : '<input id="' . Html::attribute($controlId) . '" name="' . Html::attribute($field->id . '__' . $locale) . '" type="text" maxlength="'
-                        . $field->maximumLength . '" value="' . Html::attribute($localeValue) . '"' . ($localeDefinition->preparation ? '' : $required) . $invalid . '>';
+                        . $field->maximumLength . '" value="' . Html::attribute($localeValue) . '"' . $slug($locale) . ($localeDefinition->preparation ? '' : $required) . $invalid . '>';
                 if ($addressPrefix !== '') {
                     // The page address is edited inside the route prefix it produces.
                     $control = '<div class="admin-input-group admin-address"><span class="admin-input-unit" aria-hidden="true">' . Html::text($addressPrefix) . '</span>' . $control . '</div>';
@@ -464,7 +473,10 @@ final class RecordPages
             ? '<textarea id="' . Html::attribute($fieldId) . '" name="' . Html::attribute($field->id) . '" maxlength="' . $field->maximumLength . '" rows="6"' . $required . $invalid . '>'
                 . Html::text($text) . '</textarea>'
             : '<input id="' . Html::attribute($fieldId) . '" name="' . Html::attribute($field->id) . '" type="text" maxlength="' . $field->maximumLength . '" value="'
-                . Html::attribute($text) . '"' . $required . $invalid . '>';
+                . Html::attribute($text) . '"' . $slug('') . $required . $invalid . '>';
+        if ($addressPrefix !== '' && !$multiline) {
+            $control = '<div class="admin-input-group admin-address"><span class="admin-input-unit" aria-hidden="true">' . Html::text($addressPrefix) . '</span>' . $control . '</div>';
+        }
         return '<div class="admin-field' . ($multiline || $field->maximumLength > 160 ? '' : ' admin-field--short') . '"><label for="' . Html::attribute($fieldId) . '">' . $label . '</label>'
             . $control . $errorMarkup . '</div>';
     }

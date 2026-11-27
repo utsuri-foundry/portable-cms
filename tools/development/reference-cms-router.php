@@ -31,6 +31,7 @@ $assets = [
     '/assets/composition-model.js' => [$repository . '/engine/src/cms/conventional/client/composition-model.js', 'text/javascript; charset=utf-8'],
     '/assets/groups.css' => [$repository . '/engine/src/cms/conventional/client/groups.css', 'text/css; charset=utf-8'],
     '/assets/group-rows.js' => [$repository . '/engine/src/cms/conventional/client/group-rows.js', 'text/javascript; charset=utf-8'],
+    '/assets/slug-fields.js' => [$repository . '/engine/src/cms/conventional/client/slug-fields.js', 'text/javascript; charset=utf-8'],
     '/assets/live-preview.js' => [$repository . '/engine/src/cms/conventional/client/live-preview.js', 'text/javascript; charset=utf-8'],
     '/assets/live-vimeo.js' => [$repository . '/engine/src/cms/conventional/client/live-vimeo.js', 'text/javascript; charset=utf-8'],
     '/assets/preview-vimeo.js' => [$repository . '/engine/src/cms/conventional/client/preview-vimeo.js', 'text/javascript; charset=utf-8'],
