@@ -332,7 +332,14 @@ button, .admin-button { justify-self: start; }
 .admin-table__title { font-weight: 600; text-decoration: none; }
 .admin-table tbody .admin-table__title::after { position: absolute; inset: 0; content: ""; }
 .admin-table__sub { overflow: hidden; color: var(--admin-subtle); font-size: var(--admin-text-xs); text-overflow: ellipsis; white-space: nowrap; }
-.admin-table__chevron { width: 1.5rem; color: var(--admin-subtle); text-align: right; }
+.admin-table td[data-column="actions"] { width: 2.5rem; padding-block: 0; padding-left: 0; text-align: right; }
+/* One native menu per row; it opens beside its control, so the table never grows or scrolls for it. */
+.admin-table__menu { position: relative; z-index: 1; display: inline-block; vertical-align: middle; }
+.admin-table__menu > summary { display: grid; width: 2rem; height: var(--admin-control-small); place-items: center; border-radius: var(--admin-radius-small); color: var(--admin-muted); cursor: pointer; list-style: none; }
+.admin-table__menu > summary::-webkit-details-marker { display: none; }
+.admin-table__menu > summary:hover, .admin-table__menu[open] > summary { background: var(--admin-panel-muted); color: var(--admin-text); }
+.admin-table__actions { position: absolute; top: 50%; right: calc(100% + 0.25rem); display: flex; margin: 0; transform: translateY(-50%); }
+.admin-table__actions > button { box-shadow: var(--admin-shadow); white-space: nowrap; }
 .admin-empty { display: grid; justify-items: center; gap: var(--admin-space-2); padding: var(--admin-space-7) var(--admin-space-5); text-align: center; }
 .admin-empty > * { margin: 0; }
 .admin-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2); color: var(--admin-muted); font-size: var(--admin-text-sm); }
@@ -462,6 +469,8 @@ details > summary { cursor: pointer; }
 .admin-rail-more { display: grid; gap: var(--admin-space-2); font-size: var(--admin-text-sm); }
 .admin-rail-more > summary { justify-self: start; color: var(--admin-muted); font-size: var(--admin-text-xs); }
 .admin-rail-more > summary:hover { color: var(--admin-text); }
+.admin-editor__rail .admin-save-bar .admin-rail-action { justify-self: start; width: auto; min-height: 0; padding: 0; border: 0; background: none; color: var(--admin-muted); font-size: var(--admin-text-xs); font-weight: 400; }
+.admin-editor__rail .admin-save-bar .admin-rail-action:hover { color: var(--admin-text); }
 .admin-rail-more > p { margin: 0; }
 .admin-rail-more label { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2); }
 .admin-rail-more select { width: auto; flex: 1; }
@@ -500,7 +509,7 @@ details > summary { cursor: pointer; }
   .admin-editor__rail .admin-preview-card, .admin-editor__rail .admin-coverage-card { order: 3; }
   .admin-editor__rail .admin-save-bar { position: sticky; bottom: 0; order: 4; display: flex; box-shadow: var(--admin-shadow); }
   .admin-editor__rail .admin-save-bar button { width: auto; }
-  .admin-editor__rail .admin-save-bar :is(.admin-rail-state, .admin-rail-more) { display: none; }
+  .admin-editor__rail .admin-save-bar :is(.admin-rail-state, .admin-rail-more, .admin-rail-action) { display: none; }
 }
 
 /* ---------- Rich text ---------- */
@@ -773,14 +782,14 @@ details > summary { cursor: pointer; }
   .admin-table-wrap { overflow: hidden; }
   .admin-table, .admin-table tbody { display: block; }
   .admin-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .admin-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.25rem var(--admin-space-3); padding: var(--admin-space-3) var(--admin-space-4); border-bottom: 1px solid var(--admin-border); }
+  .admin-table tr { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 0.25rem var(--admin-space-3); padding: var(--admin-space-3) var(--admin-space-4); border-bottom: 1px solid var(--admin-border); }
   .admin-table tbody tr:last-child { border-bottom: 0; }
   .admin-table td { display: block; padding: 0; border: 0; }
   .admin-table td[data-column="title"] { grid-column: 1; }
   .admin-table td[data-column="status"] { grid-column: 2; grid-row: 1; justify-self: end; }
   .admin-table td[data-column="updated"] { grid-column: 2; justify-self: end; font-size: var(--admin-text-xs); }
   .admin-table td[data-column="languages"] { grid-column: 1; grid-row: 2; }
-  .admin-table .admin-table__chevron { display: none; }
+  .admin-table td[data-column="actions"] { grid-column: 3; grid-row: 1 / span 2; align-self: center; width: auto; }
   .admin-list__item { align-items: flex-start; flex-direction: column; }
   .admin-preview-row > .admin-preview-row__details { flex-basis: auto; }
   .admin-preview-row > .admin-preview-row__actions { margin-left: 0; justify-content: flex-start; }

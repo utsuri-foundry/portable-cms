@@ -89,7 +89,7 @@ export function focusedLanes(paths) {
 	for (const [lane, covered] of Object.entries({
 		native: ["editor-start", "record-workflow", "account"],
 		media: ["vimeo", "video-field-limits"],
-		"record-keeping": ["record-keeping", "single-line-rich-text"],
+		"record-keeping": ["record-keeping", "record-slugs", "single-line-rich-text"],
 		"exact-preview": ["editor-exact-preview"],
 		blocks: ["blocks-editor", "composition"],
 		publication: ["published-record", "release-schedule"],

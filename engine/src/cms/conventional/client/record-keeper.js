@@ -13,6 +13,7 @@ export function createRecordKeeper({
 	let baseline = read();
 	let forced = initiallyDirty;
 	let invalid = false;
+	let problem = "";
 	let stopped = false;
 	let pending = null;
 	let running = null;
@@ -45,7 +46,8 @@ export function createRecordKeeper({
 				invalid = Object.keys(result.errors).length > 0;
 				onSaved(result);
 				if (invalid) {
-					onState("error", Object.values(result.errors)[0]);
+					problem = Object.values(result.errors)[0];
+					onState("error", problem);
 					if (read() !== baseline) continue;
 					if (result.retryable) {
 						forced = true;
@@ -97,7 +99,11 @@ export function createRecordKeeper({
 			return running || Promise.resolve();
 		},
 		change() {
-			if (dirty()) {
+			// Retyping the refused value changes nothing to keep: the refusal stands.
+			if (invalid && !forced && pending === null && read() === baseline) {
+				cancel(timer);
+				if (!running) onState("error", problem);
+			} else if (dirty()) {
 				displayedChanges = true;
 				onState("saving");
 				later(1500);

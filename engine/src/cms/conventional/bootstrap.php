@@ -67,6 +67,7 @@ require_once __DIR__ . '/content/profile-package.php';
 require_once __DIR__ . '/content/record-repository.php';
 require_once __DIR__ . '/content/record-editing.php';
 require_once __DIR__ . '/content/record-browser.php';
+require_once __DIR__ . '/content/record-slugs.php';
 require_once __DIR__ . '/content/locale-coverage.php';
 require_once __DIR__ . '/content/editorial-controls.php';
 require_once __DIR__ . '/content/editorial-media-fields.php';

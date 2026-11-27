@@ -663,6 +663,7 @@ require dirname(__DIR__) . '/php/quiet-record-editor-test.php';
 require dirname(__DIR__) . '/php/editor-exact-preview-test.php';
 require dirname(__DIR__) . '/php/record-history-test.php';
 require dirname(__DIR__) . '/php/single-line-rich-text-test.php';
+require dirname(__DIR__) . '/php/record-slugs-test.php';
 
 $failures = 0;
 foreach ($tests as $name => $test) {
