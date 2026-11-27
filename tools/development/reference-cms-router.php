@@ -32,6 +32,7 @@ $assets = [
     '/assets/groups.css' => [$repository . '/engine/src/cms/conventional/client/groups.css', 'text/css; charset=utf-8'],
     '/assets/group-rows.js' => [$repository . '/engine/src/cms/conventional/client/group-rows.js', 'text/javascript; charset=utf-8'],
     '/assets/live-preview.js' => [$repository . '/engine/src/cms/conventional/client/live-preview.js', 'text/javascript; charset=utf-8'],
+    '/assets/live-preview-missing.js' => [$repository . '/engine/src/cms/conventional/client/live-preview-missing.js', 'text/javascript; charset=utf-8'],
     '/assets/live-vimeo.js' => [$repository . '/engine/src/cms/conventional/client/live-vimeo.js', 'text/javascript; charset=utf-8'],
     '/assets/preview-vimeo.js' => [$repository . '/engine/src/cms/conventional/client/preview-vimeo.js', 'text/javascript; charset=utf-8'],
     '/assets/vimeo-player.js' => [$repository . '/engine/src/cms/conventional/client/vimeo-player.js', 'text/javascript; charset=utf-8'],

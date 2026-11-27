@@ -459,6 +459,24 @@ sites with published content keep their messages. The first problem Save or the
 profile would report is returned as a plain reason. A render never creates
 revisions, audit events or files.
 
+When the only problem is that the record's own required fields are empty
+(those Save requires, or else those publication requires), nothing is drawn and
+the status names every one of them, in profile order, by its label in the
+interface language: "To update the preview, fill in Title and Main still." A
+localized field empty in only some of the public languages also names them,
+"Title (English)"; one empty in all of them, or on a site with one public
+language, is named alone. Each name is a button that opens the field's section,
+switches to Edit on narrow windows and to the missing language when the one
+being edited is filled, and focuses the field's control (a closed picker's
+summary when that is all it shows, never its explanation control). The field
+carries the required star while it is empty in the language being edited, in the
+danger colour, with "Needed for the preview" for assistive technology; a field
+whose own star is already shown keeps it, coloured. The mark goes as soon as the
+field holds a value and returns if it is emptied; the next drawn page clears
+every mark. Update preview stays hidden, since the next change draws the page.
+Without scripts the same sentence explains the page that could not be drawn.
+Other problems of the record or the site keep their plain reason.
+
 The render is stored in `cms_live_previews` under the SHA-256 of an
 unguessable workspace token and a render ID, bound to the signed-in session:
 it ends ten minutes after the render, when the session signs out or expires,
@@ -730,8 +748,9 @@ Engine islands are `admin-shell.js` (appearance and account panel),
 (row reordering and menus), `rich-text-editor.js`
 with the pure `rich-text-surface.js` mapping, `composition-editor.js`,
 `live-preview.js` (the workspace, with `live-preview-bridge.js` inside live
-pages), and `resumable-upload.js`. Each enhances the server form, preserves submitted
-names, exposes its state to assistive technology, disposes cleanly, and leaves
+pages and `live-preview-missing.js` leading to empty required fields), and
+`resumable-upload.js`. Each enhances the server form, preserves submitted names,
+exposes its state to assistive technology, disposes cleanly, and leaves
 a complete no-script path. Fields without an engine editor remain explicit and
 their content is preserved.
 

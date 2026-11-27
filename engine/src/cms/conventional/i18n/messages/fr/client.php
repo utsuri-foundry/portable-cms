@@ -75,6 +75,8 @@ return [
     'client.live.rich_form' => 'Utilisez l’éditeur du formulaire pour le format, les sauts de ligne et pour ajouter, joindre ou supprimer des blocs.',
     'client.live.rich_stale' => 'Ce texte a changé dans le formulaire. La modification de l’ancienne page a été refusée ; vérifiez le formulaire actuel ou la page actualisée.',
     'client.live.failed' => 'L’aperçu n’a pas pu être mis à jour. {reason}',
+    'client.live.missing' => 'Pour mettre à jour l’aperçu, remplissez {fields}.',
+    'client.live.needed' => 'Nécessaire pour l’aperçu',
     'client.live.unavailable' => 'L’aperçu n’a pas pu être mis à jour. Réessayez.',
     'client.live.slow' => 'Cette page met du temps à s’afficher. Utilisez Mettre à jour l’aperçu après vos modifications.',
     'client.live.home_instead' => 'Cet élément n’a pas de page propre ; la page d’accueil est affichée.',

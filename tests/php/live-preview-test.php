@@ -135,13 +135,65 @@ $tests['live preview shows a draft or new record as published and reports what b
             $live['service']->render(new LivePreviewRequest('project', '10000000000000000000000000000002', livePreviewBody($live['snapshot'], '10000000000000000000000000000002'), [], 'record', 'en'), str_repeat('5', 32));
             assertTrueValue(false, 'an incomplete record cannot be drawn');
         } catch (LivePreviewFailure $failure) {
+            assertSameValue([['field' => 'title', 'locales' => ['en']], ['field' => 'slug', 'locales' => ['en']]], $failure->missing, 'the record\'s empty required fields are reported by identity, in profile order, with the languages they are empty in');
             $text = \Utsuri\PortableCms\Conventional\I18n\Translator::english()->message($failure->reason);
-            assertTrueValue(str_contains($text, 'Taller de llum') && str_contains($text, ' in en: ') && str_contains($text, 'missing translation'), 'the reason names the record, field and language: ' . $text);
+            assertSameValue('To update the preview, fill in Title (English), Slug (English).', $text, 'the reason names each field and the language it is missing in');
         }
         assertSameValue(1, count($live['store']->saved), 'a failed render stores nothing');
     } finally {
         staticCompilerRemoveTree($live['root']);
     }
+};
+
+$tests['live preview names empty required fields by the reader\'s labels and only the languages that need them'] = static function (): void {
+    $live = livePreviewFixture();
+    try {
+        $body = livePreviewBody($live['snapshot'], '10000000000000000000000000000001');
+        $body['title'] = ['ca' => '', 'es' => '', 'en' => ''];
+        $body['slug']['es'] = ' ';
+        try {
+            $live['service']->render(new LivePreviewRequest('project', '10000000000000000000000000000001', $body, [], 'record', 'en'), str_repeat('5', 32));
+            assertTrueValue(false, 'a record with empty required fields cannot be drawn');
+        } catch (LivePreviewFailure $failure) {
+            assertSameValue([['field' => 'title', 'locales' => ['ca', 'es', 'en']], ['field' => 'slug', 'locales' => ['es']]], $failure->missing, 'blank text counts as empty in each public language');
+            assertSameValue('To update the preview, fill in Title, Slug (Español).', \Utsuri\PortableCms\Conventional\I18n\Translator::english()->message($failure->reason), 'a field empty in every language it needs is named alone');
+        }
+        assertSameValue([], $live['store']->saved, 'nothing is stored');
+    } finally {
+        staticCompilerRemoveTree($live['root']);
+    }
+    $profile = \Utsuri\PortableCms\Conventional\Content\ProfilePackage::load(dirname(__DIR__, 2) . '/profiles/reference-studio')->manifest;
+    $type = $profile->type('project');
+    assertTrueValue($type !== null, 'the reference profile has projects');
+    if ($type === null) {
+        return;
+    }
+    $presented = new \Utsuri\PortableCms\Conventional\Content\RecordTypeDefinition($type->id, $type->label, $type->singularLabel, array_map(
+        static fn(\Utsuri\PortableCms\Conventional\Content\FieldDefinition $field): \Utsuri\PortableCms\Conventional\Content\FieldDefinition => $field->id !== 'title' ? $field
+            : new \Utsuri\PortableCms\Conventional\Content\FieldDefinition($field->id, 'Títol', $field->type, $field->localized, $field->requiredOnDraft, $field->requiredOnPublish, $field->settings, $field->fields, $field->maximumLength, $field->targetType, $field->maximumItems, $field->editorialSection, $field->hint),
+        $type->fields,
+    ), $type->kind, $type->archetype, $type->renderer, $type->route);
+    $named = \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::named([['field' => 'title', 'locales' => ['en']], ['field' => 'retired', 'locales' => []]], $presented, $profile, ['ca', 'es', 'en']);
+    assertSameValue([['field' => 'title', 'locales' => ['en'], 'label' => 'Títol (English)'], ['field' => 'retired', 'locales' => [], 'label' => 'retired']], $named, 'labels come from the given, presented type and the profile\'s language names');
+    assertSameValue('Títol (English)', \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::named([['field' => 'title', 'locales' => ['en']]], $presented, $profile, ['ca', 'en'])[0]['label'], 'a language in preparation is not required, so the others are named');
+    assertSameValue('Títol', \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::named([['field' => 'title', 'locales' => ['en']]], $presented, $profile, ['en'])[0]['label'], 'a site with one public language never names it');
+};
+
+$tests['live preview leads to fields Save finds empty and reports anything else as Save does'] = static function (): void {
+    $type = \Utsuri\PortableCms\Conventional\Content\ProfilePackage::load(dirname(__DIR__, 2) . '/profiles/reference-studio')->manifest->type('project');
+    assertTrueValue($type !== null, 'the reference profile has projects');
+    if ($type === null) {
+        return;
+    }
+    $required = new \Utsuri\PortableCms\Conventional\I18n\Message('validation.required_every_language', ['field' => 'Title']);
+    $values = ['title' => ['ca' => 'Arxiu', 'es' => '  ', 'en' => '']];
+    assertSameValue([['field' => 'title', 'locales' => ['es', 'en']]], \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation(['title' => $required], $values, $type, ['ca', 'es', 'en']), 'the empty public languages of a localized field are found in the submitted values');
+    assertSameValue([['field' => 'title', 'locales' => ['es']]], \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation(['title' => $required], $values, $type, ['ca', 'es']), 'languages in preparation are not asked for');
+    $rich = new \Utsuri\PortableCms\Conventional\I18n\Message('validation.detail_locale', ['field' => 'Title', 'locale' => 'es', 'detail' => new \Utsuri\PortableCms\Conventional\I18n\Message('validation.rich.required')]);
+    assertSameValue([['field' => 'title', 'locales' => ['es']]], \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation(['title' => $rich], [], $type, ['ca', 'es', 'en']), 'a required detail names its own language');
+    $tooLong = new \Utsuri\PortableCms\Conventional\I18n\Message('validation.too_long_each_language', ['field' => 'Slug', 'maximum' => '10']);
+    assertSameValue([], \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation(['title' => $required, 'slug' => $tooLong], $values, $type, ['ca', 'es', 'en']), 'any other error keeps Save\'s message');
+    assertSameValue([], \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation(['credits.0.name' => $required], [], $type, ['ca']), 'a nested field keeps Save\'s message');
 };
 
 /** The home is still a draft, as before anything is published; an unfinished draft can be archived. */

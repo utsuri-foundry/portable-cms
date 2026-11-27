@@ -79,28 +79,10 @@ final class ProfilePreviewCompiler implements PreviewCompiler
                 $links[] = null;
                 continue;
             }
-            foreach ($type->fields as $field) {
-                if (!$field->requiredOnPublish) {
-                    continue;
-                }
-                foreach ($field->localized ? array_values(array_diff($snapshot->locales, $snapshot->preparationLocales)) : [''] as $locale) {
-                    $raw = $record->body[$field->id] ?? null;
-                    $value = $field->localized && is_array($raw) ? ($raw[$locale] ?? null) : $raw;
-                    $missing = $value === null || $value === [] || (is_string($value) && trim($value) === '');
-                    if ($field->type === 'rich_text' && is_array($value)) {
-                        try {
-                            $missing = !\Utsuri\PortableCms\Conventional\Content\RichText::from($value, $field)->hasText();
-                        } catch (\InvalidArgumentException $error) {
-                            $issues[] = PreviewDiagnostics::cause(new ProfileBuildFailure(ProfileBuildReason::InvalidContent, $record->id, $record->typeId, fieldId: $field->id, locale: $locale, previous: $error), $snapshot, $this->profile($snapshot));
-                            $links[] = '/records/' . $type->id . '/' . $record->id;
-                            continue;
-                        }
-                    }
-                    if ($missing) {
-                        $issues[] = PreviewDiagnostics::cause(new ProfileBuildFailure($locale === '' ? ProfileBuildReason::RequiredValue : ProfileBuildReason::MissingTranslation, $record->id, $record->typeId, fieldId: $field->id, locale: $locale), $snapshot, $this->profile($snapshot));
-                        $links[] = '/records/' . $type->id . '/' . $record->id;
-                    }
-                }
+            foreach (self::gaps($type, $record, $snapshot) as ['field' => $field, 'locale' => $locale, 'error' => $error]) {
+                $reason = $error !== null ? ProfileBuildReason::InvalidContent : ($locale === '' ? ProfileBuildReason::RequiredValue : ProfileBuildReason::MissingTranslation);
+                $issues[] = PreviewDiagnostics::cause(new ProfileBuildFailure($reason, $record->id, $record->typeId, fieldId: $field->id, locale: $locale, previous: $error), $snapshot, $this->profile($snapshot));
+                $links[] = '/records/' . $type->id . '/' . $record->id;
             }
         }
         foreach (self::missingWording($this->profile($snapshot), $snapshot) as $issue) {
@@ -111,6 +93,63 @@ final class ProfilePreviewCompiler implements PreviewCompiler
             $error = new PreviewPreflightFailure(array_slice($issues, 0, 100), links: array_slice($links, 0, 100));
             throw new PreviewPreflightFailure($error->issues, $this->report === null ? null : ($this->report)($error), $error, links: $error->links);
         }
+    }
+
+    /**
+     * The values one record still needs before it can be drawn, in profile order: each required
+     * field with the public languages it is empty in ('' for an untranslated field).
+     *
+     * @return list<array{field: string, locales: list<string>}>
+     */
+    public function missing(PreviewSnapshot $snapshot, string $recordId): array
+    {
+        $missing = [];
+        foreach ($snapshot->records as $record) {
+            $type = $record->id === $recordId ? $this->profile($snapshot)->type($record->typeId) : null;
+            if ($type === null) {
+                continue;
+            }
+            foreach (self::gaps($type, $record, $snapshot) as ['field' => $field, 'locale' => $locale, 'error' => $error]) {
+                if ($error === null) {
+                    $missing[$field->id]['field'] = $field->id;
+                    $missing[$field->id]['locales'][] = $locale;
+                }
+            }
+        }
+        return array_values(array_map(static fn(array $gap): array => ['field' => $gap['field'], 'locales' => array_values(array_filter($gap['locales'], static fn(string $locale): bool => $locale !== ''))], $missing));
+    }
+
+    /**
+     * Required values a record lacks for publication, one per field and public language. A rich
+     * text that cannot be read carries its error instead of counting as empty.
+     *
+     * @return list<array{field: \Utsuri\PortableCms\Conventional\Content\FieldDefinition, locale: string, error: ?\InvalidArgumentException}>
+     */
+    private static function gaps(\Utsuri\PortableCms\Conventional\Content\RecordTypeDefinition $type, PreviewRecord $record, PreviewSnapshot $snapshot): array
+    {
+        $gaps = [];
+        foreach ($type->fields as $field) {
+            if (!$field->requiredOnPublish) {
+                continue;
+            }
+            foreach ($field->localized ? array_values(array_diff($snapshot->locales, $snapshot->preparationLocales)) : [''] as $locale) {
+                $raw = $record->body[$field->id] ?? null;
+                $value = $field->localized && is_array($raw) ? ($raw[$locale] ?? null) : $raw;
+                $missing = $value === null || $value === [] || (is_string($value) && trim($value) === '');
+                if ($field->type === 'rich_text' && is_array($value)) {
+                    try {
+                        $missing = !\Utsuri\PortableCms\Conventional\Content\RichText::from($value, $field)->hasText();
+                    } catch (\InvalidArgumentException $error) {
+                        $gaps[] = ['field' => $field, 'locale' => $locale, 'error' => $error];
+                        continue;
+                    }
+                }
+                if ($missing) {
+                    $gaps[] = ['field' => $field, 'locale' => $locale, 'error' => null];
+                }
+            }
+        }
+        return $gaps;
     }
 
     /**
