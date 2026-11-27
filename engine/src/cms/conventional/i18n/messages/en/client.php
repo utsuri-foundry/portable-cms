@@ -75,6 +75,8 @@ return [
     'client.live.rich_form' => 'Use the rich-text editor in the form for formatting, line breaks and adding, joining or removing blocks.',
     'client.live.rich_stale' => 'This rich text changed in the form. The old page edit was refused; review the current form or the refreshed page.',
     'client.live.failed' => 'The preview could not be updated. {reason}',
+    'client.live.missing' => 'To update the preview, fill in {fields}.',
+    'client.live.needed' => 'Needed for the preview',
     'client.live.unavailable' => 'The preview could not be updated. Try again.',
     'client.live.slow' => 'This page takes a while to draw. Use Update preview after your changes.',
     'client.live.home_instead' => 'This record has no page of its own, so the home page is shown.',

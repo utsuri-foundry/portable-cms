@@ -396,10 +396,20 @@ final class EditorialRecordHttp
             : new Response(422, \Utsuri\PortableCms\Conventional\View\AdminShell::focused($t->text('live.failed.title'), \Utsuri\PortableCms\Conventional\View\TrustedHtml::fromEngineMarkup(
                 '<h1>' . $t->html('live.failed.title') . '</h1><p class="admin-help">' . \Utsuri\PortableCms\Conventional\Http\Html::text($reason) . '</p>',
             ), $t));
+        // Empty required fields are named as the form labels them, so the workspace can lead to each.
+        $lead = function (array $missing) use ($json, $sequence, $failure, $type, $t): Response {
+            $named = \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::named($missing, $type, $this->profile, $this->content->requiredLocales());
+            $reason = $t->message(\Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::message($named));
+            return $json ? Response::json(['sequence' => $sequence, 'reason' => $reason, 'missing' => $named], 422) : $failure($reason);
+        };
         $locale = in_array($request->formValue('_live_locale'), $this->profile->locales, true) ? $request->formValue('_live_locale') : $this->profile->defaultLocale;
         $page = $request->formValue('_live_page') === 'home' ? 'home' : 'record';
         $validated = $this->content->unsaved($type->id, EditorialForm::input($request, $type, $this->profile, $saved), $saved);
         if ($validated instanceof ValidationFailure) {
+            $missing = \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation($validated->errors, $validated->values, $type, $this->content->requiredLocales());
+            if ($missing !== []) {
+                return $lead($missing);
+            }
             $fieldId = (string) array_key_first($validated->errors);
             $field = null;
             foreach ($type->fields as $candidate) {
@@ -416,6 +426,9 @@ final class EditorialRecordHttp
         try {
             $result = $this->live->render(new \Utsuri\PortableCms\Conventional\Preview\LivePreviewRequest($type->id, $saved?->id, $validated->body, $relationships, $page, $locale), $session->id, $request->formValue('_live_token'));
         } catch (\Utsuri\PortableCms\Conventional\Preview\LivePreviewFailure $error) {
+            if ($error->missing !== []) {
+                return $lead($error->missing);
+            }
             return $failure($t->message(\Utsuri\PortableCms\Conventional\Preview\PreviewDiagnostics::present($error->reason, $this->profile)));
         }
         if (!$json) {

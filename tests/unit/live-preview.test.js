@@ -865,3 +865,75 @@ test("group children link by identity in the page language and accept edits only
 		"a language switch redraws instead of waiting forever for the old field's blur",
 	);
 });
+
+test("empty required fields are named as buttons that lead to them in the form", async () => {
+	const live = fixture({ wide: false });
+	const input = Object.assign(new Element(), {
+		value: "",
+		getClientRects: () => [{}],
+		scrollIntoView() {
+			this.scrolled = true;
+		},
+	});
+	const help = Object.assign(new Element(), { getClientRects: () => [{}] });
+	help.classList.add("admin-help-control__toggle");
+	const panel = new Element({ [FOCUSABLE]: [help, input] });
+	const title = new Element({ '[data-locale-panel="ca"]': panel });
+	title.dataset = { field: "title", fieldLabel: "Títol" };
+	title.parentElement = live.form;
+	live.form.selectors["[data-field]"] = [title];
+	live.form.ownerDocument.documentElement = { lang: "ca" };
+	live.form.ownerDocument.createElement = () => new Element();
+	live.status.replaceChildren = (...nodes) => {
+		live.status.nodes = nodes;
+		live.status.textContent = nodes
+			.map((node) => (typeof node === "string" ? node : node.textContent))
+			.join("");
+	};
+	live.form.dataset.messages = JSON.stringify({
+		...JSON.parse(live.form.dataset.messages),
+		"live.missing": "Per actualitzar la previsualització, cal omplir {fields}.",
+	});
+	mountLivePreview(live.root, live.form);
+	live.toggle.dispatchEvent(new Event("click"));
+	await live.answer(
+		0,
+		{
+			sequence: 1,
+			reason: "Per actualitzar la previsualització, cal omplir Títol.",
+			missing: [{ field: "title", locales: [], label: "Títol" }],
+		},
+		false,
+	);
+	assert.equal(
+		live.status.textContent,
+		"Per actualitzar la previsualització, cal omplir Títol.",
+	);
+	const [button] = live.status.nodes.filter((node) => typeof node !== "string");
+	assert.equal(button.className, "admin-live__field");
+	assert.equal(
+		live.update.hidden,
+		true,
+		"the next change draws the page, so Update preview stays away",
+	);
+	button.dispatchEvent(new Event("click"));
+	assert.equal(
+		live.shell.dataset.liveView,
+		"edit",
+		"narrow windows switch to the form",
+	);
+	assert.deepEqual(
+		[help.focused, input.focused, input.scrolled],
+		[undefined, true, true],
+		"the field's control receives focus, not its explanation",
+	);
+	live.form.dispatchEvent(new Event("input"));
+	live.run();
+	await live.answer(1, { sequence: 2, reason: "The title is too long." }, false);
+	assert.equal(
+		live.status.textContent,
+		"The preview could not be updated. The title is too long.",
+		"other reasons stay plain text",
+	);
+	assert.equal(live.update.hidden, false);
+});

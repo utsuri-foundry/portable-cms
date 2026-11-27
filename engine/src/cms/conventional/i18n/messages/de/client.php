@@ -75,6 +75,8 @@ return [
     'client.live.rich_form' => 'Verwenden Sie den Texteditor im Formular für Formatierung, Zeilenumbrüche und das Hinzufügen, Verbinden oder Entfernen von Blöcken.',
     'client.live.rich_stale' => 'Dieser Text wurde im Formular geändert. Die Bearbeitung der alten Seite wurde abgelehnt; prüfen Sie das aktuelle Formular oder die aktualisierte Seite.',
     'client.live.failed' => 'Die Vorschau konnte nicht aktualisiert werden. {reason}',
+    'client.live.missing' => 'Füllen Sie {fields} aus, um die Vorschau zu aktualisieren.',
+    'client.live.needed' => 'Für die Vorschau nötig',
     'client.live.unavailable' => 'Die Vorschau konnte nicht aktualisiert werden. Versuchen Sie es erneut.',
     'client.live.slow' => 'Diese Seite braucht etwas länger. Verwenden Sie nach Ihren Änderungen Vorschau aktualisieren.',
     'client.live.home_instead' => 'Dieser Eintrag hat keine eigene Seite, daher wird die Startseite angezeigt.',

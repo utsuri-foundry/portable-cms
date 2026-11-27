@@ -176,6 +176,13 @@ function verifyLivePreview(PDO $pdo, RuntimeConfiguration $configuration, Profil
     $invalid = $browser->request('POST', $endpoint, [...$live, 'title__ca' => ''], $json);
     $reason = json_decode($invalid->body, true, 8, JSON_THROW_ON_ERROR);
     assertTrueValue($invalid->status === 422 && str_contains($reason['reason'], 'Title'), 'a value Save would refuse is reported as a plain reason');
+    assertSameValue([['field' => 'title', 'locales' => ['ca'], 'label' => 'Title (Català)']], $reason['missing'] ?? null, 'an empty required field is named with its language, so the workspace can lead to it');
+    $catalan = json_decode($browser->request('POST', $endpoint, [...$live, 'title__ca' => '', 'title__en' => ''], ['accept-language' => 'ca', ...$json])->body, true, 8, JSON_THROW_ON_ERROR);
+    assertSameValue(['Per actualitzar la previsualització, cal omplir Títol (Català, English).', 'Títol (Català, English)'], [$catalan['reason'], $catalan['missing'][0]['label'] ?? null], 'fields are named by the profile\'s labels in the interface language');
+    $missing = $browser->request('POST', $endpoint, [...$live, 'title__ca' => '']);
+    assertTrueValue($missing->status === 422 && str_contains($missing->body, 'To update the preview, fill in Title (Català).'), 'without scripts the same sentence explains the page');
+    $tooLong = json_decode($browser->request('POST', $endpoint, [...$live, 'title__ca' => str_repeat('a', 500)], $json)->body, true, 8, JSON_THROW_ON_ERROR);
+    assertTrueValue(!isset($tooLong['missing']) && str_contains($tooLong['reason'], 'Title'), 'other refusals keep Save\'s message: ' . $tooLong['reason']);
     $plain = $browser->request('POST', $endpoint, $live);
     assertSameValue(303, $plain->status, 'without scripts the render opens through a redirect');
     assertTrueValue(str_starts_with($plain->headers()['location'][0], '/live-previews/'), 'the redirect leads to the isolated page');

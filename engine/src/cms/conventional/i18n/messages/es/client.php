@@ -75,6 +75,8 @@ return [
     'client.live.rich_form' => 'Usa el editor de texto del formulario para el formato, los saltos de línea y para añadir, unir o eliminar bloques.',
     'client.live.rich_stale' => 'Este texto cambió en el formulario. Se rechazó la edición de la página antigua; revisa el formulario actual o la página actualizada.',
     'client.live.failed' => 'No se ha podido actualizar la vista previa. {reason}',
+    'client.live.missing' => 'Para actualizar la vista previa, rellena {fields}.',
+    'client.live.needed' => 'Necesario para la vista previa',
     'client.live.unavailable' => 'No se ha podido actualizar la vista previa. Inténtalo de nuevo.',
     'client.live.slow' => 'Esta página tarda en mostrarse. Usa Actualizar la vista previa después de tus cambios.',
     'client.live.home_instead' => 'Este elemento no tiene página propia; se muestra la página de inicio.',

@@ -75,6 +75,8 @@ return [
     'client.live.rich_form' => 'Fes servir l’editor de text del formulari per al format, els salts de línia i per afegir, unir o eliminar blocs.',
     'client.live.rich_stale' => 'Aquest text ha canviat al formulari. S’ha rebutjat l’edició de la pàgina antiga; revisa el formulari actual o la pàgina actualitzada.',
     'client.live.failed' => 'No s’ha pogut actualitzar la previsualització. {reason}',
+    'client.live.missing' => 'Per actualitzar la previsualització, cal omplir {fields}.',
+    'client.live.needed' => 'Necessari per a la previsualització',
     'client.live.unavailable' => 'No s’ha pogut actualitzar la previsualització. Torna-ho a provar.',
     'client.live.slow' => 'Aquesta pàgina triga a mostrar-se. Fes servir Actualitza la previsualització després dels canvis.',
     'client.live.home_instead' => 'Aquest element no té pàgina pròpia; es mostra la pàgina d’inici.',

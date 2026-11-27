@@ -59,9 +59,88 @@ final readonly class LivePreviewResult
 /** A plain reason the page could not be drawn; the last good page stays visible. */
 final class LivePreviewFailure extends \RuntimeException
 {
-    public function __construct(public readonly Message $reason, ?\Throwable $previous = null)
+    /** @param list<array{field: string, locales: list<string>}> $missing Required fields of the record still empty, so the editor can be led to each. */
+    public function __construct(public readonly Message $reason, ?\Throwable $previous = null, public readonly array $missing = [])
     {
         parent::__construct('Live preview could not be rendered.', previous: $previous);
+    }
+}
+
+/** Names the required fields a live page still needs, as the form labels them. */
+final class LivePreviewMissing
+{
+    private const REQUIRED = ['validation.required', 'validation.required_every_language', 'validation.selection_required'];
+    private const REQUIRED_DETAIL = ['address.required', 'vimeo.required', 'validation.rich.required'];
+
+    /**
+     * Each field by its label in the given profile. A localized field empty in only some of the
+     * languages it is required in also names them, as in "Title (English)".
+     *
+     * @param list<array{field: string, locales: list<string>}> $missing
+     * @param list<string> $required The public languages a localized field must be filled in.
+     * @return list<array{field: string, locales: list<string>, label: string}>
+     */
+    public static function named(array $missing, \Utsuri\PortableCms\Conventional\Content\RecordTypeDefinition $type, \Utsuri\PortableCms\Conventional\Content\ProfileManifest $profile, array $required): array
+    {
+        $languages = [];
+        foreach ($profile->localeDefinitions as $definition) {
+            $languages[$definition->id] = $definition->label;
+        }
+        $named = [];
+        foreach (array_slice($missing, 0, 100) as $gap) {
+            $label = $gap['field'];
+            foreach ($type->fields as $field) {
+                $label = $field->id === $gap['field'] ? $field->label : $label;
+            }
+            if ($gap['locales'] !== [] && array_diff($required, $gap['locales']) !== []) {
+                $label .= ' (' . implode(', ', array_map(static fn(string $locale): string => $languages[$locale] ?? $locale, $gap['locales'])) . ')';
+            }
+            $named[] = ['field' => $gap['field'], 'locales' => $gap['locales'], 'label' => $label];
+        }
+        return $named;
+    }
+
+    /** @param list<array{field: string, locales: list<string>, label: string}> $named */
+    public static function message(array $named): Message
+    {
+        return new Message('client.live.missing', ['fields' => implode(', ', array_column($named, 'label'))]);
+    }
+
+    /**
+     * The fields Save's validation found empty, in profile order, or nothing when anything else is
+     * wrong: other errors keep the message Save shows.
+     *
+     * @param array<string, Message> $errors
+     * @param array<string, mixed> $values
+     * @param list<string> $required The public languages a localized field must be filled in.
+     * @return list<array{field: string, locales: list<string>}>
+     */
+    public static function fromValidation(array $errors, array $values, \Utsuri\PortableCms\Conventional\Content\RecordTypeDefinition $type, array $required): array
+    {
+        $missing = [];
+        foreach ($type->fields as $field) {
+            $error = $errors[$field->id] ?? null;
+            if ($error === null) {
+                continue;
+            }
+            $detail = $error->parameters['detail'] ?? null;
+            if (!in_array($error->key, self::REQUIRED, true) && !($detail instanceof Message && in_array($detail->key, self::REQUIRED_DETAIL, true))) {
+                return [];
+            }
+            $locales = [];
+            if (is_string($error->parameters['locale'] ?? null)) {
+                $locales = [$error->parameters['locale']];
+            } elseif ($field->localized && is_array($values[$field->id] ?? null)) {
+                foreach ($required as $locale) {
+                    $value = $values[$field->id][$locale] ?? null;
+                    if ($value === null || $value === [] || (is_string($value) && trim($value) === '')) {
+                        $locales[] = $locale;
+                    }
+                }
+            }
+            $missing[] = ['field' => $field->id, 'locales' => $locales];
+        }
+        return count($missing) === count($errors) ? $missing : [];
     }
 }
 
@@ -148,6 +227,12 @@ final class LivePreviewService
         [$snapshot, $recordId] = $this->substitute(($this->snapshot)($now), $request);
         if (!in_array($request->locale, $snapshot->locales, true)) {
             throw new \InvalidArgumentException('Live preview language is not a site language');
+        }
+        // The record's own empty required fields are named before anything is drawn, with or without drafts.
+        $missing = $this->compiler->missing($snapshot, $recordId);
+        $type = $this->package->manifest->type($request->typeId);
+        if ($missing !== [] && $type !== null) {
+            throw new LivePreviewFailure(LivePreviewMissing::message(LivePreviewMissing::named($missing, $type, $this->package->manifest, array_values(array_diff($snapshot->locales, $snapshot->preparationLocales)))), missing: $missing);
         }
         $drafts = false;
         try {
