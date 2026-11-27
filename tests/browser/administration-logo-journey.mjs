@@ -216,10 +216,10 @@ async function uploadPair(shape) {
 	await navigate("/", ".admin-sidebar");
 	assert.equal(
 		await evaluate(
-			`Promise.all(${JSON.stringify(ids)}.map(id=>fetch('/media/'+id).then(r=>r.text()).then(html=>html.includes('Website (images)')))).then(values=>values.every(Boolean))`,
+			`Promise.all(${JSON.stringify(ids)}.map(id=>fetch('/media/'+id).then(r=>r.ok?r.text():'').then(html=>html.includes('admin-media')&&!html.includes('name="_website_owner"')))).then(values=>values.every(Boolean))`,
 		),
 		true,
-		"both images belong to Website without an owning entry",
+		"both images belong to the website: no entry owns them, so neither offers Keep for website",
 	);
 	return ids;
 }

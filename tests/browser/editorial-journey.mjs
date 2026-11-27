@@ -65,7 +65,7 @@ try {
 	);
 	assert.equal(
 		await evaluate("document.querySelector('[data-locale-tag]').textContent"),
-		"EN",
+		"· English",
 	);
 	await evaluate(
 		"document.querySelector('[data-record-locale-switcher] [data-locale-tab=en]').dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true,cancelable:true}))",
