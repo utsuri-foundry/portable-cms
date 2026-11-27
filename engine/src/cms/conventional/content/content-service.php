@@ -179,6 +179,21 @@ final class ContentService
         );
     }
 
+    /**
+     * A new draft with every value of a record of a collection or taxonomy: its title marked as a
+     * copy, a free slug in each language, and the same media and record references.
+     */
+    public function duplicate(string $typeId, string $recordId, string $actorUserId): RecordSnapshot
+    {
+        $type = $this->requiredType($typeId);
+        if ($type->kind === 'singleton' || !$this->repository instanceof RecordDuplicationRepository) {
+            throw new \InvalidArgumentException('This record cannot be duplicated');
+        }
+        $source = $this->find($typeId, $recordId) ?? throw new RecordNotFound();
+        $copy = $this->validateCanonical($typeId, $this->slugs()->copy($type, $source->body), $this->design?->load());
+        return $this->repository->duplicate($source, $this->randomId(), $this->randomId(), $this->profile->id, $this->profile->version, $copy->body, $copy->relationships, $actorUserId, $this->randomId(), $this->clock->now());
+    }
+
     /** @param array<string, mixed> $input */
     public function update(
         string $typeId,

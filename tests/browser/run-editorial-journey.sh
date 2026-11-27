@@ -98,7 +98,7 @@ if [ "${CMS_TEST_EDITOR_START_ONLY:-0}" = "1" ]; then
   exit 0
 fi
 if [ "${CMS_TEST_RECORD_KEEPING_ONLY:-0}" = "1" ]; then
-  if ! node tests/browser/record-keeping-journey.mjs; then
+  if ! node tests/browser/record-keeping-journey.mjs || ! node tests/browser/record-slugs-journey.mjs; then
     cat "$state/server.log" "$state/browser.log" >&2
     exit 1
   fi

@@ -114,3 +114,84 @@ $tests['slug controls edit inside their address and follow the title only while 
     assertTrueValue(!str_contains($ready, 'data-slug-from'), 'a published address never follows the title on its own');
     assertTrueValue(!str_contains($ready, 'name="name" type="text" maxlength="160" value="Anna" data-slug'), 'the name control is not a slug control');
 };
+
+$tests['duplicating a record makes a draft copy with a marked title, free slugs and the same references'] = static function (): void {
+    $fixture = editorialMediaFixture();
+    try {
+        $profile = ProfileManifest::load(dirname(__DIR__, 2) . '/profiles/reference-studio/profile.json');
+        $repository = new MemoryRecordRepository();
+        $clock = new IdentityTestClock(new DateTimeImmutable('2026-11-20T10:00:00Z'));
+        $service = new ContentService($repository, $profile, $clock, new IdentityTestRandom(), $fixture['library']);
+        $actor = str_repeat('1', 32);
+        $project = $service->create('project', recordSlugsArticle('Casa', ['ca' => 'casa', 'es' => '', 'en' => '']), $actor);
+        assertTrueValue($project instanceof RecordSnapshot, 'a related project saves');
+        $media = (string) array_key_first($fixture['repository']->items);
+        $source = $service->create('article', [
+            'title' => ['ca' => 'El pati', 'es' => 'El patio', 'en' => 'The courtyard'],
+            'slug' => ['ca' => 'pati', 'es' => 'patio', 'en' => ''],
+            'excerpt' => ['ca' => 'Resum', 'es' => 'Resumen', 'en' => 'Summary'],
+            'relatedProjects' => [$project->id],
+            'searchSharing' => ['en' => ['sharingImage' => [$media]]],
+        ], $actor);
+        assertTrueValue($source instanceof RecordSnapshot, 'the source article saves');
+        $repository->records[$source->id] = new RecordSnapshot($source->id, 'article', 'published', $source->revisionId, 1, $source->body, $source->updatedAt);
+        $copy = $service->duplicate('article', $source->id, $actor);
+        assertTrueValue($copy->id !== $source->id && $copy->workflowState === 'draft', 'the copy is a new draft, even of a published record');
+        assertSameValue($source->id, $repository->duplicates[$copy->id], 'the copy names its source for the audit');
+        assertSameValue(['ca' => 'El pati (còpia)', 'es' => 'El patio (copia)', 'en' => 'The courtyard (copy)'], $copy->body['title'], 'the title reads as a copy in each language');
+        assertSameValue(['ca' => 'pati-2', 'es' => 'patio-2', 'en' => ''], $copy->body['slug'], 'each slug takes the first free number and an empty one stays empty');
+        foreach (['excerpt', 'relatedProjects', 'searchSharing'] as $field) {
+            assertSameValue($source->body[$field], $copy->body[$field], $field . ' is copied unchanged');
+        }
+        assertSameValue([$project->id], array_map(static fn($relationship): string => $relationship->targetRecordId, $repository->relationships[$copy->id]), 'record references are projected for the copy');
+        assertSameValue($source->body, $repository->records[$source->id]->body, 'the source is untouched');
+        $second = $service->duplicate('article', $source->id, $actor);
+        assertSameValue(['ca' => 'pati-3', 'es' => 'patio-3', 'en' => ''], $second->body['slug'], 'a second copy takes the next free number');
+        $ofCopy = $service->duplicate('article', $copy->id, $actor);
+        assertSameValue('pati-2-2', $ofCopy->body['slug']['ca'], 'a copy of a copy keeps its own slug as the base');
+        assertSameValue('El pati (còpia) (còpia)', $ofCopy->body['title']['ca'], 'and marks its title again');
+        $long = $service->create('article', ['title' => array_fill_keys($profile->locales, str_repeat('a', 160)), 'slug' => array_fill_keys($profile->locales, str_repeat('b', 180))], $actor);
+        assertTrueValue($long instanceof RecordSnapshot, 'a record at the length limits saves');
+        $longCopy = $service->duplicate('article', $long->id, $actor);
+        assertSameValue(str_repeat('a', 153) . ' (copy)', $longCopy->body['title']['en'], 'a long title is shortened to keep the copy mark');
+        assertSameValue(str_repeat('b', 178) . '-2', $longCopy->body['slug']['en'], 'a long slug is shortened to keep its number');
+        $settings = $service->create('site-settings', [], $actor);
+        assertTrueValue($settings instanceof RecordSnapshot, 'a singleton saves');
+        try {
+            $service->duplicate('site-settings', $settings->id, $actor);
+            throw new RuntimeException('a singleton was duplicated');
+        } catch (InvalidArgumentException) {
+        }
+    } finally {
+        removeUploadTestTree($fixture['root']);
+    }
+};
+
+$tests['the duplicate action is a native form on a record page and in its list row, never on a singleton'] = static function (): void {
+    $profile = ProfileManifest::load(dirname(__DIR__, 2) . '/profiles/reference-studio/profile.json');
+    ['app' => $app, 'contentRepository' => $repository] = contentTestApplication(profileOverride: $profile);
+    $cookies = authenticatedTestCookies($app);
+    $csrf = $cookies[\Utsuri\PortableCms\Conventional\Identity\IdentityService::CSRF_COOKIE];
+    $created = $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('POST', '/records/article', contentMutationHeaders(), ['_csrf' => $csrf, 'title__ca' => 'Pati', 'title__es' => 'Patio', 'title__en' => 'Courtyard', 'slug__ca' => 'pati', 'slug__es' => '', 'slug__en' => '', '_editorial_end' => '1'], $cookies));
+    assertSameValue(303, $created->status, 'the article saves natively');
+    $id = basename($created->headers()['location'][0] ?? '');
+    $page = $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('GET', '/records/article/' . $id, cookies: $cookies));
+    assertTrueValue(str_contains($page->body, '<button type="submit" class="admin-rail-action" form="record-duplicate-form">Duplicate</button>'), 'the record page offers Duplicate quietly in its rail');
+    assertTrueValue(str_contains($page->body, '<form id="record-duplicate-form" method="post" action="/records/article/' . $id . '/duplicate"><input type="hidden" name="_csrf"'), 'Duplicate is a native form outside the editing form');
+    $list = $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('GET', '/records/article', cookies: $cookies));
+    assertTrueValue(str_contains($list->body, '<details class="admin-table__menu" data-row-menu><summary aria-label="Actions for “Pati”">'), 'each row has a named actions menu');
+    assertTrueValue(str_contains($list->body, 'action="/records/article/' . $id . '/duplicate"'), 'the row menu duplicates that record');
+    assertSameValue(403, $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('POST', '/records/article/' . $id . '/duplicate', contentMutationHeaders(), ['_csrf' => 'forged'], $cookies))->status, 'duplicating requires the CSRF token');
+    assertSameValue(405, $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('GET', '/records/article/' . $id . '/duplicate', cookies: $cookies))->status, 'duplicating is never a GET');
+    $duplicated = $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('POST', '/records/article/' . $id . '/duplicate', contentMutationHeaders(), ['_csrf' => $csrf], $cookies));
+    assertSameValue(303, $duplicated->status, 'duplicating redirects');
+    $copyId = basename($duplicated->headers()['location'][0] ?? '');
+    assertSameValue('/records/article/' . $copyId, $duplicated->headers()['location'][0] ?? '', 'it opens the new draft');
+    assertSameValue('pati-2', $repository->records[$copyId]->body['slug']['ca'], 'the copy has its own address');
+    $settings = $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('POST', '/records/site-settings', contentMutationHeaders(), ['_csrf' => $csrf, '_editorial_end' => '1'], $cookies));
+    $settingsPath = $settings->headers()['location'][0] ?? '';
+    assertTrueValue(str_starts_with($settingsPath, '/records/site-settings/'), 'the singleton saves');
+    $single = $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('GET', $settingsPath, cookies: $cookies));
+    assertTrueValue(!str_contains($single->body, 'record-duplicate-form'), 'a singleton offers no Duplicate');
+    assertSameValue(404, $app->handle(new \Utsuri\PortableCms\Conventional\Http\Request('POST', $settingsPath . '/duplicate', contentMutationHeaders(), ['_csrf' => $csrf], $cookies))->status, 'a singleton cannot be duplicated directly');
+};

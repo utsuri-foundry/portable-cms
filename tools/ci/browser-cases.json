@@ -17,6 +17,12 @@
     ],
     "env": {}
   },
+  "record-slugs": {
+    "files": [
+      "record-slugs-journey.mjs"
+    ],
+    "env": {}
+  },
   "editor-exact-preview": {
     "files": [
       "editor-exact-preview-journey.mjs"

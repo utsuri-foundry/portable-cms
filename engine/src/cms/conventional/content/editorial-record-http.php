@@ -31,7 +31,7 @@ final class EditorialRecordHttp
         private readonly ?\Utsuri\PortableCms\Conventional\Preview\EditorExactPreview $exact = null,
     ) {}
 
-    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live', typeId: string, recordId: string|null} $route */
+    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live'|'duplicate', typeId: string, recordId: string|null} $route */
     public function handle(Request $request, array $route, SessionContext $session, string $correlationId): Response
     {
         $response = $this->record($request, $route, $session, $correlationId);
@@ -40,7 +40,7 @@ final class EditorialRecordHttp
             ? $response->withVimeoWorkspace() : $response;
     }
 
-    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live', typeId: string, recordId: string|null} $route */
+    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live'|'duplicate', typeId: string, recordId: string|null} $route */
     private function record(Request $request, array $route, SessionContext $session, string $correlationId): Response
     {
         $type = $this->profile->type($route['typeId']);
@@ -56,6 +56,12 @@ final class EditorialRecordHttp
         }
         if ($route['kind'] === 'live') {
             return $this->live($request, $type, $saved, $session, $correlationId);
+        }
+        if ($route['kind'] === 'duplicate' && $saved !== null) {
+            if ($request->method !== 'POST' || $type->kind === 'singleton') {
+                return new Response($request->method !== 'POST' ? 405 : 404, Pages::error($request->method !== 'POST' ? 405 : 404, $correlationId, $this->chrome?->translator()));
+            }
+            return Response::redirect('/records/' . $type->id . '/' . $this->content->duplicate($type->id, $saved->id, $session->userId)->id);
         }
         if ($route['kind'] === 'workflow' && $saved !== null) {
             if ($request->method !== 'POST') {

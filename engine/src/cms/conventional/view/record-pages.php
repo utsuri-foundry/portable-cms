@@ -50,7 +50,7 @@ final class RecordPages
         return ($translator ?? Translator::english())->text('shell.group.content');
     }
 
-    public static function listing(ProfileManifest $profile, RecordTypeDefinition $type, RecordListing $listing, ?AdminChrome $chrome): string
+    public static function listing(ProfileManifest $profile, RecordTypeDefinition $type, RecordListing $listing, ?AdminChrome $chrome, string $csrfToken = ''): string
     {
         $t = AdminShell::translator($chrome);
         $taxonomy = $type->kind === 'taxonomy';
@@ -59,9 +59,10 @@ final class RecordPages
         $rows = '';
         foreach ($listing->records as $record) {
             $url = $base . '/' . $record->id;
+            $title = RecordLabels::label($record, $profile);
             $thumbnail = $listing->thumbnail === null ? '' : ($listing->thumbnail)($record);
             $rows .= '<tr><td data-column="title"><div class="admin-table__record">' . $thumbnail . '<span><a class="admin-table__title" href="' . Html::url($url) . '">'
-                . Html::text(RecordLabels::label($record, $profile)) . '</a><span class="admin-table__sub">' . Html::text(self::subtitle($record, $profile, $t)) . '</span></span></div></td>';
+                . Html::text($title) . '</a><span class="admin-table__sub">' . Html::text(self::subtitle($record, $profile, $t)) . '</span></span></div></td>';
             if ($languages) {
                 $rows .= '<td data-column="languages">' . self::coverage($type, $record->body, $profile, $t) . '</td>';
             }
@@ -70,7 +71,7 @@ final class RecordPages
             }
             $rows .= '<td data-column="status">' . AdminShell::status($record->hasUnpublishedChanges() ? 'published_changes' : $record->workflowState, null, $t) . '</td>'
                 . '<td data-column="updated">' . AdminShell::time($record->updatedAt, $chrome?->now, $t) . '</td>'
-                . '<td class="admin-table__chevron" aria-hidden="true">›</td></tr>';
+                . '<td data-column="actions">' . ($csrfToken === '' ? '' : self::rowMenu($url, $title, $csrfToken, $t)) . '</td></tr>';
         }
         $singular = $t->inlineLabel($type->singularLabel);
         $plural = $t->inlineLabel($type->label);
@@ -81,7 +82,7 @@ final class RecordPages
                 . ($filtered ? '<a class="admin-button" href="' . Html::url($base) . '">' . $t->html('records.clear_filters') . '</a>' : '') . '</div>'
             : '<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th scope="col">' . $t->html('records.column.title') . '</th>'
                 . ($languages ? '<th scope="col">' . $t->html('records.column.languages') . '</th>' : '') . ($taxonomy ? '<th scope="col">' . $t->html('records.column.used_by') . '</th>' : '')
-                . '<th scope="col">' . $t->html('records.column.status') . '</th><th scope="col">' . $t->html('records.column.updated') . '</th><th scope="col"><span class="admin-visually-hidden">' . $t->html('records.column.open') . '</span></th></tr></thead><tbody>' . $rows . '</tbody></table></div>';
+                . '<th scope="col">' . $t->html('records.column.status') . '</th><th scope="col">' . $t->html('records.column.updated') . '</th><th scope="col"><span class="admin-visually-hidden">' . $t->html('records.column.actions') . '</span></th></tr></thead><tbody>' . $rows . '</tbody></table></div>';
         $total = array_sum(array_intersect_key($listing->states, array_flip(['draft', 'published', 'archived'])));
         $toolbar = '<form class="admin-toolbar" method="get" action="' . Html::url($base) . '" role="search">'
             . '<label class="admin-visually-hidden" for="record-query">' . $t->html('records.search.label', ['plural' => $plural]) . '</label>'
@@ -238,10 +239,12 @@ final class RecordPages
         $statusMarkup = $scriptStatus === null ? Html::text($status)
             : '<span data-script-fallback="editor">' . Html::text($status) . '</span><span data-script-control="editor" hidden>' . Html::text($scriptStatus) . '</span>';
         // One card for saving and the state with its next step, one for the two previews, then the sections and languages.
+        $duplicable = $record !== null && $type->kind !== 'singleton' && $conflict === null;
         $rail = '<aside class="admin-editor__rail" aria-label="' . $t->html('editor.rail') . '"><div class="admin-save-bar"><p id="record-save-status" tabindex="-1" class="admin-save-bar__status" role="status" data-save-status>' . $statusMarkup . '</p>'
             . '<button type="submit" class="admin-button--primary" data-record-save' . ($conflict === null ? ' data-script-fallback="editor"' : '') . '>' . ($conflict === null ? $t->html($record !== null && $record->workflowState !== 'draft' ? 'workflow.save' : 'editor.save') : $t->html('editor.save_over', ['revision' => (string) $conflict->revisionNumber])) . '</button>'
             . '<button type="button" data-keep-retry hidden>' . $t->html('client.keep.retry') . '</button><span class="admin-visually-hidden" role="status" aria-live="polite" data-keep-announcement></span>'
-            . $facts . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::controls($record, $t, allowDelete: $type->kind === 'collection')) . '</div>'
+            . $facts . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::controls($record, $t, allowDelete: $type->kind === 'collection'))
+            . ($duplicable ? '<button type="submit" class="admin-rail-action" form="record-duplicate-form">' . $t->html('records.duplicate') . '</button>' : '') . '</div>'
             . ($previewControls === '' ? '' : '<div class="admin-rail-card admin-preview-card">' . $previewControls . '</div>') . $parts['properties']
             . '<nav class="admin-outline admin-rail-card" aria-label="' . $t->html('editor.sections') . '"><h2>' . $t->html('editor.outline') . '</h2><ul>' . $parts['outline'] . '</ul></nav>'
             . ($localized ? self::coverageCard($type, $values, $profile, $t) : '') . '</aside>';
@@ -276,6 +279,7 @@ final class RecordPages
             . '<input type="hidden" name="_editorial_end" value="1"></form>'
             . ($exact ? '<form id="record-exact-preview-form" method="post" action="' . Html::url('/records/' . $type->id . '/' . ($record->id ?? 'new') . '/exact-preview') . '" target="_blank" rel="noopener"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_exact_locale" value="' . Html::attribute($profile->defaultLocale) . '"></form>' : '')
             . ($live ? self::livePane($liveEndpoint, $profile, $t) : '') . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::form($record, $csrfToken)) . $upload
+            . ($duplicable ? '<form id="record-duplicate-form" method="post" action="' . Html::url('/records/' . $type->id . '/' . $record->id . '/duplicate') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"></form>' : '')
             . implode('', array_map(static fn(string $suffix): string => '<form id="media-descriptions-form' . Html::attribute($suffix) . '" method="post" action="/media/descriptions" target="_blank" rel="noopener"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_descriptions_end" value="1"></form>', [...($unbound ? [''] : []), ...array_map(static fn(string $id): string => '-' . $id, $tileFields)]))
             . '<script type="module" data-admin-enhancement="editor" src="' . Html::url('/assets/editorial-form.js?v=' . self::EDITOR_SCRIPT_VERSION) . '"></script>'
             . ($uploads ? '<script type="module" src="' . Html::url('/assets/resumable-upload.js?v=' . self::MEDIA_UPLOAD_ASSET_VERSION) . '"></script>' : '');
@@ -313,6 +317,14 @@ final class RecordPages
             . '<div class="admin-live__stage" data-live-stage><div class="admin-live__box" data-live-box>' . $frames . '</div></div></section>'
             . '<div class="admin-live-separator" role="separator" aria-orientation="vertical" tabindex="0" aria-label="' . $t->html('live.separator') . '"'
             . ' aria-controls="live-preview" aria-valuemin="20" aria-valuemax="60" aria-valuenow="30" data-live-separator hidden></div>';
+    }
+
+    /** A row's native actions menu. Its form leaves the row's link alone and works without scripts. */
+    private static function rowMenu(string $url, string $title, string $csrfToken, Translator $t): string
+    {
+        return '<details class="admin-table__menu" data-row-menu><summary aria-label="' . $t->html('records.row_actions', ['title' => $title]) . '"><span aria-hidden="true">⋯</span></summary>'
+            . '<form class="admin-table__actions" method="post" action="' . Html::url($url . '/duplicate') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">'
+            . '<button type="submit" class="admin-button--small">' . $t->html('records.duplicate') . '</button></form></details>';
     }
 
     /** @param list<RecordSnapshot> $choices

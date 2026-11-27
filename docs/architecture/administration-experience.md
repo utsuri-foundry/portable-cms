@@ -252,8 +252,10 @@ and Export is reached from the navigation alone.
 Lists use a real table on wider screens with an optional thumbnail, record
 title, slug or revision, language completeness, workflow state, and a readable
 update time whose exact instant stays in the `time` element. The whole row is a
-link to the record. A native GET form searches and filters by workflow state
-with links that keep the query. Taxonomies show how many records use each term
+link to the record; its last cell holds a quiet `⋯` menu, a native disclosure
+named after the record, whose **Duplicate** opens beside it and submits a native
+form. Escape or a click elsewhere folds it. A native GET form searches and
+filters by workflow state with links that keep the query. Taxonomies show how many records use each term
 instead of languages. Below 42rem each row becomes a compact two-line item
 while keeping meaningful cell labels. An empty or filtered list explains the
 state and keeps the create action available.
@@ -263,7 +265,8 @@ state and keeps the create action available.
 The header shows the record name, workflow state and saved time; revision
 numbers appear nowhere on the page. At wide widths, a sticky rail shows one card
 with the save state, the record's state with one sentence on what it means and
-Mark as ready as the primary action (Change status folded quietly beneath), one
+Mark as ready as the primary action (Change status folded quietly beneath, then
+a quiet **Duplicate** on collections and taxonomies), one
 card with **Preview while editing** and **Preview the website**, then section
 links with issue/change counts and language completeness. Scripted forms show
 automatic-keeping status; native
@@ -286,6 +289,13 @@ a slug that is not lowercase letters, digits and single hyphens, proposing the
 one it would make, and a slug another record of the same type uses in that
 language, naming that record. A slug saved before this rule stays while it
 remains a valid route and is unchanged.
+
+Duplicate saves pending edits first, then creates a new draft of the same type
+with every value copied: the title marked as a copy in its own language
+("(còpia)", "(copy)"), each slug the original's plus the first free `-2`, `-3`
+and so on, and the same media and record references (files are not copied). The
+new draft opens; the audit event `record_duplicated` names the source record and
+revision. Singletons never offer it.
 
 Image fields show each image as one row: thumbnail, name, **Image details**
 and a quiet remove control, never a numbered card. One **Add images**

@@ -58,4 +58,22 @@ $invalid = $content->keep('article', $id, ['title' => array_fill_keys($profile->
 assertTrueValue($invalid instanceof KeptRecord && str_contains(Translator::english()->message($invalid->errors['slug']), '“two-words”'), 'keeping proposes the address a slug would make');
 assertSameValue('', $invalid->record->body['slug']['ca'], 'an invalid address is not stored');
 
-fwrite(STDOUT, "PASS record slugs stay unique, valid web addresses in MariaDB\n");
+// A copy is a new draft written like any record, audited with its source.
+$project = $content->create('project', ['title' => array_fill_keys($profile->locales, 'Pati obert'), 'slug' => ['ca' => 'pati-obert'] + array_fill_keys($profile->locales, '')], $actor);
+assertTrueValue($project instanceof RecordSnapshot, 'a project to reference saves');
+$source = $content->update('article', $first->id, 1, $article('pati', ['ca' => 'pati', 'es' => 'patio']) + ['relatedProjects' => [$project->id]], $actor);
+assertTrueValue($source instanceof RecordSnapshot, 'the source article references the project');
+$copy = $content->duplicate('article', $first->id, $actor);
+assertSameValue(['draft', 'pati (còpia)', 'pati-2', 'patio-2', [$project->id]], [$copy->workflowState, $copy->body['title']['ca'], $copy->body['slug']['ca'], $copy->body['slug']['es'], $copy->body['relatedProjects']], 'the stored copy is a draft with a marked title, free slugs and the same references');
+$relations = $pdo->prepare('SELECT target_record_id FROM cms_record_relationship_index WHERE record_id = :id');
+$relations->execute(['id' => $copy->id]);
+assertSameValue([$project->id], $relations->fetchAll(PDO::FETCH_COLUMN), 'the copy projects its references');
+$audit = $pdo->prepare("SELECT actor_user_id, metadata_json FROM cms_audit_events WHERE event_type = 'record_duplicated'");
+$audit->execute();
+$events = $audit->fetchAll(PDO::FETCH_ASSOC);
+assertSameValue(1, count($events), 'one audit event records the copy');
+assertSameValue($actor, $events[0]['actor_user_id'], 'by the person who made it');
+assertSameValue(['recordId' => $copy->id, 'typeId' => 'article', 'revisionNumber' => 1, 'sourceRecordId' => $first->id, 'sourceRevisionNumber' => $source->revisionNumber], json_decode((string) $events[0]['metadata_json'], true, 4, JSON_THROW_ON_ERROR), 'naming its source revision');
+assertSameValue('pati-3', $content->duplicate('article', $first->id, $actor)->body['slug']['ca'], 'the next copy finds the next free address in the database');
+
+fwrite(STDOUT, "PASS record slugs stay unique, valid web addresses in MariaDB, and copies are audited drafts\n");

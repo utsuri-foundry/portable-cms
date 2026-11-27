@@ -7,7 +7,7 @@ namespace Utsuri\PortableCms\Conventional\Content;
 use PDO;
 use Throwable;
 
-final class MariaDbRecordRepository implements RecordRepository, RecordBrowser, RecordActivity, PublishedRecordRepository, RecordDeletionRepository, EditingRecordRepository, RecordSlugLookup
+final class MariaDbRecordRepository implements RecordRepository, RecordBrowser, RecordActivity, PublishedRecordRepository, RecordDeletionRepository, EditingRecordRepository, RecordSlugLookup, RecordDuplicationRepository
 {
     public function __construct(private readonly PDO $pdo)
     {
@@ -134,6 +134,11 @@ SQL);
         return $states;
     }
 
+    public function duplicate(RecordSnapshot $source, string $recordId, string $revisionId, string $profileId, string $profileVersion, array $body, array $relationships, string $actorUserId, string $auditId, \DateTimeImmutable $now): RecordSnapshot
+    {
+        return $this->create($recordId, $revisionId, $source->typeId, $profileId, $profileVersion, $body, $relationships, $actorUserId, $auditId, $now, source: $source);
+    }
+
     public function slugOwner(string $typeId, ?string $locale, string $slug, ?string $exceptRecordId): ?RecordSnapshot
     {
         if ($slug === '') {
@@ -195,6 +200,7 @@ SQL);
         string $auditId,
         \DateTimeImmutable $now,
         ?RecordEditIntent $editing = null,
+        ?RecordSnapshot $source = null,
     ): RecordSnapshot {
         $time = self::databaseTime($now);
         $encoded = self::encodeBody($body);
@@ -233,10 +239,11 @@ SQL);
             );
             $this->projectRelationships($recordId, $revisionId, $relationships);
             (new \Utsuri\PortableCms\Conventional\Database\MariaDbSiteSequence($this->pdo))->revision($typeId, $recordId, $revisionId, 1, $now);
-            $this->appendAudit($auditId, $actorUserId, 'record_created', [
+            $this->appendAudit($auditId, $actorUserId, $source === null ? 'record_created' : 'record_duplicated', [
                 'recordId' => $recordId,
                 'typeId' => $typeId,
                 'revisionNumber' => 1,
+                ...($source === null ? [] : ['sourceRecordId' => $source->id, 'sourceRevisionNumber' => $source->revisionNumber]),
             ], $time);
             $this->editing($recordId, $editing, $time);
             $result = $this->find($typeId, $recordId) ?? throw new RecordNotFound();
