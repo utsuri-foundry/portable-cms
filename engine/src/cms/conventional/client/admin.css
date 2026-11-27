@@ -165,7 +165,7 @@ button, .admin-button { justify-self: start; }
   margin: 0; padding: var(--admin-space-3) var(--admin-space-2); overflow-y: auto; border: 0;
   border-right: 1px solid var(--admin-border); background: var(--admin-panel); color: var(--admin-text);
 }
-.admin-brand { display: flex; align-items: center; gap: var(--admin-space-2); padding: var(--admin-space-1) var(--admin-space-2) var(--admin-space-3); border-bottom: 1px solid var(--admin-border); text-decoration: none; }
+.admin-brand { display: flex; align-items: center; gap: var(--admin-space-2); padding: var(--admin-space-1) var(--admin-space-2) var(--admin-space-2); text-decoration: none; }
 .admin-mark {
   display: inline-grid; width: 1.75rem; height: 1.75rem; flex: none; place-items: center; border-radius: var(--admin-radius-small);
   background: var(--admin-text); color: var(--admin-on-ink); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.02em;
@@ -190,9 +190,10 @@ button, .admin-button { justify-self: start; }
 .admin-installation-facts { display: grid; gap: var(--admin-space-1); margin: 0; }
 .admin-installation-facts dt { margin-top: var(--admin-space-3); color: var(--admin-muted); font-size: var(--admin-text-xs); }
 .admin-installation-facts dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
-.admin-navigation { display: grid; gap: var(--admin-space-4); }
+/* Sections stand clearly apart; items within one stay tight. */
+.admin-navigation { display: grid; gap: var(--admin-space-5); }
 .admin-navigation__group { display: grid; gap: 1px; }
-.admin-navigation__label { margin: 0; padding: 0 var(--admin-space-2) var(--admin-space-1); color: var(--admin-subtle); font-size: 0.6875rem; font-weight: 500; }
+.admin-navigation__label { margin: 0; padding: 0 var(--admin-space-2) 0.375rem; color: var(--admin-subtle); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
 .admin-navigation__list { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
 .admin-navigation__link {
   display: flex; min-height: 1.875rem; align-items: center; justify-content: space-between; gap: var(--admin-space-2);
@@ -519,6 +520,8 @@ details > summary { cursor: pointer; }
 .admin-rich-toolbar select { width: auto; min-height: var(--admin-control-small); padding: 0 0.375rem; border-color: transparent; background: transparent; font-size: var(--admin-text-xs); }
 .admin-rich-editor .admin-rich-toolbar button { min-width: var(--admin-control-small); border-color: transparent; background: transparent; color: var(--admin-muted); }
 .admin-rich-editor .admin-rich-toolbar button:hover, .admin-rich-editor .admin-rich-toolbar [aria-pressed="true"] { background: var(--admin-panel-muted); color: var(--admin-text); }
+.admin-rich-editor .admin-rich-toolbar button:has(> .admin-rich-toolbar__icon) { padding: 0; }
+.admin-rich-toolbar__icon { display: block; flex: none; width: 1rem; height: 1rem; }
 .admin-rich-toolbar__separator { width: 1px; height: 1.125rem; margin: 0 0.25rem; background: var(--admin-border); }
 .admin-rich-toolbar__spacer { flex: 1; }
 .admin-rich-surface { min-height: 7rem; max-height: 32rem; padding: var(--admin-space-3); overflow: auto; outline: 0; line-height: 1.6; overflow-wrap: anywhere; }
@@ -723,7 +726,7 @@ details > summary { cursor: pointer; }
     padding: calc(var(--admin-space-2) + env(safe-area-inset-top, 0px)) var(--admin-space-4) var(--admin-space-2);
     border-bottom: 1px solid var(--admin-border); background: var(--admin-panel);
   }
-  .admin-topbar .admin-brand { flex: 1; min-width: 0; padding: 0; border: 0; }
+  .admin-topbar .admin-brand { flex: 1; min-width: 0; padding: 0; }
   .admin-menu-button { display: none; }
   /* Popover menus are progressive: without support the rail stays an inline section. */
   .admin-sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--admin-border); }

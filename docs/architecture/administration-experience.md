@@ -100,7 +100,10 @@ The persistent shell groups ordinary editing and publication work as follows:
 2. Overview: when the content last changed and what the website shows, work to
    continue, items needing attention and content totals; installation problems
    appear to owners only while they exist.
-3. Navigation groups, each omitted when empty, in the order of the work:
+3. Navigation groups, each omitted when empty, in the order of the work. Group
+   headings are small, slightly spaced uppercase in a subtle color, and the
+   groups stand clearly apart while the items within one stay tight; no rule
+   separates the identity from the first group:
    - Content contains every record type the profile lists, in its order
      (collections with record counts, singleton pages, taxonomies and the
      site settings record), then Media. A singleton destination opens its
@@ -129,8 +132,9 @@ The persistent shell groups ordinary editing and publication work as follows:
      manifest label and purpose. Field errors use the same name; missing-wording
      preview reports resolve saved wording identities in the reader's language.
      These names do not translate the website's authored text or alter its build.
-4. The sidebar's foot holds the agency's pages under a "For the agency"
-   heading, visibly apart from the editorial groups and absent for editors:
+4. The sidebar's foot holds the agency's pages, set apart from the editorial
+   groups by a rule and absent for editors. Their "For the agency" heading is
+   visually hidden and still labels the group for screen readers:
    Installation details at `/settings/installation`, read-only for owners and
    administrators, which labels the website name, profile ID, site version
    (profile), Portable CMS engine version and installed CMS release separately

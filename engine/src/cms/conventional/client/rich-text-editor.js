@@ -20,6 +20,33 @@ import {
 const CLIPBOARD = "application/x-portable-cms-text";
 const FORMAT_MARKS = ["bold", "italic", "underline", "smallCaps"];
 const BLOCK_TAGS = { paragraph: "p", heading_2: "h2", heading_3: "h3" };
+const HISTORY_ICONS = {
+	undo: ["M5.75 3.25l-3 3 3 3", "M2.75 6.25H10a3.25 3.25 0 0 1 0 6.5H7.5"],
+	redo: ["M10.25 3.25l3 3-3 3", "M13.25 6.25H6a3.25 3.25 0 0 0 0 6.5h2.5"],
+};
+
+/** Undo and redo draw as mirrored line icons on a 16 unit grid, stroked in the button's color. */
+function historyIcon(doc, action) {
+	const icon = doc.createElementNS("http://www.w3.org/2000/svg", "svg");
+	for (const [attribute, value] of Object.entries({
+		class: "admin-rich-toolbar__icon",
+		viewBox: "0 0 16 16",
+		fill: "none",
+		stroke: "currentColor",
+		"stroke-width": "1.5",
+		"stroke-linecap": "round",
+		"stroke-linejoin": "round",
+		"aria-hidden": "true",
+		focusable: "false",
+	}))
+		icon.setAttribute(attribute, value);
+	for (const path of HISTORY_ICONS[action]) {
+		const line = doc.createElementNS(icon.namespaceURI, "path");
+		line.setAttribute("d", path);
+		icon.append(line);
+	}
+	return icon;
+}
 
 /** Reads the server-rendered native rows; they stay the no-script editing path. */
 function nativeRows(container) {
@@ -118,8 +145,8 @@ export function mountRichTextEditor(root, previewEditors = null) {
 		? tool(t("rich.link"), t("rich.link_title"), "link")
 		: null;
 	toolbar.append(element("span", { className: "admin-rich-toolbar__spacer" }));
-	tool("↶", t("rich.undo"), "undo");
-	tool("↷", t("rich.redo"), "redo");
+	tool("", t("rich.undo"), "undo").append(historyIcon(doc, "undo"));
+	tool("", t("rich.redo"), "redo").append(historyIcon(doc, "redo"));
 	const linkBar = element("div", { className: "admin-rich-link", hidden: true });
 	const linkInput = element("input", {
 		type: "url",

@@ -62,6 +62,10 @@ $tests['administration shell groups navigation exposes current state and owns ac
     foreach (['Content', 'Publish', 'Website', 'For the agency'] as $group) {
         assertTrueValue(str_contains($html, '>' . $group . '</h2>'), "{$group} navigation group should exist");
     }
+    foreach (['content' => 'Content', 'publish' => 'Publish', 'website' => 'Website'] as $id => $group) {
+        assertTrueValue(str_contains($html, '<h2 class="admin-navigation__label" id="nav-' . $id . '">' . $group . '</h2>'), "{$group} heading stays visible");
+    }
+    assertTrueValue(str_contains($html, '<section class="admin-navigation__group" aria-labelledby="nav-agency"><h2 class="admin-navigation__label admin-visually-hidden" id="nav-agency">For the agency</h2>'), 'the agency group stays labelled for screen readers without a visible heading');
     foreach (['Pages', 'Library', 'Operations', 'Workflow'] as $group) {
         assertTrueValue(!str_contains($html, '>' . $group . '</h2>'), "{$group} is no longer a navigation group");
     }
