@@ -5,6 +5,18 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.15.2
+
+- The Website design page no longer scrolls sideways on narrow or zoomed
+  screens: in a fieldset whose legend carries a help control, the first field
+  was left beside the full-width legend and pushed past the right edge. Every
+  element after such a legend now starts below it.
+- The complete qualification is green again. Four browser and integration
+  checks still described pages from before the administration redesign: the
+  Wording page's former revision line, the language marker's former code, the
+  publication mode as a single control, and the media page's former owner
+  label. They now check the same behaviour on the current pages.
+
 ## 0.15.1
 
 - Returning visitors get a release's new stylesheets and scripts even where the

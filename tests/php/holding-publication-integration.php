@@ -166,7 +166,7 @@ try {
     assertSameValue(303, $request('POST', '/settings/wording', $wordingForm)->status, 'site wording uses POST redirect GET');
     assertSameValue(409, $request('POST', '/settings/wording', $wordingForm)->status, 'a stale site wording re-renders rather than overwrites');
     $wordingPage = $request('GET', '/settings/wording')->body;
-    assertTrueValue(str_contains($wordingPage, 'value="Selected work"') && str_contains($wordingPage, 'Saved revision 1.'), 'the saved wording is shown with its revision');
+    assertTrueValue(str_contains($wordingPage, 'value="Selected work"') && str_contains($wordingPage, 'name="_revision" value="1"'), 'the saved wording is shown, and the form continues from its revision');
     assertSameValue(1, (int) $pdo->query('SELECT COUNT(*) FROM cms_site_wording_revisions WHERE revision = 1')->fetchColumn(), 'the saved wording is kept as a revision');
 
     ReferenceStudioDevelopmentSeeder::load($package->root, $root . '/schemas/portable-cms-snapshot-v1.schema.json')->seed($pdo, $actorId);

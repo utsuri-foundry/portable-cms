@@ -43,8 +43,11 @@ try {
 	}
 	await ready("location.pathname==='/' && document.querySelector('.admin-navigation')");
 	await navigate("/settings/publication", "[name=mode]");
-	const originalMode = await evaluate("document.querySelector('[name=mode]').value");
-	await evaluate("document.querySelector('[name=mode]').value='live'");
+	// "mode" is a pair of radio buttons: read the checked one and choose the website.
+	const originalMode = await evaluate(
+		"document.querySelector('[name=mode]:checked').value",
+	);
+	await evaluate("document.querySelector('[name=mode][value=live]').checked=true");
 	await submit("document.querySelector('[name=mode]').form");
 	await navigate("/previews", "form[action='/previews']");
 	await submit("document.querySelector('form[action=\"/previews\"]')");
@@ -169,7 +172,7 @@ try {
 	await ready("location.pathname==='/previews'");
 	await navigate("/settings/publication", "[name=mode]");
 	await evaluate(
-		`document.querySelector('[name=mode]').value=${JSON.stringify(originalMode)};document.querySelector('[name=confirmed]').checked=true`,
+		`document.querySelector('[name=mode][value=${originalMode}]').checked=true;const confirm=document.querySelector('[name=confirmed]');if(confirm)confirm.checked=true`,
 	);
 	await submit("document.querySelector('[name=mode]').form");
 	await submit("document.querySelector('form[action=\"/logout\"]')");
