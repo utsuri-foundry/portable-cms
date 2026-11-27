@@ -113,6 +113,29 @@ try {
 	await evaluate(
 		"const t=document.querySelector('#field-title-ca');t.value='Unsaved upload title';t.dispatchEvent(new Event('input',{bubbles:true}))",
 	);
+	// A transfer that fails before any file completes says so in the file's row and keeps the way to retry.
+	await evaluate(
+		"(()=>{const send=window.fetch.bind(window);let failed=false;window.fetch=(url,options)=>{if(!failed && String(url).startsWith('/api/records/') && options?.method==='POST'){failed=true;window.fetch=send;return Promise.reject(new TypeError('Failed to fetch'))}return send(url,options)}})()",
+	);
+	await uploadFiles([files[0]]);
+	await ready(
+		"document.querySelector('#field-gallery [data-upload-row] .admin-field__error')",
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('#field-gallery [data-upload-row] .admin-field__error').textContent",
+		),
+		"The upload failed. Upload it again.",
+		"a dropped connection is said in plain words with what to do",
+	);
+	assert.equal(
+		await evaluate(
+			"document.activeElement===document.querySelector('#field-gallery [data-media-upload-choose]')",
+		),
+		true,
+		"the upload button keeps the focus for another try",
+	);
+	assert.deepEqual(await ids(), original, "nothing joins the field");
 	// Interrupt the second transfer. The first completed upload must still join the field.
 	await evaluate(
 		"(()=>{const send=window.fetch.bind(window);let count=0;window.fetch=(url,options)=>{if(String(url).startsWith('/api/records/') && options?.method==='POST'){count++;if(count===1)return new Promise(resolve=>{window.resumeFieldUpload=()=>resolve(send(url,options))});if(count===2)return Promise.reject(new Error('Interrupted field batch'))}return send(url,options)}})()",
@@ -126,6 +149,13 @@ try {
 		),
 		revision,
 		"automatic keeping refreshes the uploader's revision without replacing its controls",
+	);
+	assert.deepEqual(
+		await evaluate(
+			"Array.from(document.querySelectorAll('#field-gallery [data-upload-row]')).map(row=>[row.lastChild.textContent,!!row.querySelector('progress')])",
+		),
+		files.map((file) => [basename(file), true]),
+		"each chosen file is a row of the field with its own progress",
 	);
 	const blocked = await evaluate(
 		"Array.from(document.querySelectorAll('[data-editorial-form] [data-media-upload-start]')).map(b=>b.disabled)",
@@ -175,9 +205,33 @@ try {
 		await evaluate("document.querySelector('#field-title-ca').value"),
 		"Unsaved upload title",
 	);
+	const preparing = await evaluate(
+		"Array.from(document.querySelectorAll('#field-gallery [data-media-pending] [data-media-state]')).map(state=>state.textContent)",
+	);
+	assert.equal(preparing.length, 2, "both new images are waiting");
+	for (const line of preparing)
+		assert.match(
+			line,
+			/^Being prepared\. Ready in (?:a few minutes|about \d+ minutes?)\.$/,
+			"new images say when they will be ready, not an engine state",
+		);
+	// Waiting for preparation is not a failed save: the rest of the record is kept.
+	await ready(
+		"document.querySelector('[data-save-status]').textContent.startsWith('Saved at ') && document.querySelector('[data-keep-retry]')?.hidden !== false",
+	);
+	assert.equal(
+		await evaluate("document.querySelectorAll('[data-keep-error]').length"),
+		0,
+		"and puts no error under the field",
+	);
 	worker();
 	await ready(
-		"document.querySelector('[data-save-status]').textContent.startsWith('Saved at ')",
+		"!document.querySelector('#field-gallery [data-media-pending]') && document.querySelectorAll('#field-gallery .admin-selections img.admin-thumbnail').length>=2",
+		40000,
+	);
+	// Once prepared, the images are kept with the record without any action.
+	await ready(
+		`fetch(location.pathname).then(r=>r.text()).then(h=>new DOMParser().parseFromString(h,'text/html').querySelectorAll('#field-gallery input[name="gallery[]"]').length===${completed.length})`,
 	);
 	original = completed;
 	revision = await evaluate("document.querySelector('[name=_revision]').value");
@@ -353,7 +407,7 @@ try {
 		`document.querySelector('[name=_revision]')?.value!==${JSON.stringify(revision)} && document.readyState==='complete'`,
 	);
 	console.log(
-		"PASS edited-field uploads: interrupted enhanced batch/resume, ordered native additions, preserved unsaved form/revision, one-activation library pick and undo, library retention and 360px no-script use.",
+		"PASS edited-field uploads: interrupted enhanced batch/resume, ordered native additions, preserved unsaved form/revision, one-activation library pick and undo, upload rows, preparation and failure states, library retention and 360px no-script use.",
 	);
 } catch (error) {
 	process.stderr.write(

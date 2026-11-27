@@ -7,6 +7,7 @@ return [
     'picker.choose_library' => 'Choose from library',
     'picker.upload_images' => 'Upload images',
     'picker.upload_image' => 'Upload image',
+    'picker.preparation_failed' => 'This image could not be prepared. Remove it and upload it again.',
     'blocks.type' => 'Block type',
     'blocks.add' => 'Add block',
     'blocks.insert' => 'Insert block below',

@@ -69,6 +69,7 @@ return [
     'client.upload.derivative_attention' => 'El archivo se ha subido, pero su derivado requiere atención.',
     'client.upload.limit' => 'Selecciona hasta ocho archivos.',
     'client.upload.too_large' => '{name} supera el límite de carga de {limit} MiB.',
+    'client.upload.again' => 'Súbelo de nuevo.',
     'client.live.updating' => 'Actualizando…',
     'client.live.ready' => 'Se muestran tus cambios en la web publicada. No se ha publicado nada.',
     'client.live.rich_editing' => 'Se editan las palabras de {field} en la página. Haz clic fuera para terminar o Esc para deshacer. Usa el formulario para el formato y los bloques. No se ha publicado nada.',

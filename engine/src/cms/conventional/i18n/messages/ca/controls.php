@@ -7,6 +7,7 @@ return [
     'picker.choose_library' => 'Triar de la biblioteca',
     'picker.upload_images' => 'Pujar imatges',
     'picker.upload_image' => 'Pujar una imatge',
+    'picker.preparation_failed' => 'Aquesta imatge no s’ha pogut preparar. Treu-la i torna-la a pujar.',
     'blocks.type' => 'Tipus de bloc',
     'blocks.add' => 'Afegir bloc',
     'blocks.insert' => 'Inserir bloc a sota',

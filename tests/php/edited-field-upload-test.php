@@ -101,6 +101,8 @@ $tests['field native uploads append in order within the maximum and preserve the
         assertSameValue(200, $receipt->status, 'completed upload receipts return description controls with the pending selection');
         assertSameValue(3, substr_count($receipt->body, ' data-description-job='), 'all completed uploads remain describable, including overflow');
         assertTrueValue(str_contains($receipt->body, 'name="description_' . $uploaded[2] . '__alternativeText__ca"') && str_contains($receipt->body, 'form="media-descriptions-form-gallery"'), 'overflow descriptions belong to a separate field-specific form');
+        assertTrueValue(str_contains($receipt->body, '<li class="admin-selection" data-media-pending="' . $uploaded[0] . '">') && str_contains($receipt->body, '<small class="admin-meta" data-media-state>Being prepared. Ready in a moment.</small>'), 'a new image being prepared says so in its row, which asks again until it is ready');
+        assertTrueValue(!str_contains($receipt->body, '>processing<'), 'no engine state word is shown');
     } finally {
         editedFieldCleanup($f);
     }

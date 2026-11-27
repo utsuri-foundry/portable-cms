@@ -83,6 +83,8 @@ return [
     'media.show.undescribed' => 'Ohne Beschreibung',
     'media.pending.moment' => 'Wird vorbereitet. Gleich bereit.',
     'media.pending.minutes' => 'Wird vorbereitet. In wenigen Minuten bereit.',
+    'media.pending.about' => 'Wird vorbereitet. In etwa {minutes, plural, one {einer Minute} other {# Minuten}} bereit.',
+    'media.pending.late' => 'Wird noch vorbereitet. Ist es in einer Stunde nicht bereit, sagen Sie der Person Bescheid, die sich um die Website kümmert.',
     'media.pending.detail' => 'Wird vorbereitet.',
     'media.processing_attention' => 'Diese Datei konnte nicht vorbereitet werden. Laden Sie sie erneut hoch.',
     'media.empty.title' => 'Noch nichts hier',

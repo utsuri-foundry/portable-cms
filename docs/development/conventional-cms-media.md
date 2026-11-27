@@ -41,7 +41,10 @@ The private `worker-heartbeat.json` records `mediaProcessed`, `mediaCompleted`,
 including delayed retries, excluding running jobs and exhausted attempts.
 These are observations, not reservations against concurrent workers. Existing
 `processed`, `completed` and `failed` fields remain media-only, as do the elapsed
-and per-job memory measurements in heartbeat v2. For qualification and recovery,
+and per-job memory measurements in heartbeat v2. `intervalSeconds` is the time
+since the previous pass finished, or null on the first pass; with
+`cron_only`, the administration uses it and `completedAt` to tell editors when
+a file being prepared will be ready. For qualification and recovery,
 see [media processing](media-processing.md#cron-recovery-acceptance).
 
 ## Describing uploaded images

@@ -180,6 +180,11 @@ separate description form, so metadata saves exclude the pending record and
 other panels' batches. Native cards are available before derivative processing;
 native description saves open a separate tab to retain the pending record.
 The enhanced page saves inline and refreshes thumbnails as the original jobs complete.
+A selected image that is not ready yet carries `data-media-pending`; the page asks
+the read-only `GET /media/status?ids=` (at most twelve identities, editors only)
+for its state, its line and its thumbnail, at the interval the response names.
+Automatic keeping treats files still being prepared as a quiet retry rather than
+an error, and keeps the image as soon as it is ready.
 Neither path saves a content revision. A stale native request accepts no bytes;
 transient operations preserve the conflict and original base until explicit
 resolution. Scripted uploads wait for pending edits before reading their revision;

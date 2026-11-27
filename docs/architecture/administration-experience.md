@@ -568,7 +568,18 @@ group identities. Their ownership and security bounds are defined in
 [editorial controls](../development/editorial-controls.md).
 
 Upload progress uses native `progress` and a polite live status. Processing and
-preview states use stable text and status semantics. Queued pages can refresh
+preview states use stable text and status semantics. In an image field each
+chosen file is a row with its own progress while it uploads; a transfer that
+fails says so in its row with what to do, and the upload button keeps the
+focus. Once the files join the field, a row whose image is being prepared says
+when it will be ready: in a moment where the host prepares files right after
+the response, otherwise in about the minutes until the scheduled worker's next
+pass, read from its heartbeat ("a few minutes" until the cadence is known, and
+whom to tell when the schedule has stopped). The row asks again by itself and
+shows the thumbnail once the image is ready, and the record keeps the image then.
+Waiting for preparation is not a failed save: the rest of the record is kept
+and no error is shown. An image that could not be prepared says to remove it
+and upload it again. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
 

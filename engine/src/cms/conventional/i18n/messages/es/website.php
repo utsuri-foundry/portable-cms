@@ -83,6 +83,8 @@ return [
     'media.show.undescribed' => 'Sin descripción',
     'media.pending.moment' => 'Se está preparando. Estará listo en un momento.',
     'media.pending.minutes' => 'Se está preparando. Estará listo en pocos minutos.',
+    'media.pending.about' => 'Se está preparando. Estará listo {minutes, plural, one {en un minuto} other {en unos # minutos}}.',
+    'media.pending.late' => 'Sigue preparándose. Si no está listo en una hora, avisa a quien se ocupa de la web.',
     'media.pending.detail' => 'Se está preparando.',
     'media.processing_attention' => 'Este archivo no se ha podido preparar. Súbelo de nuevo.',
     'media.empty.title' => 'Todavía no hay nada',

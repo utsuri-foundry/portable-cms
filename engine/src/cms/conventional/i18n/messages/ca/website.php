@@ -83,6 +83,8 @@ return [
     'media.show.undescribed' => 'Sense descripció',
     'media.pending.moment' => 'S’està preparant. Estarà a punt en un moment.',
     'media.pending.minutes' => 'S’està preparant. Estarà a punt en pocs minuts.',
+    'media.pending.about' => 'S’està preparant. Estarà a punt {minutes, plural, one {d’aquí a un minut} other {d’aquí a uns # minuts}}.',
+    'media.pending.late' => 'Encara s’està preparant. Si no està a punt d’aquí a una hora, avisa qui s’encarrega de la web.',
     'media.pending.detail' => 'S’està preparant.',
     'media.processing_attention' => 'Aquest fitxer no s’ha pogut preparar. Torna a pujar-lo.',
     'media.empty.title' => 'Encara no hi ha res',

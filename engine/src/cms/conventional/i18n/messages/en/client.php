@@ -69,6 +69,7 @@ return [
     'client.upload.derivative_attention' => 'The file was uploaded, but its derivative needs attention.',
     'client.upload.limit' => 'Select up to eight files.',
     'client.upload.too_large' => '{name} exceeds the {limit} MiB upload limit.',
+    'client.upload.again' => 'Upload it again.',
     'client.live.updating' => 'Updating…',
     'client.live.ready' => 'Showing your edits on the published site. Nothing has been published.',
     'client.live.rich_editing' => 'Editing the words of {field} in the page. Click outside to finish or Escape to undo. Use the form for formatting and blocks. Nothing has been published.',

@@ -83,6 +83,8 @@ return [
     'media.show.undescribed' => 'Need a description',
     'media.pending.moment' => 'Being prepared. Ready in a moment.',
     'media.pending.minutes' => 'Being prepared. Ready in a few minutes.',
+    'media.pending.about' => 'Being prepared. Ready in about {minutes, plural, one {# minute} other {# minutes}}.',
+    'media.pending.late' => 'Still being prepared. If it is not ready within the hour, tell whoever looks after the website.',
     'media.pending.detail' => 'Being prepared.',
     'media.processing_attention' => 'This file could not be prepared. Upload it again.',
     'media.empty.title' => 'Nothing here yet',

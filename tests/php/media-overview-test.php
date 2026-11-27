@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Utsuri\PortableCms\Conventional\Content\ContentService;
 use Utsuri\PortableCms\Conventional\Content\ProfileManifest;
 use Utsuri\PortableCms\Conventional\Http\Request;
 use Utsuri\PortableCms\Conventional\I18n\Translator;
@@ -9,7 +10,9 @@ use Utsuri\PortableCms\Conventional\Media\FilesystemMediaStore;
 use Utsuri\PortableCms\Conventional\Media\LibraryMedia;
 use Utsuri\PortableCms\Conventional\Media\MediaDerivative;
 use Utsuri\PortableCms\Conventional\Media\MediaLibrary;
+use Utsuri\PortableCms\Conventional\Media\MediaLibraryHttp;
 use Utsuri\PortableCms\Conventional\Media\MediaPage;
+use Utsuri\PortableCms\Conventional\Media\MediaPreparation;
 use Utsuri\PortableCms\Conventional\Media\MediaText;
 use Utsuri\PortableCms\Conventional\View\AdminChrome;
 use Utsuri\PortableCms\Conventional\View\MediaLibraryPage;
@@ -157,5 +160,65 @@ $tests['overview keeps installation problems to owners and shows them only while
         $t = Translator::load($language);
         $translated = Pages::dashboard('csrf', 'Owner', $profile, $queued, new AdminChrome(str_repeat('c', 32), 'Owner', translator: $t));
         assertTrueValue(str_contains($translated, $t->html('overview.media.queued')) && str_contains($translated, $t->html('shell.group.agency')), $language . ' overview is translated');
+    }
+};
+
+$tests['a file being prepared says when it will be ready from the worker heartbeat and its rows can ask until then'] = static function (): void {
+    $fixture = mediaOverviewFixture();
+    try {
+        $id = $fixture['id'];
+        $pending = $fixture['library']->find($id(5));
+        $failed = $fixture['library']->find($id(6));
+        $clock = new IdentityTestClock(new DateTimeImmutable('2026-11-17T12:00:00Z'));
+        $heartbeat = $fixture['root'] . '/worker-heartbeat.json';
+        $t = Translator::english();
+        $say = static fn(MediaPreparation $preparation, LibraryMedia $media): string => $t->message($preparation->message($media));
+        $beat = static function (string $completedAt, ?int $interval) use ($heartbeat): void {
+            file_put_contents($heartbeat, json_encode(['formatVersion' => 2, 'completedAt' => $completedAt, 'intervalSeconds' => $interval], JSON_THROW_ON_ERROR));
+        };
+        assertSameValue('Being prepared. Ready in a moment.', $say(new MediaPreparation(), $pending), 'a host that prepares after the response promises a moment');
+        $scheduled = new MediaPreparation(true, $heartbeat, $clock);
+        assertSameValue('Being prepared. Ready in a few minutes.', $say($scheduled, $pending), 'before the first heartbeat the wait is a few minutes');
+        $beat('2026-11-17T11:59:00Z', 300);
+        assertSameValue('Being prepared. Ready in about 4 minutes.', $say($scheduled, $pending), 'the next pass is one interval after the last');
+        $beat('2026-11-17T11:50:30Z', 300);
+        assertSameValue('Being prepared. Ready in about 1 minute.', $say($scheduled, $pending), 'a missed beat waits for the following pass, never less than a minute');
+        $beat('2026-11-17T11:59:00Z', null);
+        assertSameValue('Being prepared. Ready in a few minutes.', $say($scheduled, $pending), 'one pass alone does not tell the cadence');
+        $beat('2026-11-17T11:30:00Z', 300);
+        assertSameValue('Still being prepared. If it is not ready within the hour, tell whoever looks after the website.', $say($scheduled, $pending), 'a schedule that stopped says whom to tell');
+        file_put_contents($heartbeat, '{not json');
+        assertSameValue('Being prepared. Ready in a few minutes.', $say($scheduled, $pending), 'an unreadable heartbeat is no estimate');
+        $working = new LibraryMedia($id(7), str_repeat('1', 32), 'Working.jpg', 'processing', 'image/jpeg', 1, null, null, 1, null, null);
+        assertSameValue('Being prepared. Ready in a moment.', $say($scheduled, $working), 'a file the worker holds is ready in a moment');
+        assertSameValue('This file could not be prepared. Upload it again.', $say($scheduled, $failed), 'a failed file says what to do');
+        foreach (['ca', 'es', 'fr', 'de'] as $language) {
+            $beat('2026-11-17T11:59:00Z', 300);
+            assertTrueValue(str_contains(Translator::load($language)->message($scheduled->message($pending)), '4'), $language . ' says the minutes');
+        }
+
+        $profile = ProfileManifest::gateZero();
+        $content = new ContentService(new MemoryRecordRepository(), $profile, $clock, new IdentityTestRandom(), $fixture['library']);
+        $library = new MediaLibrary($fixture['repository'], new FilesystemMediaStore($fixture['root']), $clock, new IdentityTestRandom(), preparation: $scheduled);
+        $http = new MediaLibraryHttp($library, $content, $profile);
+        $session = new \Utsuri\PortableCms\Conventional\Identity\SessionContext('session', 'authenticated', str_repeat('a', 32), 'editor@example.test', 'Editor', 'editor', 'token', 'csrf', new DateTimeImmutable('+1 hour'), false);
+        $response = $http->handle(new Request('GET', '/media/status', query: ['ids' => implode(',', [$id(1), $id(5), $id(6), str_repeat('f', 32), '../etc'])]), $session, 'test');
+        assertSameValue(200, $response->status, 'an editor can ask where files stand');
+        $value = json_decode($response->body, true, 8, JSON_THROW_ON_ERROR);
+        assertSameValue(15, $value['poll'], 'a scheduled host is asked every fifteen seconds');
+        assertSameValue([
+            ['id' => $id(1), 'state' => 'ready', 'text' => null, 'thumbnail' => '/media/' . $id(1) . '/thumbnail'],
+            ['id' => $id(5), 'state' => 'preparing', 'text' => 'Being prepared. Ready in about 4 minutes.', 'thumbnail' => null],
+            ['id' => $id(6), 'state' => 'failed', 'text' => 'This image could not be prepared. Remove it and upload it again.', 'thumbnail' => null],
+        ], $value['items'], 'each known file says where it stands; unknown and malformed identities are left out');
+        $many = implode(',', array_map(static fn(int $number): string => $id($number), range(1, 13)));
+        assertSameValue(422, $http->handle(new Request('GET', '/media/status', query: ['ids' => $many]), $session, 'test')->status, 'one request asks about twelve files at most');
+        assertSameValue(405, $http->handle(new Request('POST', '/media/status'), $session, 'test')->status, 'status is read-only');
+        assertTrueValue(MediaLibraryHttp::matches(new Request('GET', '/media/status')), 'the route is part of the library');
+
+        $listing = MediaLibraryPage::listing($library->browse('', 1, 'all', $profile->locales, $profile->defaultLocale), $profile, adminTestChrome(), null, 'csrf', null, true, $scheduled);
+        assertTrueValue(str_contains($listing, 'Being prepared. Ready in about 4 minutes.'), 'the Media page card says the same estimate');
+    } finally {
+        removeUploadTestTree($fixture['root']);
     }
 };

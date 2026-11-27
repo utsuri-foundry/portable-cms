@@ -69,6 +69,7 @@ return [
     'client.upload.derivative_attention' => 'Das Datei wurde hochgeladen, aber seine Dateivariante erfordert Ihre Aufmerksamkeit.',
     'client.upload.limit' => 'Wählen Sie bis zu acht Dateien aus.',
     'client.upload.too_large' => '{name} überschreitet die Upload-Grenze von {limit} MiB.',
+    'client.upload.again' => 'Laden Sie die Datei erneut hoch.',
     'client.live.updating' => 'Wird aktualisiert…',
     'client.live.ready' => 'Deine Änderungen werden auf der veröffentlichten Website gezeigt. Es wurde nichts veröffentlicht.',
     'client.live.rich_editing' => 'Wörter von {field} auf der Seite bearbeiten. Außerhalb klicken zum Beenden, Esc zum Rückgängigmachen. Formatierung und Blöcke im Formular ändern. Nichts wurde veröffentlicht.',

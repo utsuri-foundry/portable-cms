@@ -7,6 +7,7 @@ return [
     'picker.choose_library' => 'Choisir dans la bibliothèque',
     'picker.upload_images' => 'Téléverser des images',
     'picker.upload_image' => 'Téléverser une image',
+    'picker.preparation_failed' => 'Cette image n’a pas pu être préparée. Retirez-la et importez-la à nouveau.',
     'blocks.type' => 'Type de bloc',
     'blocks.add' => 'Ajouter un bloc',
     'blocks.insert' => 'Insérer un bloc en dessous',

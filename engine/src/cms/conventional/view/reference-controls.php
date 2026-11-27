@@ -13,9 +13,11 @@ use Utsuri\PortableCms\Conventional\Content\RecordReference;
 use Utsuri\PortableCms\Conventional\Content\RecordSnapshot;
 use Utsuri\PortableCms\Conventional\Http\Html;
 use Utsuri\PortableCms\Conventional\Http\Request;
+use Utsuri\PortableCms\Conventional\I18n\Message;
 use Utsuri\PortableCms\Conventional\I18n\Translator;
 use Utsuri\PortableCms\Conventional\Media\LibraryMedia;
 use Utsuri\PortableCms\Conventional\Media\MediaLibrary;
+use Utsuri\PortableCms\Conventional\Media\MediaPreparation;
 
 final class ReferenceControls
 {
@@ -92,14 +94,16 @@ final class ReferenceControls
         foreach ($selected as $index => $id) {
             $record = !$mediaField ? $this->selectedRecord($field, $id) : null;
             $media = $mediaField ? $this->media?->find($id) : null;
-            $descriptionWarning = $media === null ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
+            $descriptionWarning = $media === null || MediaPreparation::failed($media) ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
             $name = $mediaField ? ($media->name ?? $t->text('picker.unavailable_image')) : ($record === null ? $t->text('picker.unavailable_record') : RecordLabels::label($record, $this->profile));
             // An image is one row: thumbnail, name, the way to its details, then the remove control.
             // A record row shows the picture its type shares, when it has one.
             $cover = $recordRows && $record !== null ? $this->coverMedia($record) : null;
-            $markup .= '<li class="admin-selection">' . ($media === null ? ($cover === null ? '' : self::thumbnail($cover)) : self::thumbnail($media))
-                . '<span>' . Html::text($name) . ($media !== null && $media->status !== 'ready' ? '<small class="admin-meta">' . Html::text(self::mediaState($media->status, $t)) . '</small>' : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
-                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error">' . Html::text($descriptionWarning) . '</small>')
+            // Until an image is ready its row says when it will be; the page asks again until then.
+            $waiting = $media !== null && $media->status !== 'ready';
+            $markup .= '<li class="admin-selection"' . ($waiting && !MediaPreparation::failed($media) ? ' data-media-pending="' . Html::attribute($media->id) . '"' : '') . '>' . ($media === null ? ($cover === null ? '' : self::thumbnail($cover)) : self::thumbnail($media))
+                . '<span>' . Html::text($name) . ($waiting ? $this->preparation($media) : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
+                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error" data-description-warning="' . Html::attribute($id) . '">' . Html::text($descriptionWarning) . '</small>')
                 . ($media === null ? '' : '<a class="admin-selection__link" href="' . Html::url('/media/' . $media->id) . '">' . $t->html('picker.image_details') . '</a>') . '</span>'
                 . '<input type="hidden" name="' . Html::attribute($field->id . ($field->type === 'record_reference' ? '' : '[]')) . '" value="' . Html::attribute($id) . '">'
                 . '<span class="admin-selection__actions">'
@@ -173,6 +177,14 @@ final class ReferenceControls
             . ($results?->hasNext === true ? self::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>'
             . ($field->type === 'taxonomy_references' ? $this->inlineTerm($field) : '') . '</details>' . ($tile === '' ? '' : '</div>');
         return $markup . '</fieldset>';
+    }
+
+    /** When a file that is not ready will be, or that it failed and what to do. */
+    private function preparation(LibraryMedia $media): string
+    {
+        // In a field the failed row stays until it is removed, so the line says to remove it too.
+        $message = MediaPreparation::failed($media) ? new Message('picker.preparation_failed') : ($this->media->preparation ?? new MediaPreparation())->message($media);
+        return '<small class="' . (MediaPreparation::failed($media) ? 'admin-field__error' : 'admin-meta') . '" data-media-state>' . Html::text($this->t->message($message)) . '</small>';
     }
 
     public function summary(FieldDefinition $field, mixed $value): string
