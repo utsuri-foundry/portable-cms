@@ -37,6 +37,9 @@ after 0.1.2; older commits are not assigned invented release versions.
   redo are drawn as line icons.
 - Automatic keeping errors use the field error style, and retyping a refused
   value keeps the refusal visible instead of showing Saving.
+- A website build's asset version now comes from its frozen content instead of
+  the snapshot's id, so two builds of equal content, such as before and after a
+  backup is restored, are byte for byte the same again.
 
 ## 0.15.2
 

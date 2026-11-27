@@ -40,3 +40,20 @@ $tests['asset versions mark stable-named files in pages, stylesheets and module 
     );
     assertSameValue('no imports here', AssetVersion::js('no imports here', 'assets/x.js', $version), 'a module without imports keeps its bytes and its integrity');
 };
+
+$tests['equal snapshot content gives the same digest whatever the snapshot id and time'] = static function (): void {
+    $root = dirname(__DIR__, 2);
+    $package = \Utsuri\PortableCms\Conventional\Content\ProfilePackage::load($root . '/profiles/reference-studio');
+    $document = json_decode((string) file_get_contents($root . '/profiles/reference-studio/fixtures/snapshot.json'), true, 64, JSON_THROW_ON_ERROR);
+    $first = \Utsuri\PortableCms\Conventional\Compiler\FrozenSnapshot::fromDocument($document, $package);
+    $restored = $document;
+    $restored['snapshotId'] = str_repeat('e', 32);
+    $restored['createdAt'] = '2027-01-01T00:00:00Z';
+    $second = \Utsuri\PortableCms\Conventional\Compiler\FrozenSnapshot::fromDocument($restored, $package);
+    assertTrueValue(preg_match('/\A[a-f0-9]{64}\z/', AssetVersion::content($first)) === 1, 'a snapshot digests to a sha256');
+    assertSameValue(AssetVersion::content($first), AssetVersion::content($second), 'a new snapshot id and time keep the digest, so a restored site rebuilds the same bytes');
+    $changed = $document;
+    $changed['records'][0]['revisionId'] = str_repeat('f', 32);
+    $third = \Utsuri\PortableCms\Conventional\Compiler\FrozenSnapshot::fromDocument($changed, $package);
+    assertTrueValue(AssetVersion::content($first) !== AssetVersion::content($third), 'changed content gives a new digest');
+};
