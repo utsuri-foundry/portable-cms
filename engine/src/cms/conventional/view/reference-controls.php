@@ -112,6 +112,10 @@ final class ReferenceControls
         $markup .= '</ol>';
         // Search opens on demand; it stays open while the editor is searching, paging or picking in this field.
         $browsing = $query !== '' || $filter !== '' || ($this->request->method === 'POST' && ($pageAction[1] ?? '') === $field->id && in_array($pageAction[0], ['page', 'search', 'select', 'add-media', 'replace', 'term'], true));
+        // Choosing an image puts it in the field and closes the chooser; removing the row is the undo.
+        if ($mediaField && $this->request->method === 'POST' && ($pageAction[1] ?? '') === $field->id && in_array($pageAction[0], ['select', 'replace'], true)) {
+            $browsing = false;
+        }
         $uploading = $tile !== '' && ($this->request->formValue('_upload_field') === $field->id || ($pageAction[0] === 'uploaded-media' && ($pageAction[1] ?? '') === $field->id));
         // A full image field offers nothing to add; removing a row is the way to change it. An upload
         // that has just completed keeps its panel, so its images can still be described.
@@ -142,25 +146,28 @@ final class ReferenceControls
             $invalidIcon = $item instanceof LibraryMedia && ($field->settings['purpose'] ?? null) === 'website-icon'
                 && !\Utsuri\PortableCms\Conventional\Content\WebsiteIconSelection::eligible($item->status, $item->mime, $item->width, $item->height);
             $disabled = $item instanceof LibraryMedia ? $item->status !== 'ready' || !str_starts_with($item->mime, 'image/') || $invalidIcon : ($item->body['deprecated'] ?? false) === true;
+            if ($item instanceof LibraryMedia && $mediaField && !$disabled && !in_array($id, $selected, true)) {
+                // The whole image is one button: activating it adds the image at once, with or without scripts.
+                $markup .= '<li><button type="submit" name="_editor_action" value="' . Html::attribute('select:' . $field->id . ':' . $id) . '" formnovalidate class="admin-picker__pick" aria-label="' . $t->html('picker.select', ['name' => $label]) . '">'
+                    . self::thumbnail($item) . '<span><span>' . Html::text($label) . '</span><small class="admin-meta">' . Html::text(self::metadata($item, $t)) . '</small></span></button>'
+                    . ($selected !== [] ? self::button('replace:' . $field->id . ':' . $id, $t->text('picker.replace'), $t->text('picker.replace_label', ['name' => $label])) : '') . '</li>';
+                continue;
+            }
             $markup .= '<li>' . ($item instanceof LibraryMedia ? self::thumbnail($item) : '') . '<div><span>' . Html::text($label) . '</span>'
                 . ($item instanceof RecordSnapshot ? $this->referenceStatus($field, $id, $item) : '')
                 . ($item instanceof LibraryMedia ? '<small class="admin-meta">' . Html::text(self::metadata($item, $t)) . '</small>' : self::taxonomyMetadata($item->body)) . '</div>';
             if (in_array($id, $selected, true)) {
                 $markup .= '<span class="admin-meta">' . $t->html('picker.selected_state') . '</span>';
-            } elseif ($disabled) {
-                $markup .= '<span class="admin-meta">' . ($invalidIcon ? $t->html('picker.icon_requirements') : ($item instanceof LibraryMedia ? Html::text(self::mediaState($item->status, $t)) : $t->html('picker.deprecated'))) . '</span>';
-            } else {
-                if ($mediaField) {
-                    $markup .= '<label class="admin-checkbox"><input type="checkbox" name="_pick_' . Html::attribute($field->id) . '[]" value="' . Html::attribute($id) . '"' . (in_array($id, $this->request->formValues('_pick_' . $field->id), true) ? ' checked' : '') . ' aria-label="' . $t->html('picker.select', ['name' => $label]) . '"><span>' . $t->html('picker.choose') . '</span></label>';
-                }
+            } elseif ($disabled && $invalidIcon) {
+                $markup .= '<span class="admin-meta">' . $t->html('picker.icon_requirements') . '</span>';
+            } elseif ($disabled && !$item instanceof LibraryMedia) {
+                $markup .= '<span class="admin-meta">' . $t->html('picker.deprecated') . '</span>';
+            } elseif (!$disabled) {
                 $markup .= self::button('select:' . $field->id . ':' . $id, $t->text($field->type === 'record_reference' ? 'picker.choose' : 'picker.add'), $t->text('picker.select', ['name' => $label]));
-                if ($mediaField && $selected !== []) {
-                    $markup .= self::button('replace:' . $field->id . ':' . $id, $t->text('picker.replace'), $t->text('picker.replace_label', ['name' => $label]));
-                }
             }
             $markup .= '</li>';
         }
-        $markup .= '</ul>' . ($mediaField && $items !== [] ? self::button('add-media:' . $field->id, $t->text('picker.add_selected')) : '') . ($items === [] ? '<p class="admin-meta">' . $t->html('picker.no_matches') . '</p>' : '')
+        $markup .= '</ul>' . ($items === [] ? '<p class="admin-meta">' . $t->html('picker.no_matches') . '</p>' : '')
             . '<div class="admin-picker__pagination"><span>' . $t->html('records.pages.current', ['page' => (string) $page]) . '</span>'
             . ($page > 1 ? self::button('page:' . $field->id . ':' . ($page - 1), $t->text('records.pages.previous')) : '')
             . ($results?->hasNext === true ? self::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>'

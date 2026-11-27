@@ -7,7 +7,6 @@ return [
     'media.field.added' => 'Añadidos a {field}: {added}. Solo en la biblioteca: {remaining}. Revisa estas selecciones antes de publicar.',
     'media.field.failed' => 'Algunos archivos no se han podido subir. Las imágenes completadas se han conservado. Vuelve a seleccionar los archivos pendientes para reintentarlo.',
     'media.field.invalid' => 'Elige imágenes disponibles y preparadas de la biblioteca.',
-    'picker.add_selected' => 'Añadir las imágenes seleccionadas',
     'design.lede' => 'Tipografía, espaciado y puntos de corte del sitio web público.',
     'design.error.title' => 'Revisa los valores del diseño',
     'design.error.preserved' => 'Lo que has introducido se conserva. Vuelve a elegir el archivo de fuente después de corregir el formulario.',

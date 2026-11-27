@@ -587,6 +587,17 @@ details > summary { cursor: pointer; }
 .admin-picker__results > li { display: flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-3); padding: var(--admin-space-2) var(--admin-space-3); border-top: 1px solid var(--admin-border); }
 .admin-picker__results > li:first-child { border-top: 0; }
 .admin-picker__results > li > div { flex: 1; min-width: 6rem; overflow-wrap: anywhere; }
+/* A library image is one button that adds it to the field. */
+.admin-picker__results > li:has(> .admin-picker__pick) { padding: 0; }
+.admin-picker__pick + button { margin-right: var(--admin-space-3); }
+.admin-picker__results .admin-picker__pick {
+  display: flex; min-width: 0; min-height: auto; flex: 1 1 12rem; align-items: center; justify-content: flex-start; gap: var(--admin-space-3);
+  padding: var(--admin-space-2) var(--admin-space-3); border: 0; border-radius: 0; background: transparent; color: var(--admin-text);
+  font-size: var(--admin-text-md); font-weight: 400; text-align: left; white-space: normal;
+}
+.admin-picker__results .admin-picker__pick:hover { background: var(--admin-panel-muted); }
+.admin-picker__results .admin-picker__pick:focus-visible { outline-offset: -2px; }
+.admin-picker__pick > span { display: grid; min-width: 0; overflow-wrap: anywhere; }
 .admin-picker__results small { display: block; }
 .admin-picker__results .admin-thumbnail { width: 2.75rem; height: 2.25rem; }
 .admin-picker__results button, .admin-picker__pagination button, .admin-picker__search button { min-height: var(--admin-control-small); padding: 0 0.5rem; font-size: var(--admin-text-xs); }

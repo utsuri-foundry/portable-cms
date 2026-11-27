@@ -7,7 +7,6 @@ return [
     'media.field.added' => 'Ajouts à {field} : {added}. Uniquement dans la bibliothèque : {remaining}. Vérifiez ces sélections avant de publier.',
     'media.field.failed' => 'Certains fichiers n’ont pas pu être envoyés. Les images terminées ont été conservées. Sélectionnez à nouveau les fichiers restants pour réessayer.',
     'media.field.invalid' => 'Choisissez des images disponibles et préparées dans la bibliothèque.',
-    'picker.add_selected' => 'Ajouter les images sélectionnées',
     'design.lede' => 'Typographie, espacements et points de rupture utilisés par le site web public.',
     'design.error.title' => 'Vérifiez les valeurs du design',
     'design.error.preserved' => 'Votre saisie est conservée. Choisissez à nouveau un fichier de police après avoir corrigé le formulaire.',

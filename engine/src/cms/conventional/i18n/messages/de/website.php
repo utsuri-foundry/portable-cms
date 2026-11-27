@@ -7,7 +7,6 @@ return [
     'media.field.added' => 'Zu {field} hinzugefügt: {added}. Nur in der Bibliothek: {remaining}. Prüfe diese Auswahl vor der Veröffentlichung.',
     'media.field.failed' => 'Einige Dateien konnten nicht hochgeladen werden. Fertige Bilder wurden behalten. Wählen Sie die übrigen Dateien erneut aus, um es nochmals zu versuchen.',
     'media.field.invalid' => 'Wählen Sie verfügbare, vorbereitete Bilder aus der Bibliothek.',
-    'picker.add_selected' => 'Ausgewählte Bilder hinzufügen',
     'design.lede' => 'Schrift, Abstände und Breakpoints der öffentlichen Website.',
     'design.error.title' => 'Designwerte prüfen',
     'design.error.preserved' => 'Ihre Eingaben bleiben erhalten. Wählen Sie nach der Korrektur des Formulars erneut eine Schriftdatei aus.',

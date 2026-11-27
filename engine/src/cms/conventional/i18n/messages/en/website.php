@@ -7,7 +7,6 @@ return [
     'media.field.added' => 'Added to {field}: {added}. Kept only in the library: {remaining}. Review these selections before publishing.',
     'media.field.failed' => 'Some files could not be uploaded. Completed images were kept. Select the remaining files again to retry.',
     'media.field.invalid' => 'Choose available, prepared images from the library.',
-    'picker.add_selected' => 'Add selected images',
     'design.lede' => 'Type, spacing and breakpoints used by the public website.',
     'design.error.title' => 'Check the design values',
     'design.error.preserved' => 'Your input is preserved. Choose a font file again after correcting the form.',

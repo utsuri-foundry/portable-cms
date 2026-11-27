@@ -7,7 +7,6 @@ return [
     'media.field.added' => 'Afegits a {field}: {added}. Només a la biblioteca: {remaining}. Revisa aquestes seleccions abans de publicar.',
     'media.field.failed' => 'Alguns fitxers no s’han pogut pujar. Les imatges completades s’han conservat. Torna a seleccionar els fitxers pendents per reintentar-ho.',
     'media.field.invalid' => 'Tria imatges disponibles i preparades de la biblioteca.',
-    'picker.add_selected' => 'Afegeix les imatges seleccionades',
     'design.lede' => 'Tipografia, espaiat i punts de ruptura que utilitza el lloc web públic.',
     'design.error.title' => 'Cal revisar els valors del disseny',
     'design.error.preserved' => 'Les dades introduïdes es conserven. Cal tornar a triar el fitxer del tipus de lletra després de corregir el formulari.',

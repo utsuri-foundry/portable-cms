@@ -196,10 +196,13 @@ ordinary Save still requires media to satisfy the normal validation contract.
 Generic library and video uploads keep their separate form and do not target an
 image field.
 
-The library picker offers native checkboxes and **Add selected images** for one
-bounded page of at most 20 choices. They append in picker order, preserve every
-other unsaved field and use the same maximum and overflow notice. Removing a
-selection never deletes or changes its library image.
+In the library picker each ready image is one native submit button. Activating
+it, by pointer or keyboard, with or without scripts, appends the image after
+the existing selection (or fills a single-image field), preserves every other
+unsaved field and closes the chooser; removing the row is the undo. The
+bounded `add-media` action for up to 20 choices remains accepted for forms
+rendered before this change. Removing a selection never deletes or changes its
+library image.
 
 The local sandbox seeds checksum-verified fictional originals through that
 same pipeline. Development seeding is excluded from installed bundles and

@@ -263,23 +263,53 @@ try {
 		`document.querySelector('[value="remove:gallery:${original[0]}"]').click()`,
 	);
 	await ready(`!(${idsExpression}).includes(${JSON.stringify(original[0])})`);
-	const beforeBulk = await ids();
-	const picks = await evaluate(
-		"(()=>{const boxes=Array.from(document.querySelectorAll('[name=\"_pick_gallery[]\"]')).slice(0,2);for(const box of boxes)box.checked=true;return boxes.map(b=>b.value)})()",
+	const beforePick = await ids();
+	await evaluate(
+		"document.querySelector('#field-gallery details.admin-picker__library > summary').click()",
 	);
-	assert.equal(picks.length, 2, "two ready library images can be checked together");
-	await evaluate("document.querySelector('[value=\"add-media:gallery\"]').click()");
-	await ready(`(${idsExpression}).length===${beforeBulk.length + 2}`);
+	const pick = await evaluate(
+		"(()=>{const button=document.querySelector('#field-gallery .admin-picker__pick');button.focus();return document.activeElement===button?button.value.split(':')[2]:null})()",
+	);
+	assert.ok(pick, "a ready library image is one focusable button");
+	assert.equal(
+		await evaluate("document.querySelectorAll('[name=\"_pick_gallery[]\"]').length"),
+		0,
+		"there is nothing to tick before adding",
+	);
+	await command("Input.dispatchKeyEvent", {
+		type: "keyDown",
+		key: "Enter",
+		code: "Enter",
+		windowsVirtualKeyCode: 13,
+		text: "\r",
+	});
+	await command("Input.dispatchKeyEvent", {
+		type: "keyUp",
+		key: "Enter",
+		code: "Enter",
+		windowsVirtualKeyCode: 13,
+	});
+	await ready(`(${idsExpression}).length===${beforePick.length + 1}`);
 	assert.deepEqual(
 		await ids(),
-		[...beforeBulk, ...picks],
-		"one native submission adds both library choices in picker order",
+		[...beforePick, pick],
+		"activating a library image from the keyboard adds it at once",
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('#field-gallery details.admin-picker__library').open",
+		),
+		false,
+		"the chooser closes after the pick",
 	);
 	assert.equal(
 		await evaluate("document.querySelector('#field-title-ca').value"),
 		"Native unsaved title",
-		"bulk picking preserves the form too",
+		"picking preserves the form too",
 	);
+	await evaluate(`document.querySelector('[value="remove:gallery:${pick}"]').click()`);
+	await ready(`!(${idsExpression}).includes(${JSON.stringify(pick)})`);
+	assert.deepEqual(await ids(), beforePick, "removing the row undoes the pick");
 	const removed = native.at(-1);
 	await evaluate(
 		`document.querySelector('[value="remove:gallery:${removed}"]').click()`,
@@ -323,7 +353,7 @@ try {
 		`document.querySelector('[name=_revision]')?.value!==${JSON.stringify(revision)} && document.readyState==='complete'`,
 	);
 	console.log(
-		"PASS edited-field uploads: interrupted enhanced batch/resume, ordered native additions, preserved unsaved form/revision, one-action multi-select, library retention and 360px no-script use.",
+		"PASS edited-field uploads: interrupted enhanced batch/resume, ordered native additions, preserved unsaved form/revision, one-activation library pick and undo, library retention and 360px no-script use.",
 	);
 } catch (error) {
 	process.stderr.write(

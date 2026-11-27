@@ -285,7 +285,9 @@ that opens the browser's file chooser; choosing files starts the upload at
 once, with no further submit. Without scripts it opens the native upload form
 in place. A field whose record cannot take uploads keeps one **Add images**
 disclosure (**Choose image**) for the library. A full field offers nothing
-more, and removing a row is the way to change it. The field's actual limits
+more, and removing a row is the way to change it. In Choose from library each
+ready image is one button: activating it puts the image in the field, or adds
+it to a list, and closes the chooser; removing the row is the undo. The field's actual limits
 stay with the upload control and are said in any rejection. Completed uploads append
 in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
