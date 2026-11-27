@@ -282,10 +282,17 @@ focus a hidden required control. Profiles may select the bounded
 `editorialSection` value, but cannot supply section markup.
 
 Image fields show each image as one row: thumbnail, name, **Image details**
-and a quiet remove control, never a numbered card. One **Add images**
-disclosure (**Choose image** on a field that holds one) offers library
-selection and uploads; a full field offers nothing more, and removing a row is
-the way to change it. Show the field's actual limits. Completed uploads append
+and a quiet remove control, never a numbered card. Two choices sit side by
+side under the rows: **Upload images** (**Upload image** on a field that holds
+one) and **Choose from library**. With scripts, Upload images is one button
+that opens the browser's file chooser; choosing files starts the upload at
+once, with no further submit. Without scripts it opens the native upload form
+in place. A field whose record cannot take uploads keeps one **Add images**
+disclosure (**Choose image**) for the library. A full field offers nothing
+more, and removing a row is the way to change it. In Choose from library each
+ready image is one button: activating it puts the image in the field, or adds
+it to a list, and closes the chooser; removing the row is the undo. The field's actual limits
+stay with the upload control and are said in any rejection. Completed uploads append
 in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
 Removing a selection keeps the library image. See the
@@ -583,7 +590,18 @@ group identities. Their ownership and security bounds are defined in
 [editorial controls](../development/editorial-controls.md).
 
 Upload progress uses native `progress` and a polite live status. Processing and
-preview states use stable text and status semantics. Queued pages can refresh
+preview states use stable text and status semantics. In an image field each
+chosen file is a row with its own progress while it uploads; a transfer that
+fails says so in its row with what to do, and the upload button keeps the
+focus. Once the files join the field, a row whose image is being prepared says
+when it will be ready: in a moment where the host prepares files right after
+the response, otherwise in about the minutes until the scheduled worker's next
+pass, read from its heartbeat ("a few minutes" until the cadence is known, and
+whom to tell when the schedule has stopped). The row asks again by itself and
+shows the thumbnail once the image is ready, and the record keeps the image then.
+Waiting for preparation is not a failed save: the rest of the record is kept
+and no error is shown. An image that could not be prepared says to remove it
+and upload it again. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
 

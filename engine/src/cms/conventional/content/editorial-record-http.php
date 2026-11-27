@@ -356,6 +356,17 @@ final class EditorialRecordHttp
         return is_int($sequence) ? $sequence : 0;
     }
 
+    private function holdsFailedMedia(FieldDefinition $field, mixed $value): bool
+    {
+        foreach (EditorialControls::selections($value, $field) as $id) {
+            $media = $this->media?->find($id);
+            if ($media !== null && \Utsuri\PortableCms\Conventional\Media\MediaPreparation::failed($media)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** @param array<string, mixed> $values */
     private function keep(Request $request, RecordTypeDefinition $type, ?RecordSnapshot $saved, array $values, SessionContext $session): Response
     {
@@ -372,9 +383,17 @@ final class EditorialRecordHttp
         $t = $this->chrome?->translator() ?? \Utsuri\PortableCms\Conventional\I18n\Translator::english();
         $errors = [];
         foreach ($result->errors as $fieldId => $message) {
+            if ($message->key === 'validation.media_preparing') {
+                // Not an error: the field's rows say when its new files will be ready, and keeping retries until then.
+                continue;
+            }
             $field = EditorialControls::nestedDefinition($type, $this->profile, $values, $fieldId);
             foreach ($type->fields as $candidate) {
                 $field = $candidate->id === $fieldId ? $candidate : $field;
+            }
+            if ($field?->type === 'media_references' && $this->holdsFailedMedia($field, $values[$fieldId] ?? null)) {
+                // The row of the image that could not be prepared already says what to do.
+                continue;
             }
             $errors[$fieldId] = \Utsuri\PortableCms\Conventional\View\EditorialRecordLayout::fieldMessage($message, $field, $t);
         }

@@ -155,6 +155,7 @@ require_once __DIR__ . '/media/maria-db-raster-width-queue.php';
 require_once __DIR__ . '/media/media-text.php';
 require_once __DIR__ . '/media/focal-point.php';
 require_once __DIR__ . '/compiler/media-focal-style.php';
+require_once __DIR__ . '/media/media-preparation.php';
 require_once __DIR__ . '/media/media-library.php';
 require_once __DIR__ . '/media/administration-logo-delivery.php';
 require_once __DIR__ . '/media/maria-db-media-library.php';

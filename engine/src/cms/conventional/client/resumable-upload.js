@@ -211,6 +211,124 @@ export function submitUploadSelection(panel, sessions, failed = false) {
 	return true;
 }
 
+/** One row per chosen file in the field's list, with its own progress, until the field takes the files. */
+function uploadRows(panel, files) {
+	const list = panel
+		.closest("[data-reference-control]")
+		?.querySelector(".admin-selections");
+	if (!list) return null;
+	const document = panel.ownerDocument;
+	for (const row of list.querySelectorAll("[data-upload-row]")) row.remove();
+	return files.map((file) => {
+		const row = document.createElement("li");
+		row.className = "admin-selection";
+		row.dataset.uploadRow = "";
+		const thumbnail = document.createElement("span");
+		thumbnail.className = "admin-thumbnail admin-thumbnail--pending";
+		thumbnail.setAttribute("aria-hidden", "true");
+		thumbnail.textContent = "…";
+		const text = document.createElement("span");
+		text.textContent = file.name;
+		const progress = document.createElement("progress");
+		progress.className = "admin-progress";
+		progress.max = 1;
+		progress.value = 0;
+		progress.setAttribute("aria-label", file.name);
+		text.append(progress);
+		row.append(thumbnail, text);
+		list.append(row);
+		return { row, text, progress, thumbnail };
+	});
+}
+
+function failUploadRow(entry, message) {
+	entry.progress.remove();
+	entry.thumbnail.textContent = "!";
+	const note = entry.row.ownerDocument.createElement("small");
+	note.className = "admin-field__error";
+	note.textContent = message;
+	entry.text.append(note);
+}
+
+/** A waiting row takes the state the server reports: still preparing, ready or failed. */
+export function showPreparation(row, item) {
+	const state = row.querySelector("[data-media-state]");
+	if (item.state === "preparing") {
+		if (state && item.text) state.textContent = item.text;
+		return;
+	}
+	delete row.dataset.mediaPending;
+	const thumbnail = row.querySelector(".admin-thumbnail");
+	if (item.state === "failed") {
+		if (state) {
+			state.textContent = item.text;
+			state.className = "admin-field__error";
+		}
+		if (thumbnail) thumbnail.textContent = "!";
+		// A file that could not be prepared needs no description.
+		for (const node of row.parentElement
+			?.closest("[data-reference-control]")
+			?.querySelectorAll(
+				`[data-media-description="${item.id}"], [data-description-warning="${item.id}"]`,
+			) ?? [])
+			node.hidden = true;
+		return;
+	}
+	state?.remove();
+	if (thumbnail && item.thumbnail) {
+		const image = row.ownerDocument.createElement("img");
+		image.className = "admin-thumbnail";
+		image.src = item.thumbnail;
+		image.width = 80;
+		image.height = 64;
+		image.alt = "";
+		thumbnail.replaceWith(image);
+	}
+	// The ready image can now be kept with the record.
+	const view = row.ownerDocument.defaultView ?? globalThis;
+	row
+		.querySelector("input[type=hidden]")
+		?.dispatchEvent(new view.Event("change", { bubbles: true }));
+}
+
+/** Rows of files still being prepared ask where they stand until each is ready or failed. */
+export function watchPreparation(
+	root,
+	{
+		request = (url) => fetch(url, { headers: { Accept: "application/json" } }),
+		schedule = setTimeout,
+	} = {},
+) {
+	const waiting = () => [...root.querySelectorAll("[data-media-pending]")];
+	let poll = 3;
+	const check = async () => {
+		const rows = waiting();
+		if (rows.length === 0) return;
+		const ids = [...new Set(rows.map((row) => row.dataset.mediaPending))];
+		// One request asks about twelve files at most.
+		for (let start = 0; start < ids.length; start += 12) {
+			try {
+				const response = await request(
+					`/media/status?ids=${ids.slice(start, start + 12).join(",")}`,
+				);
+				if (!response.ok) continue;
+				const value = await response.json();
+				if (Number.isInteger(value.poll) && value.poll > 0) poll = value.poll;
+				for (const item of value.items ?? [])
+					for (const row of rows)
+						if (row.dataset.mediaPending === item.id) showPreparation(row, item);
+			} catch {
+				/* The next check asks again. */
+			}
+		}
+		if (waiting().length > 0) schedule(check, poll * 1000);
+	};
+	if (waiting().length > 0) schedule(check, poll * 1000);
+	return check;
+}
+
+if (globalThis.document) watchPreparation(globalThis.document);
+
 for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]") ??
 	[]) {
 	const input = panel.querySelector("[data-media-upload-files]");
@@ -233,48 +351,71 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 			.catch(() => {});
 	}
 	if (nativeButton) nativeButton.hidden = true;
-	if (button) button.hidden = false;
+	const choose = panel.querySelector("[data-media-upload-choose]");
+	const disclosure = panel.closest(".admin-picker__upload");
+	if (choose && disclosure) {
+		// One step: the field's button opens the file chooser and choosing starts the upload.
+		// Each file shows as a row of the field with its progress; failures say what to do.
+		disclosure.parentElement.after(panel);
+		disclosure.replaceWith(choose);
+		panel.classList.add("admin-upload--direct");
+		choose.hidden = false;
+		choose.addEventListener("click", () => {
+			if (!owner.hasAttribute("data-upload-busy")) input.click();
+		});
+		input.addEventListener("change", () => {
+			if (input.files.length > 0) button.click();
+		});
+	} else if (button) button.hidden = false;
+	const refuse = (message) => {
+		status.classList.remove("admin-visually-hidden");
+		status.textContent = message;
+		(choose ?? input).focus();
+		if (choose) input.value = "";
+	};
 	button.addEventListener("click", async () => {
 		if (owner.hasAttribute("data-upload-busy")) return;
 		const files = [...input.files];
-		if (files.length > 8) {
-			status.textContent = t("upload.limit");
-			input.focus();
-			return;
-		}
-		if (files.length === 0) {
-			status.textContent = t("upload.select");
-			input.focus();
-			return;
-		}
+		if (files.length > 8) return refuse(t("upload.limit"));
+		if (files.length === 0) return refuse(t("upload.select"));
 		for (const file of files) {
 			const maximum = uploadFileMaximum(file, panel.dataset);
 			const accepted = sessionStorage.getItem(
 				`${storageKey(panel.dataset.recordId, file)}:accepted`,
 			);
-			if (!accepted && file.size > maximum) {
-				status.textContent = t("upload.too_large", {
-					name: file.name,
-					limit: Math.round((maximum / 1048576) * 100) / 100,
-				});
-				input.focus();
-				return;
-			}
+			if (!accepted && file.size > maximum)
+				return refuse(
+					t("upload.too_large", {
+						name: file.name,
+						limit: Math.round((maximum / 1048576) * 100) / 100,
+					}),
+				);
 		}
 		owner.setAttribute("data-upload-busy", "");
-		const starts = [...owner.querySelectorAll("[data-media-upload-start]")];
+		const starts = [
+			...owner.querySelectorAll(
+				"[data-media-upload-start], [data-media-upload-choose]",
+			),
+		];
 		for (const start of starts) start.disabled = true;
 		input.disabled = true;
-		progress.hidden = false;
-		progress.value = 0;
+		const rows = choose ? uploadRows(panel, files) : null;
+		// The rows show progress; the status line still narrates it to assistive technology.
+		status.classList.toggle("admin-visually-hidden", rows !== null);
+		if (!rows) {
+			progress.hidden = false;
+			progress.value = 0;
+		}
 		const sessions = [];
 		try {
 			const mediaByJob = new Map();
 			const result = await uploadThenProcessBatch({
 				files,
-				upload: async (file) => {
+				upload: async (file, index) => {
 					const completed = await uploadFile(panel, file, (uploaded, total) => {
-						progress.value = total > 0 ? uploaded / total : 0;
+						const value = total > 0 ? uploaded / total : 0;
+						if (rows) rows[index].progress.value = value;
+						else progress.value = value;
 					});
 					if (!panel.dataset.uploadField) await descriptions.add(completed.media);
 					mediaByJob.set(completed.job.id, completed.media.id);
@@ -315,12 +456,25 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 			input.value = "";
 			submitUploadSelection(panel, sessions);
 		} catch (error) {
-			status.textContent = error instanceof Error ? error.message : t("upload.failed");
+			// A dropped connection is a TypeError in the browser's own words; the server explains the rest.
+			const reason =
+				error instanceof Error && !(error instanceof TypeError)
+					? error.message
+					: t("upload.failed");
+			status.textContent = rows ? `${reason} ${t("upload.again")}` : reason;
+			// Files that did not finish say so in their own row; finished ones still join the field.
+			for (const entry of rows?.slice(sessions.length) ?? [])
+				failUploadRow(entry, `${reason} ${t("upload.again")}`);
 			submitUploadSelection(panel, sessions, true);
 		} finally {
 			owner.removeAttribute("data-upload-busy");
 			for (const start of starts) start.disabled = false;
 			input.disabled = false;
+			if (choose) {
+				input.value = "";
+				// Without a round trip, the way to try again keeps the focus.
+				if (sessions.length === 0) choose.focus();
+			}
 		}
 	});
 }

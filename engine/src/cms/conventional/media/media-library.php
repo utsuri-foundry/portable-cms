@@ -69,6 +69,7 @@ final class MediaLibrary
         private readonly Clock $clock,
         private readonly RandomSource $random,
         public readonly VideoUploadPolicy $videoUploads = new VideoUploadPolicy(),
+        public readonly MediaPreparation $preparation = new MediaPreparation(),
     ) {}
 
     /** @var array<string, array<string, mixed>> */

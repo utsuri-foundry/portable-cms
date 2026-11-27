@@ -231,6 +231,34 @@ test("preparing uploaded media retries with new request identities and acknowled
 	f.keeper.stop();
 });
 
+test("files still being prepared read as saved while the keeper quietly retries until they join", async () => {
+	let preparing = true;
+	const f = fixture(async () => ({ errors: {}, retryable: preparing }));
+	f.change("an uploaded image the field shows as being prepared");
+	assert.equal(await f.keeper.flush(), false);
+	assert.deepEqual(f.states.at(-1), ["saved"], "no error is shown for a normal wait");
+	assert.equal(
+		f.keeper.dirty(),
+		true,
+		"leaving still asks, because the image is not kept yet",
+	);
+	assert.equal(f.keeper.waiting(), true);
+	assert.equal(f.keeper.unacknowledged(), false);
+	assert.equal(f.timers.at(-1).delay, 1000);
+	const shown = f.states.length;
+	await f.keeper.flush();
+	assert.deepEqual(
+		f.states.slice(shown),
+		[["saved"]],
+		"a quiet retry does not flash Saving",
+	);
+	assert.equal(f.timers.at(-1).delay, 2000);
+	preparing = false;
+	assert.equal(await f.keeper.flush(), true);
+	assert.equal(f.keeper.waiting(), false);
+	assert.equal(f.keeper.dirty(), false);
+	f.keeper.stop();
+});
 test("conflicts stop all writes and preserve the current local input for the native conflict view", async () => {
 	const f = fixture(async () => ({ conflict: true }));
 	f.change("my local words");

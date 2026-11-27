@@ -87,7 +87,9 @@ final class ApplicationFactory
         $mediaStore = new FilesystemMediaStore($configuration->mediaRoot);
         $free = HostIo::attempt(fn() => disk_free_space($configuration->mediaRoot))->value;
         $videoUploads = Media\VideoUploadPolicy::qualify($configuration->videoUploads, EnvironmentReport::runtimeLimits(), is_float($free) ? (int) $free : null, Media\VideoSupport::available());
-        $mediaLibrary = new Media\MediaLibrary(new Media\MariaDbMediaLibrary($pdo), $mediaStore, $clock, $random, $videoUploads);
+        // Editors hear when a file being prepared will be ready, from the scheduled worker's heartbeat.
+        $preparation = new Media\MediaPreparation($configuration->mediaWakeStrategy === 'cron_only', $configuration->mediaRoot . '/worker-heartbeat.json', $clock);
+        $mediaLibrary = new Media\MediaLibrary(new Media\MariaDbMediaLibrary($pdo), $mediaStore, $clock, $random, $videoUploads, $preparation);
         $mediaJobs = new MariaDbMediaJobRepository($pdo);
         $reporter = $package === null ? null : new Preview\PreviewErrorReporter($clock, $random, $configuration->errorLog, $package->root);
         $compiler = $package === null ? null : new Preview\ProfilePreviewCompiler($package, $configuration->mediaRoot, dirname(__DIR__, 4) . '/schemas', $reporter === null ? null : $reporter->report(...));

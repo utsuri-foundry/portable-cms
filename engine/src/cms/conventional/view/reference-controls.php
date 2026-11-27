@@ -13,9 +13,11 @@ use Utsuri\PortableCms\Conventional\Content\RecordReference;
 use Utsuri\PortableCms\Conventional\Content\RecordSnapshot;
 use Utsuri\PortableCms\Conventional\Http\Html;
 use Utsuri\PortableCms\Conventional\Http\Request;
+use Utsuri\PortableCms\Conventional\I18n\Message;
 use Utsuri\PortableCms\Conventional\I18n\Translator;
 use Utsuri\PortableCms\Conventional\Media\LibraryMedia;
 use Utsuri\PortableCms\Conventional\Media\MediaLibrary;
+use Utsuri\PortableCms\Conventional\Media\MediaPreparation;
 
 final class ReferenceControls
 {
@@ -92,14 +94,16 @@ final class ReferenceControls
         foreach ($selected as $index => $id) {
             $record = !$mediaField ? $this->selectedRecord($field, $id) : null;
             $media = $mediaField ? $this->media?->find($id) : null;
-            $descriptionWarning = $media === null ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
+            $descriptionWarning = $media === null || MediaPreparation::failed($media) ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
             $name = $mediaField ? ($media->name ?? $t->text('picker.unavailable_image')) : ($record === null ? $t->text('picker.unavailable_record') : RecordLabels::label($record, $this->profile));
             // An image is one row: thumbnail, name, the way to its details, then the remove control.
             // A record row shows the picture its type shares, when it has one.
             $cover = $recordRows && $record !== null ? $this->coverMedia($record) : null;
-            $markup .= '<li class="admin-selection">' . ($media === null ? ($cover === null ? '' : self::thumbnail($cover)) : self::thumbnail($media))
-                . '<span>' . Html::text($name) . ($media !== null && $media->status !== 'ready' ? '<small class="admin-meta">' . Html::text(self::mediaState($media->status, $t)) . '</small>' : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
-                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error">' . Html::text($descriptionWarning) . '</small>')
+            // Until an image is ready its row says when it will be; the page asks again until then.
+            $waiting = $media !== null && $media->status !== 'ready';
+            $markup .= '<li class="admin-selection"' . ($waiting && !MediaPreparation::failed($media) ? ' data-media-pending="' . Html::attribute($media->id) . '"' : '') . '>' . ($media === null ? ($cover === null ? '' : self::thumbnail($cover)) : self::thumbnail($media))
+                . '<span>' . Html::text($name) . ($waiting ? $this->preparation($media) : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
+                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error" data-description-warning="' . Html::attribute($id) . '">' . Html::text($descriptionWarning) . '</small>')
                 . ($media === null ? '' : '<a class="admin-selection__link" href="' . Html::url('/media/' . $media->id) . '">' . $t->html('picker.image_details') . '</a>') . '</span>'
                 . '<input type="hidden" name="' . Html::attribute($field->id . ($field->type === 'record_reference' ? '' : '[]')) . '" value="' . Html::attribute($id) . '">'
                 . '<span class="admin-selection__actions">'
@@ -112,17 +116,24 @@ final class ReferenceControls
         $markup .= '</ol>';
         // Search opens on demand; it stays open while the editor is searching, paging or picking in this field.
         $browsing = $query !== '' || $filter !== '' || ($this->request->method === 'POST' && ($pageAction[1] ?? '') === $field->id && in_array($pageAction[0], ['page', 'search', 'select', 'add-media', 'replace', 'term'], true));
+        // Choosing an image puts it in the field and closes the chooser; removing the row is the undo.
+        if ($mediaField && $this->request->method === 'POST' && ($pageAction[1] ?? '') === $field->id && in_array($pageAction[0], ['select', 'replace'], true)) {
+            $browsing = false;
+        }
         $uploading = $tile !== '' && ($this->request->formValue('_upload_field') === $field->id || ($pageAction[0] === 'uploaded-media' && ($pageAction[1] ?? '') === $field->id));
         // A full image field offers nothing to add; removing a row is the way to change it. An upload
         // that has just completed keeps its panel, so its images can still be described.
         if ($mediaField && !$uploading && $field->maximumItems !== null && count($selected) >= $field->maximumItems) {
             return $markup . '</fieldset>';
         }
-        $markup .= '<details class="admin-picker__browse"' . ($browsing || $uploading ? ' open' : '') . '><summary>'
-            . ($mediaField ? $t->html($field->maximumItems === 1 ? 'picker.choose_image' : 'picker.add_media') : $t->html($field->type === 'record_reference' ? 'picker.choose_field' : 'picker.add_field', ['field' => $t->inlineLabel($field->label)])) . '</summary>';
         if ($tile !== '') {
-            $markup .= '<details class="admin-picker__upload"' . ($uploading ? ' open' : '') . '><summary>' . $t->html('picker.upload_images') . '</summary><div class="admin-upload-tile">' . $tile . '</div></details>'
+            // Uploading and the library are the field's two ways to add, side by side. Scripts turn the
+            // upload choice into one button that opens the file chooser and uploads what is chosen.
+            $markup .= '<div class="admin-picker__add"><details class="admin-picker__upload"' . ($uploading ? ' open' : '') . '><summary>' . $t->html($field->maximumItems === 1 ? 'picker.upload_image' : 'picker.upload_images') . '</summary><div class="admin-upload-tile">' . $tile . '</div></details>'
                 . '<details class="admin-picker__library"' . ($browsing ? ' open' : '') . '><summary>' . $t->html('picker.choose_library') . '</summary>';
+        } else {
+            $markup .= '<details class="admin-picker__browse"' . ($browsing ? ' open' : '') . '><summary>'
+                . ($mediaField ? $t->html($field->maximumItems === 1 ? 'picker.choose_image' : 'picker.add_media') : $t->html($field->type === 'record_reference' ? 'picker.choose_field' : 'picker.add_field', ['field' => $t->inlineLabel($field->label)])) . '</summary>';
         }
         $markup .= '<div class="admin-picker__search"><label for="query-' . Html::attribute($field->id) . '">' . $t->html('picker.find') . '</label>'
             . '<input type="search" id="query-' . Html::attribute($field->id) . '" name="_query_' . Html::attribute($field->id) . '" maxlength="100" value="' . Html::attribute($query) . '">'
@@ -139,30 +150,41 @@ final class ReferenceControls
             $invalidIcon = $item instanceof LibraryMedia && ($field->settings['purpose'] ?? null) === 'website-icon'
                 && !\Utsuri\PortableCms\Conventional\Content\WebsiteIconSelection::eligible($item->status, $item->mime, $item->width, $item->height);
             $disabled = $item instanceof LibraryMedia ? $item->status !== 'ready' || !str_starts_with($item->mime, 'image/') || $invalidIcon : ($item->body['deprecated'] ?? false) === true;
+            if ($item instanceof LibraryMedia && $mediaField && !$disabled && !in_array($id, $selected, true)) {
+                // The whole image is one button: activating it adds the image at once, with or without scripts.
+                $markup .= '<li><button type="submit" name="_editor_action" value="' . Html::attribute('select:' . $field->id . ':' . $id) . '" formnovalidate class="admin-picker__pick" aria-label="' . $t->html('picker.select', ['name' => $label]) . '">'
+                    . self::thumbnail($item) . '<span><span>' . Html::text($label) . '</span><small class="admin-meta">' . Html::text(self::metadata($item, $t)) . '</small></span></button>'
+                    . ($selected !== [] ? self::button('replace:' . $field->id . ':' . $id, $t->text('picker.replace'), $t->text('picker.replace_label', ['name' => $label])) : '') . '</li>';
+                continue;
+            }
             $markup .= '<li>' . ($item instanceof LibraryMedia ? self::thumbnail($item) : '') . '<div><span>' . Html::text($label) . '</span>'
                 . ($item instanceof RecordSnapshot ? $this->referenceStatus($field, $id, $item) : '')
                 . ($item instanceof LibraryMedia ? '<small class="admin-meta">' . Html::text(self::metadata($item, $t)) . '</small>' : self::taxonomyMetadata($item->body)) . '</div>';
             if (in_array($id, $selected, true)) {
                 $markup .= '<span class="admin-meta">' . $t->html('picker.selected_state') . '</span>';
-            } elseif ($disabled) {
-                $markup .= '<span class="admin-meta">' . ($invalidIcon ? $t->html('picker.icon_requirements') : ($item instanceof LibraryMedia ? Html::text(self::mediaState($item->status, $t)) : $t->html('picker.deprecated'))) . '</span>';
-            } else {
-                if ($mediaField) {
-                    $markup .= '<label class="admin-checkbox"><input type="checkbox" name="_pick_' . Html::attribute($field->id) . '[]" value="' . Html::attribute($id) . '"' . (in_array($id, $this->request->formValues('_pick_' . $field->id), true) ? ' checked' : '') . ' aria-label="' . $t->html('picker.select', ['name' => $label]) . '"><span>' . $t->html('picker.choose') . '</span></label>';
-                }
+            } elseif ($disabled && $invalidIcon) {
+                $markup .= '<span class="admin-meta">' . $t->html('picker.icon_requirements') . '</span>';
+            } elseif ($disabled && !$item instanceof LibraryMedia) {
+                $markup .= '<span class="admin-meta">' . $t->html('picker.deprecated') . '</span>';
+            } elseif (!$disabled) {
                 $markup .= self::button('select:' . $field->id . ':' . $id, $t->text($field->type === 'record_reference' ? 'picker.choose' : 'picker.add'), $t->text('picker.select', ['name' => $label]));
-                if ($mediaField && $selected !== []) {
-                    $markup .= self::button('replace:' . $field->id . ':' . $id, $t->text('picker.replace'), $t->text('picker.replace_label', ['name' => $label]));
-                }
             }
             $markup .= '</li>';
         }
-        $markup .= '</ul>' . ($mediaField && $items !== [] ? self::button('add-media:' . $field->id, $t->text('picker.add_selected')) : '') . ($items === [] ? '<p class="admin-meta">' . $t->html('picker.no_matches') . '</p>' : '')
+        $markup .= '</ul>' . ($items === [] ? '<p class="admin-meta">' . $t->html('picker.no_matches') . '</p>' : '')
             . '<div class="admin-picker__pagination"><span>' . $t->html('records.pages.current', ['page' => (string) $page]) . '</span>'
             . ($page > 1 ? self::button('page:' . $field->id . ':' . ($page - 1), $t->text('records.pages.previous')) : '')
             . ($results?->hasNext === true ? self::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>'
-            . ($field->type === 'taxonomy_references' ? $this->inlineTerm($field) : '') . ($tile === '' ? '' : '</details>') . '</details>';
+            . ($field->type === 'taxonomy_references' ? $this->inlineTerm($field) : '') . '</details>' . ($tile === '' ? '' : '</div>');
         return $markup . '</fieldset>';
+    }
+
+    /** When a file that is not ready will be, or that it failed and what to do. */
+    private function preparation(LibraryMedia $media): string
+    {
+        // In a field the failed row stays until it is removed, so the line says to remove it too.
+        $message = MediaPreparation::failed($media) ? new Message('picker.preparation_failed') : ($this->media->preparation ?? new MediaPreparation())->message($media);
+        return '<small class="' . (MediaPreparation::failed($media) ? 'admin-field__error' : 'admin-meta') . '" data-media-state>' . Html::text($this->t->message($message)) . '</small>';
     }
 
     public function summary(FieldDefinition $field, mixed $value): string

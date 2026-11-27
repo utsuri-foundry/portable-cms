@@ -36,6 +36,19 @@ function writeMediaWorkerHeartbeat(string $mediaRoot, array $value): void
     }
 }
 
+/** Seconds since the previous pass finished, from its heartbeat: how often the host runs the worker. */
+function mediaWorkerInterval(string $mediaRoot, int $now): ?int
+{
+    $path = $mediaRoot . '/worker-heartbeat.json';
+    $bytes = is_file($path) ? HostIo::attempt(fn(): string|false => file_get_contents($path, false, null, 0, 65536))->value : false;
+    $previous = is_string($bytes) ? json_decode($bytes, true) : null;
+    $completed = is_array($previous) && is_string($previous['completedAt'] ?? null)
+        ? DateTimeImmutable::createFromFormat('!Y-m-d\TH:i:s\Z', $previous['completedAt'], new DateTimeZone('UTC'))
+        : false;
+    $interval = $completed === false ? null : $now - $completed->getTimestamp();
+    return $interval !== null && $interval >= 1 && $interval <= 86400 ? $interval : null;
+}
+
 $options = getopt('', ['config:', 'max-jobs::', 'max-seconds::', 'worker-id::', 'help']);
 if (isset($options['help'])) {
     fwrite(STDOUT, <<<'HELP'
@@ -105,9 +118,11 @@ try {
         ? $usage['ru_maxrss'] * 1024
         : null;
     $residentMemoryAtEnd = \Utsuri\PortableCms\Conventional\Media\MediaJobRunner::currentResidentMemoryBytes();
+    $completedAt = time();
     writeMediaWorkerHeartbeat($configuration->mediaRoot, [
         'formatVersion' => 2,
-        'completedAt' => gmdate('Y-m-d\TH:i:s\Z'),
+        'completedAt' => gmdate('Y-m-d\TH:i:s\Z', $completedAt),
+        'intervalSeconds' => mediaWorkerInterval($configuration->mediaRoot, $completedAt),
         'processed' => count($results),
         'completed' => $completed,
         'failed' => $failed,

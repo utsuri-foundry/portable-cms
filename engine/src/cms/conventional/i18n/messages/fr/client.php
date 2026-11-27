@@ -69,6 +69,7 @@ return [
     'client.upload.derivative_attention' => 'Le fichier a été téléversé, mais sa version dérivée nécessite une intervention.',
     'client.upload.limit' => 'Sélectionnez jusqu’à huit fichiers.',
     'client.upload.too_large' => '{name} dépasse la limite d’envoi de {limit} MiB.',
+    'client.upload.again' => 'Importez-le à nouveau.',
     'client.live.updating' => 'Mise à jour…',
     'client.live.ready' => 'Vos modifications sont affichées sur le site publié. Rien n’a été publié.',
     'client.live.rich_editing' => 'Modification des mots de {field} dans la page. Cliquez ailleurs pour terminer ou sur Échap pour annuler. Utilisez le formulaire pour le format et les blocs. Rien n’a été publié.',

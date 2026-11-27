@@ -69,6 +69,7 @@ return [
     'client.upload.derivative_attention' => 'S’ha pujat el fitxer, però la seva versió derivada requereix atenció.',
     'client.upload.limit' => 'Seleccioneu fins a vuit fitxers.',
     'client.upload.too_large' => '{name} supera el límit de càrrega de {limit} MiB.',
+    'client.upload.again' => 'Torna a pujar-lo.',
     'client.live.updating' => 'S’està actualitzant…',
     'client.live.ready' => 'Es mostren els teus canvis al web publicat. No s’ha publicat res.',
     'client.live.rich_editing' => 'S’editen les paraules de {field} a la pàgina. Clica fora per acabar o Esc per desfer. Fes servir el formulari per al format i els blocs. No s’ha publicat res.',
