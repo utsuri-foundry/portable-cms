@@ -278,10 +278,15 @@ focus a hidden required control. Profiles may select the bounded
 `editorialSection` value, but cannot supply section markup.
 
 Image fields show each image as one row: thumbnail, name, **Image details**
-and a quiet remove control, never a numbered card. One **Add images**
-disclosure (**Choose image** on a field that holds one) offers library
-selection and uploads; a full field offers nothing more, and removing a row is
-the way to change it. Show the field's actual limits. Completed uploads append
+and a quiet remove control, never a numbered card. Two choices sit side by
+side under the rows: **Upload images** (**Upload image** on a field that holds
+one) and **Choose from library**. With scripts, Upload images is one button
+that opens the browser's file chooser; choosing files starts the upload at
+once, with no further submit. Without scripts it opens the native upload form
+in place. A field whose record cannot take uploads keeps one **Add images**
+disclosure (**Choose image**) for the library. A full field offers nothing
+more, and removing a row is the way to change it. The field's actual limits
+stay with the upload control and are said in any rejection. Completed uploads append
 in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
 Removing a selection keeps the library image. See the

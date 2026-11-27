@@ -233,18 +233,35 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 			.catch(() => {});
 	}
 	if (nativeButton) nativeButton.hidden = true;
-	if (button) button.hidden = false;
+	const choose = panel.querySelector("[data-media-upload-choose]");
+	const disclosure = panel.closest(".admin-picker__upload");
+	if (choose && disclosure) {
+		// One step: the field's button opens the file chooser and choosing starts the upload.
+		// The progress, status and descriptions move under the field's actions.
+		disclosure.parentElement.after(panel);
+		disclosure.replaceWith(choose);
+		panel.classList.add("admin-upload--direct");
+		choose.hidden = false;
+		choose.addEventListener("click", () => {
+			if (!owner.hasAttribute("data-upload-busy")) input.click();
+		});
+		input.addEventListener("change", () => {
+			if (input.files.length > 0) button.click();
+		});
+	} else if (button) button.hidden = false;
 	button.addEventListener("click", async () => {
 		if (owner.hasAttribute("data-upload-busy")) return;
 		const files = [...input.files];
 		if (files.length > 8) {
 			status.textContent = t("upload.limit");
-			input.focus();
+			(choose ?? input).focus();
+			if (choose) input.value = "";
 			return;
 		}
 		if (files.length === 0) {
 			status.textContent = t("upload.select");
-			input.focus();
+			(choose ?? input).focus();
+			if (choose) input.value = "";
 			return;
 		}
 		for (const file of files) {
@@ -257,12 +274,17 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 					name: file.name,
 					limit: Math.round((maximum / 1048576) * 100) / 100,
 				});
-				input.focus();
+				(choose ?? input).focus();
+				if (choose) input.value = "";
 				return;
 			}
 		}
 		owner.setAttribute("data-upload-busy", "");
-		const starts = [...owner.querySelectorAll("[data-media-upload-start]")];
+		const starts = [
+			...owner.querySelectorAll(
+				"[data-media-upload-start], [data-media-upload-choose]",
+			),
+		];
 		for (const start of starts) start.disabled = true;
 		input.disabled = true;
 		progress.hidden = false;

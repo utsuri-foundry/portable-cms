@@ -160,9 +160,11 @@ processing, and reports accepted counts on partial failure. Post-response wake
 runs at most the existing worker allowance; cron remains recovery. No-script
 editors can reload the library to inspect status.
 
-Every supported top-level image field on a saved collection record has one
-Add images disclosure (Choose image on a single-image field) offering library
-selection and a collapsed native uploader while the field has room; a field at
+Every supported top-level image field on a saved collection record offers
+Upload images (Upload image on a single-image field) beside Choose from library
+while the field has room. With scripts, Upload images is one button: it opens
+the file chooser and the chosen files upload at once. Without scripts it is a
+collapsed native uploader; a field at
 its maximum offers nothing to add, except right after an upload it received, so
 the new images can still be described.
 Native multipart submission includes the complete unsaved editorial

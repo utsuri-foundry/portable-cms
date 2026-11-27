@@ -118,11 +118,14 @@ final class ReferenceControls
         if ($mediaField && !$uploading && $field->maximumItems !== null && count($selected) >= $field->maximumItems) {
             return $markup . '</fieldset>';
         }
-        $markup .= '<details class="admin-picker__browse"' . ($browsing || $uploading ? ' open' : '') . '><summary>'
-            . ($mediaField ? $t->html($field->maximumItems === 1 ? 'picker.choose_image' : 'picker.add_media') : $t->html($field->type === 'record_reference' ? 'picker.choose_field' : 'picker.add_field', ['field' => $t->inlineLabel($field->label)])) . '</summary>';
         if ($tile !== '') {
-            $markup .= '<details class="admin-picker__upload"' . ($uploading ? ' open' : '') . '><summary>' . $t->html('picker.upload_images') . '</summary><div class="admin-upload-tile">' . $tile . '</div></details>'
+            // Uploading and the library are the field's two ways to add, side by side. Scripts turn the
+            // upload choice into one button that opens the file chooser and uploads what is chosen.
+            $markup .= '<div class="admin-picker__add"><details class="admin-picker__upload"' . ($uploading ? ' open' : '') . '><summary>' . $t->html($field->maximumItems === 1 ? 'picker.upload_image' : 'picker.upload_images') . '</summary><div class="admin-upload-tile">' . $tile . '</div></details>'
                 . '<details class="admin-picker__library"' . ($browsing ? ' open' : '') . '><summary>' . $t->html('picker.choose_library') . '</summary>';
+        } else {
+            $markup .= '<details class="admin-picker__browse"' . ($browsing ? ' open' : '') . '><summary>'
+                . ($mediaField ? $t->html($field->maximumItems === 1 ? 'picker.choose_image' : 'picker.add_media') : $t->html($field->type === 'record_reference' ? 'picker.choose_field' : 'picker.add_field', ['field' => $t->inlineLabel($field->label)])) . '</summary>';
         }
         $markup .= '<div class="admin-picker__search"><label for="query-' . Html::attribute($field->id) . '">' . $t->html('picker.find') . '</label>'
             . '<input type="search" id="query-' . Html::attribute($field->id) . '" name="_query_' . Html::attribute($field->id) . '" maxlength="100" value="' . Html::attribute($query) . '">'
@@ -161,7 +164,7 @@ final class ReferenceControls
             . '<div class="admin-picker__pagination"><span>' . $t->html('records.pages.current', ['page' => (string) $page]) . '</span>'
             . ($page > 1 ? self::button('page:' . $field->id . ':' . ($page - 1), $t->text('records.pages.previous')) : '')
             . ($results?->hasNext === true ? self::button('page:' . $field->id . ':' . ($page + 1), $t->text('records.pages.next')) : '') . '</div>'
-            . ($field->type === 'taxonomy_references' ? $this->inlineTerm($field) : '') . ($tile === '' ? '' : '</details>') . '</details>';
+            . ($field->type === 'taxonomy_references' ? $this->inlineTerm($field) : '') . '</details>' . ($tile === '' ? '' : '</div>');
         return $markup . '</fieldset>';
     }
 

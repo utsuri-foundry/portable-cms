@@ -556,21 +556,26 @@ final class RecordPages
         $policy ??= new \Utsuri\PortableCms\Conventional\Media\VideoUploadPolicy();
         $maximum = min($policy->maximumBytes, \Utsuri\PortableCms\Conventional\Media\MediaContract::videoFieldMaximum($type->fields));
         $videoField = false;
+        $single = false;
         foreach ($type->fields as $candidate) {
             if ($candidate->id === $field && $candidate->type === 'video_reference') {
                 $videoField = true;
                 $maximum = min($policy->maximumBytes, \Utsuri\PortableCms\Conventional\Media\MediaContract::videoFieldMaximum([$candidate]));
             }
+            $single = $single || ($candidate->id === $field && $candidate->maximumItems === 1);
         }
+        // An image field uploads in one step: its button opens the file chooser and choosing starts the upload.
+        $direct = $field !== null && !$videoField;
         $video = ($field === null || $videoField) && \Utsuri\PortableCms\Conventional\Media\MediaContract::profileVideoEnabled($profile) && $maximum > 0;
         $suffix = $field === null ? '' : '-' . $field;
         $form = $field === null ? ' form="media-upload-form"' : '';
         $native = $field === null ? $form : ' name="_upload_field" value="' . Html::attribute($field) . '" formaction="' . Html::url('/records/' . $type->id . '/' . $record->id . '/upload') . '" formenctype="multipart/form-data" formnovalidate';
         $types = implode(',', \Utsuri\PortableCms\Conventional\Media\MediaContract::uploadTypes($video));
-        return ($field === null ? '<details class="admin-library-upload"><summary>' . $t->html('editor.upload.section') . '</summary>' : '') . '<div class="admin-upload" data-media-upload data-upload-field="' . Html::attribute($field ?? '') . '" data-messages="' . $t->bundleAttribute('client') . '" data-record-type="' . Html::attribute($type->id) . '" data-record-id="' . Html::attribute($record->id) . '"'
+        return ($field === null ? '<details class="admin-library-upload"><summary>' . $t->html('editor.upload.section') . '</summary>' : '') . '<div class="admin-upload" data-media-upload data-upload-field="' . Html::attribute($field ?? '') . '"' . ($direct ? ' data-upload-direct' : '') . ' data-messages="' . $t->bundleAttribute('client') . '" data-record-type="' . Html::attribute($type->id) . '" data-record-id="' . Html::attribute($record->id) . '"'
             . ' data-image-max-bytes="41943040" data-video-max-bytes="' . $maximum . '" data-record-revision="' . Html::attribute((string) ($revision ?? $record->revisionNumber)) . '" data-csrf-token="' . Html::attribute($csrfToken) . '">'
             . '<label class="admin-upload__label' . ($field !== null ? ' admin-visually-hidden' : '') . '" for="media-upload-files' . Html::attribute($suffix) . '">' . $t->html($video ? 'video.upload_label' : 'editor.upload.label') . '</label>'
-            . '<div class="admin-upload__controls"><input id="media-upload-files' . Html::attribute($suffix) . '" name="' . Html::attribute($field === null ? 'images' : 'images_' . $field) . '[]" type="file" accept="' . Html::attribute($types) . '" multiple' . $form . ' data-media-upload-files aria-describedby="media-upload-help' . Html::attribute($suffix) . '">'
+            . '<div class="admin-upload__controls"><input id="media-upload-files' . Html::attribute($suffix) . '" name="' . Html::attribute($field === null ? 'images' : 'images_' . $field) . '[]" type="file" accept="' . Html::attribute($types) . '"' . ($single ? '' : ' multiple') . $form . ' data-media-upload-files aria-describedby="media-upload-help' . Html::attribute($suffix) . '">'
+            . ($direct ? '<button type="button" class="admin-picker__upload-button" data-media-upload-choose aria-describedby="media-upload-help' . Html::attribute($suffix) . '" hidden>' . $t->html($single ? 'picker.upload_image' : 'picker.upload_images') . '</button>' : '')
             . '<button type="button" data-media-upload-start hidden>' . $t->html($video ? 'video.upload_submit' : 'editor.upload.submit') . '</button>'
             . '<button type="submit"' . $native . ' data-native-upload-start>' . $t->html($video ? 'video.upload_submit' : 'editor.upload.submit') . '</button></div>'
             . '<small class="admin-upload__limits" id="media-upload-help' . Html::attribute($suffix) . '">' . $t->html('editor.upload.limits') . ($video ? ' ' . VideoUploadHelp::limits($t, $policy, $maximum) : '') . '</small>'

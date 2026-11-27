@@ -4,7 +4,14 @@ import { basename, resolve } from "node:path";
 import { connectLocalBrowser } from "./local-browser.mjs";
 
 const origin = process.env.CMS_BROWSER_ORIGIN;
-const browser = await connectLocalBrowser(origin, process.env.CMS_BROWSER_DEBUG_URL);
+let chooserOpened = null;
+const browser = await connectLocalBrowser(
+	origin,
+	process.env.CMS_BROWSER_DEBUG_URL,
+	(method, params) => {
+		if (method === "Page.fileChooserOpened") chooserOpened?.(params);
+	},
+);
 const { command, evaluate, ready, navigate, setFiles, browserErrors } = browser;
 const path = "/records/project/10000000000000000000000000000001";
 const input = "#media-upload-files-gallery";
@@ -17,26 +24,44 @@ const files = [2, 1].map((number) =>
 const idsExpression =
 	"Array.from(document.querySelectorAll('#field-gallery .admin-selections input[name=\"gallery[]\"]')).map(i=>i.value)";
 const ids = () => evaluate(idsExpression);
-async function chooseFiles(paths) {
+/** Without scripts, Upload images opens the native form in place. */
+async function chooseNativeFiles(paths) {
 	await evaluate(
-		"for(const selector of ['#field-gallery > details.admin-picker__browse','#field-gallery details.admin-picker__upload']){const choice=document.querySelector(selector);if(!choice.open)choice.querySelector(':scope > summary').click()}",
+		"(()=>{const choice=document.querySelector('#field-gallery details.admin-picker__upload');if(!choice.open)choice.querySelector(':scope > summary').click()})()",
 	);
 	assert.equal(
 		await evaluate(
 			"document.querySelector('#media-upload-files-gallery').checkVisibility()",
 		),
 		true,
-		"Add images → Upload images reveals the native input",
+		"Upload images reveals the native input",
 	);
 	await setFiles(input, paths);
 }
-async function enhancedUpload() {
-	await ready(
-		`!document.querySelector(${JSON.stringify(panel + " [data-media-upload-start]")}).hidden`,
+/** With scripts, Upload images is one button: it opens the file chooser and choosing uploads. */
+async function uploadFiles(paths) {
+	const choose = "#field-gallery [data-media-upload-choose]";
+	await ready(`document.querySelector(${JSON.stringify(choose)})?.checkVisibility()`);
+	assert.equal(
+		await evaluate(
+			"!document.querySelector('#field-gallery details.admin-picker__browse') && !document.querySelector('#field-gallery details.admin-picker__upload') && !document.querySelector('#media-upload-files-gallery').checkVisibility()",
+		),
+		true,
+		"no disclosure or file input stands before the upload button",
 	);
-	await evaluate(
-		`document.querySelector(${JSON.stringify(panel + " [data-media-upload-start]")}).click()`,
-	);
+	await command("Page.setInterceptFileChooserDialog", { enabled: true });
+	const opened = new Promise((resolve) => {
+		chooserOpened = resolve;
+	});
+	await evaluate(`document.querySelector(${JSON.stringify(choose)}).click()`);
+	const chooser = await opened;
+	chooserOpened = null;
+	assert.equal(chooser.mode, "selectMultiple", "a gallery accepts several files");
+	await command("DOM.setFileInputFiles", {
+		backendNodeId: chooser.backendNodeId,
+		files: paths,
+	});
+	await command("Page.setInterceptFileChooserDialog", { enabled: false });
 }
 function worker() {
 	execFileSync(
@@ -92,8 +117,7 @@ try {
 	await evaluate(
 		"(()=>{const send=window.fetch.bind(window);let count=0;window.fetch=(url,options)=>{if(String(url).startsWith('/api/records/') && options?.method==='POST'){count++;if(count===1)return new Promise(resolve=>{window.resumeFieldUpload=()=>resolve(send(url,options))});if(count===2)return Promise.reject(new Error('Interrupted field batch'))}return send(url,options)}})()",
 	);
-	await chooseFiles(files);
-	await enhancedUpload();
+	await uploadFiles(files);
 	await ready("typeof window.resumeFieldUpload==='function'");
 	revision = await evaluate("document.querySelector('[name=_revision]').value");
 	assert.equal(
@@ -130,8 +154,7 @@ try {
 		revision,
 		"upload choices stay within the current editing revision",
 	);
-	await chooseFiles(files);
-	await enhancedUpload();
+	await uploadFiles(files);
 	await ready(
 		`document.querySelector('[data-media-upload-result]') && !document.querySelector('[data-validation-summary]') && (${idsExpression}).length===${original.length + 2}`,
 	);
@@ -176,7 +199,7 @@ try {
 	await evaluate(
 		"document.querySelector('#field-title-ca').value='Native unsaved title'",
 	);
-	await chooseFiles([files[0]]);
+	await chooseNativeFiles([files[0]]);
 	await evaluate(
 		`document.querySelector('[data-editorial-form]').requestSubmit(document.querySelector(${JSON.stringify(panel + " [data-native-upload-start]")}))`,
 	);

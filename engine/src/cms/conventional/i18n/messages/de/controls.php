@@ -6,6 +6,7 @@ declare(strict_types=1);
 return [
     'picker.choose_library' => 'Aus der Mediathek wählen',
     'picker.upload_images' => 'Bilder hochladen',
+    'picker.upload_image' => 'Bild hochladen',
     'blocks.type' => 'Blocktyp',
     'blocks.add' => 'Block hinzufügen',
     'blocks.insert' => 'Block darunter einfügen',

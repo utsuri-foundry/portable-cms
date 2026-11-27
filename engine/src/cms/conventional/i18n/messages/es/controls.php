@@ -6,6 +6,7 @@ declare(strict_types=1);
 return [
     'picker.choose_library' => 'Elegir de la biblioteca',
     'picker.upload_images' => 'Subir imágenes',
+    'picker.upload_image' => 'Subir una imagen',
     'blocks.type' => 'Tipo de bloque',
     'blocks.add' => 'Añadir bloque',
     'blocks.insert' => 'Insertar bloque debajo',
