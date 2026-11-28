@@ -251,9 +251,20 @@ try {
 		],
 		{ stdio: "pipe", timeout: 65000 },
 	);
+	// The field's rows show the real thumbnails; the cards below them repeat no picture or name.
 	await ready(
-		"[...document.querySelectorAll('[data-description-cards] img')].length===2 && [...document.querySelectorAll('[data-description-cards] img')].every(i=>i.complete && i.naturalWidth>0)",
+		`(()=>{const images=${JSON.stringify(enhancedIds)}.map(id=>document.querySelector('#field-gallery .admin-selection:has(input[value="'+id+'"]) img.admin-thumbnail'));return images.every(i=>i && i.complete && i.naturalWidth>0)})()`,
 		20000,
+	);
+	assert.deepEqual(
+		await evaluate(
+			"[...document.querySelectorAll('[data-description-cards] [data-media-description]')].map(c=>[!!c.querySelector('.admin-thumbnail'),c.querySelector('legend').classList.contains('admin-visually-hidden'),c.querySelector('legend').textContent.length>0])",
+		),
+		[
+			[false, true, true],
+			[false, true, true],
+		],
+		"each card keeps its image's name for screen readers only",
 	);
 	await ready(
 		"document.querySelector('[data-save-status]').textContent.startsWith('Saved at ')",

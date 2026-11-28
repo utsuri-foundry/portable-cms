@@ -317,8 +317,9 @@ in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
 Removing a selection keeps the library image.
 
-After an upload, Describe images under the field lists the new images, each with a
-Description per language, caption and credit folded behind a compact dashed
+After an upload, Describe images under the field has a card per new image, in the
+order of the rows above, repeating neither the picture nor the name (screen
+readers still hear the name), each with a Description per language, caption and credit folded behind a compact dashed
 "+ Caption and credit" like the field's own additions, and the decorative choice.
 With scripts the descriptions keep themselves as the record does, with the same
 words ("Saving", "Saved at 10:42", a quiet retry) and no Save button; a refusal

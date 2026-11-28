@@ -14,7 +14,10 @@ after 0.1.2; older commits are not assigned invented release versions.
 - An image that still needs a description says so once, in its field row,
   instead of also in its card below, and the row updates as soon as the
   description is kept, without a reload. While the image is being prepared the
-  line is a quiet hint; it becomes the warning when the image is ready.
+  line is a quiet hint; it becomes the warning when the image is ready. The
+  description cards under an image field no longer repeat the image's picture
+  and name shown in its row; they follow the rows' order, and screen readers
+  still hear each name.
 - Caption and credit open from a compact dashed "+ Caption and credit", like the
   image field's own Upload image and Choose from library, on the record page and
   on the media pages alike.
