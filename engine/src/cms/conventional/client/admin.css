@@ -583,15 +583,15 @@ details > summary { cursor: pointer; }
 .admin-upload--direct { display: contents; }
 .admin-upload--direct > .admin-upload__controls, .admin-upload--direct > [data-media-upload-status]:empty { display: none; }
 .admin-upload--direct > .admin-upload__limits { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.admin-picker details > summary {
+:is(.admin-picker details, .admin-media-text__more) > summary {
   display: inline-flex; min-height: var(--admin-control-small); align-items: center; padding: 0 0.625rem; border: 1px dashed var(--admin-border-strong);
   border-radius: var(--admin-radius-small); color: var(--admin-muted); font-size: var(--admin-text-xs); font-weight: 500; list-style: none;
 }
-.admin-picker details > summary::-webkit-details-marker { display: none; }
-.admin-picker details > summary::before { margin-right: 0.375rem; content: "+"; }
-.admin-picker details[open] > summary::before { content: "−"; }
+:is(.admin-picker details, .admin-media-text__more) > summary::-webkit-details-marker { display: none; }
+:is(.admin-picker details, .admin-media-text__more) > summary::before { margin-right: 0.375rem; content: "+"; }
+:is(.admin-picker details, .admin-media-text__more)[open] > summary::before { content: "−"; }
 .admin-picker details[open] { display: grid; gap: var(--admin-space-2); }
-.admin-picker details[open] > summary { justify-self: start; }
+:is(.admin-picker details[open], .admin-media-text__more) > summary { justify-self: start; }
 .admin-picker details[open] > :not(summary) { margin: 0; }
 .admin-picker__search { display: flex; flex-wrap: wrap; align-items: end; gap: var(--admin-space-2); }
 .admin-picker__search label { flex-basis: 100%; font-size: var(--admin-text-xs); }
@@ -639,7 +639,9 @@ details > summary { cursor: pointer; }
 .admin-media-detail .admin-video-player { width: 100%; height: auto; }
 .admin-media-text { display: grid; gap: var(--admin-space-2); margin: 0; padding: 0; border: 0; }
 .admin-media-text > legend { padding: 0; font-size: var(--admin-text-sm); font-weight: 600; }
-.admin-media-text__more { justify-self: start; min-width: min(100%, 24rem); }
+/* Caption and credit is a secondary addition like an image field's own: the same compact dashed "+" control. */
+.admin-media-text__more { display: grid; justify-self: start; gap: var(--admin-space-2); }
+.admin-media-text__more[open] { justify-self: stretch; }
 .admin-optional.admin-optional--quiet { padding: 0; border: 0; }
 .admin-optional.admin-optional--quiet > summary > span:first-child { color: var(--admin-muted); font-size: var(--admin-text-sm); font-weight: 500; }
 .admin-optional.admin-optional--quiet[open] > summary > span:first-child { color: var(--admin-text); }

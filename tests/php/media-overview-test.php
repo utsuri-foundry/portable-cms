@@ -115,8 +115,8 @@ $tests['media item page reads name and description per language with caption and
         }
         assertTrueValue(!str_contains($page, '<legend>CA</legend>'), 'no language codes');
         assertSameValue(3, substr_count($page, '>Description</label>'), 'one description per language');
-        assertSameValue(1, substr_count($page, '<details class="admin-optional admin-optional--quiet admin-media-text__more" open><summary><span>Caption and credit</span>'), 'a language with a caption shows it');
-        assertSameValue(2, substr_count($page, '<details class="admin-optional admin-optional--quiet admin-media-text__more"><summary><span>Caption and credit</span>'), 'languages without caption or credit keep them folded');
+        assertSameValue(1, substr_count($page, '<details class="admin-media-text__more" open><summary><span>Caption and credit</span>'), 'a language with a caption shows it');
+        assertSameValue(2, substr_count($page, '<details class="admin-media-text__more"><summary><span>Caption and credit</span>'), 'languages without caption or credit keep them folded');
         assertTrueValue(str_contains($page, 'Decorative image, needs no description') && str_contains($page, 'id="media-decorative-help"'), 'the decorative choice explains itself on demand');
         assertTrueValue(str_contains($page, 'class="admin-focal__crop" viewBox="0 0 240 240"') && str_contains($page, '<summary><span>As numbers</span></summary>'), 'the crop is square and the percentages fold');
         assertTrueValue(str_contains($page, '<p class="admin-meta">3840 × 2160 · 2.0 MB</p>') && !str_contains($page, '· ready'), 'size facts appear once, without a state word');

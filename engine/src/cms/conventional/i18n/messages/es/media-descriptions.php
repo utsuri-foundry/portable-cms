@@ -11,9 +11,9 @@ return [
     'media.descriptions.select' => 'Elige entre una y ocho imágenes disponibles.',
     'media.descriptions.save' => 'Guardar descripciones de las imágenes',
     'media.descriptions.saved' => 'Descripción guardada.',
-    'media.descriptions.failed' => 'No se pudieron guardar las descripciones. El texto sigue aquí; inténtalo de nuevo.',
     'media.descriptions.load_failed' => 'Abre la biblioteca para describir estas imágenes subidas.',
     'media.descriptions.missing' => 'Describe esta imagen en {languages} antes de publicar.',
     'media.descriptions.review' => 'Revisar los detalles actuales de la biblioteca en una pestaña nueva',
+    'media.descriptions.conflict' => 'Otra persona ha cambiado los detalles de esta imagen mientras tanto. Tu texto sigue aquí y tu próximo cambio lo guarda encima del suyo.',
     'media.descriptions.incomplete' => 'El formulario de descripciones estaba incompleto. No se cambió ninguna descripción; vuelve a abrir las imágenes.',
 ];

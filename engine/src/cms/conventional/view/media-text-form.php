@@ -44,7 +44,7 @@ final class MediaTextForm
             $more = ($translations[$locale]['caption'] ?? '') !== '' || ($translations[$locale]['credit'] ?? '') !== '';
             $html .= '<fieldset class="admin-media-text"><legend>' . Html::text($labels[$locale] ?? strtoupper($locale)) . '</legend>'
                 . '<div class="admin-field"><label class="admin-visually-hidden" for="' . Html::attribute($field('alternativeText')) . '">' . $t->html('media.text.alternative') . '</label>' . $input('alternativeText') . '</div>'
-                . '<details class="admin-optional admin-optional--quiet admin-media-text__more"' . ($more ? ' open' : '') . '><summary><span>' . $t->html('media.text.more') . '</span></summary>'
+                . '<details class="admin-media-text__more"' . ($more ? ' open' : '') . '><summary><span>' . $t->html('media.text.more') . '</span></summary>'
                 . '<div class="admin-field"><label for="' . Html::attribute($field('caption')) . '">' . $t->html('media.text.caption') . '</label>' . $input('caption') . '</div>'
                 . '<div class="admin-field"><label for="' . Html::attribute($field('credit')) . '">' . $t->html('media.text.credit') . '</label>' . $input('credit') . '</div></details></fieldset>';
         }

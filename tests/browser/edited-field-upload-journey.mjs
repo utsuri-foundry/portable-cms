@@ -215,6 +215,30 @@ try {
 			/^Being prepared\. Ready in (?:a few minutes|about \d+ minutes?)\.$/,
 			"new images say when they will be ready, not an engine state",
 		);
+	// The row is the one place that says an image still needs describing; while it is prepared, quietly.
+	assert.deepEqual(
+		await evaluate(
+			"Array.from(document.querySelectorAll('#field-gallery [data-media-pending] [data-description-warning]')).map(line=>[line.className,line.hidden])",
+		),
+		[
+			["admin-meta", false],
+			["admin-meta", false],
+		],
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelectorAll('#field-gallery [data-description-cards] [data-description-warning]').length",
+		),
+		0,
+		"the description cards below do not repeat it",
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('#field-gallery [data-upload-descriptions] button[type=submit]').checkVisibility()",
+		),
+		false,
+		"descriptions keep themselves without a Save button",
+	);
 	// Waiting for preparation is not a failed save: the rest of the record is kept.
 	await ready(
 		"document.querySelector('[data-save-status]').textContent.startsWith('Saved at ') && document.querySelector('[data-keep-retry]')?.hidden !== false",
@@ -228,6 +252,20 @@ try {
 	await ready(
 		"!document.querySelector('#field-gallery [data-media-pending]') && document.querySelectorAll('#field-gallery .admin-selections img.admin-thumbnail').length>=2",
 		40000,
+	);
+	const described = completed.at(-1);
+	const describedLine = `document.querySelector('#field-gallery .admin-selection [data-description-warning="${described}"]')`;
+	assert.deepEqual(
+		await evaluate(`[${describedLine}.className,${describedLine}.hidden]`),
+		["admin-field__error", false],
+		"a ready image without a description asks for one before publishing",
+	);
+	await evaluate(
+		`for(const control of document.querySelectorAll('[name^="description_${described}__alternativeText__"]')){control.value='A described upload';control.dispatchEvent(new Event('input',{bubbles:true}))}`,
+	);
+	// Descriptions keep themselves like the record, and the row reflects them at once.
+	await ready(
+		`document.querySelector('#field-gallery [data-descriptions-status]').textContent.startsWith('Saved at ') && ${describedLine}.hidden`,
 	);
 	// Once prepared, the images are kept with the record without any action.
 	await ready(

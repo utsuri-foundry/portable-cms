@@ -211,11 +211,18 @@ try {
 		),
 		false,
 	);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('[data-upload-descriptions]:not([hidden]) button').checkVisibility()",
+		),
+		false,
+		"with scripts, descriptions keep themselves without a Save button",
+	);
 	await evaluate(
-		`for(const id of ${JSON.stringify(enhancedIds)}){const control=document.querySelector('[name="description_'+id+'__alternativeText__ca"]');control.value='Enhanced upload description';control.dispatchEvent(new Event('input',{bubbles:true}))}document.querySelector('[data-upload-descriptions] button').click()`,
+		`for(const id of ${JSON.stringify(enhancedIds)}){const control=document.querySelector('[name="description_'+id+'__alternativeText__ca"]');control.value='Enhanced upload description';control.dispatchEvent(new Event('input',{bubbles:true}))}`,
 	);
 	await ready(
-		"document.querySelector('[data-descriptions-status]').textContent==='Description saved.'",
+		"document.querySelector('[data-upload-descriptions]:not([hidden]) [data-descriptions-status]').textContent.startsWith('Saved at ')",
 	);
 	assert.equal(
 		await evaluate("document.querySelector('[name=title__ca]').value"),

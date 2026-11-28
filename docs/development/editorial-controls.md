@@ -179,7 +179,14 @@ overflow, through the shared media description editor. Each upload panel owns a
 separate description form, so metadata saves exclude the pending record and
 other panels' batches. Native cards are available before derivative processing;
 native description saves open a separate tab to retain the pending record.
-The enhanced page saves inline and refreshes thumbnails as the original jobs complete.
+With scripts the cards have no Save button: the record keeper's own state machine
+keeps them through `POST /media/descriptions` (JSON) after the same pause, on
+Enter, on leaving a field and with keepalive when the page is hidden. Only cards
+the editor wrote in are sent, each with the revision it was read at; a refused
+card shows its reason in its card, and a conflict adopts the current revision
+so the editor's next change saves over it. Image rows carry
+`data-description-warning`, updated from each response, and the page refreshes
+thumbnails as the original jobs complete.
 A selected image that is not ready yet carries `data-media-pending`; the page asks
 the read-only `GET /media/status?ids=` (at most twelve identities, editors only)
 for its state, its line and its thumbnail, at the interval the response names.

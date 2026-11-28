@@ -315,7 +315,18 @@ it to a list, and closes the chooser; removing the row is the undo. The field's 
 stay with the upload control and are said in any rejection. Completed uploads append
 in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
-Removing a selection keeps the library image. See the
+Removing a selection keeps the library image.
+
+After an upload, Describe images under the field lists the new images, each with a
+Description per language, caption and credit folded behind a compact dashed
+"+ Caption and credit" like the field's own additions, and the decorative choice.
+With scripts the descriptions keep themselves as the record does, with the same
+words ("Saving", "Saved at 10:42", a quiet retry) and no Save button; a refusal
+shows in the image's card in the field error style. Without scripts their native
+Save opens the kept descriptions in a new tab and leaves the record open. An
+image's row is the one place that names the languages its description still
+needs: quietly while the image is being prepared, as a warning once it is ready,
+and gone as soon as a description is kept, without a reload. See the
 [media control contract](../development/editorial-controls.md#bounds-and-media-integrity)
 for receipts, conflicts and separate description forms.
 

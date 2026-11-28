@@ -41,7 +41,7 @@ final readonly class RecordListing
 final class RecordPages
 {
     public const EDITOR_SCRIPT_VERSION = '20';
-    private const MEDIA_UPLOAD_ASSET_VERSION = '8';
+    private const MEDIA_UPLOAD_ASSET_VERSION = '9';
     private const LIVE_PREVIEW_STYLE_VERSION = '3';
 
     /** Every record type, whatever its kind, is listed under Content in the sidebar and in breadcrumbs. */
@@ -604,6 +604,6 @@ final class RecordPages
             . '<button type="submit"' . $native . ' data-native-upload-start>' . $t->html($video ? 'video.upload_submit' : 'editor.upload.submit') . '</button></div>'
             . '<small class="admin-upload__limits" id="media-upload-help' . Html::attribute($suffix) . '">' . $t->html('editor.upload.limits') . ($video ? ' ' . VideoUploadHelp::limits($t, $policy, $maximum) : '') . '</small>'
             . '<progress class="admin-progress" max="1" value="0" hidden data-media-upload-progress></progress>'
-            . '<p class="admin-meta" role="status" aria-live="polite" data-media-upload-status></p>' . MediaDescriptionsForm::template($profile, $t, $descriptions, 'media-descriptions-form' . $suffix, instructions: false) . '</div>' . ($field === null ? '</details>' : '');
+            . '<p class="admin-meta" role="status" aria-live="polite" data-media-upload-status></p>' . MediaDescriptionsForm::template($profile, $t, $descriptions, 'media-descriptions-form' . $suffix, instructions: false, warnings: $field === null) . '</div>' . ($field === null ? '</details>' : '');
     }
 }

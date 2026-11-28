@@ -11,9 +11,9 @@ return [
     'media.descriptions.select' => 'Choose between one and eight available images.',
     'media.descriptions.save' => 'Save image descriptions',
     'media.descriptions.saved' => 'Description saved.',
-    'media.descriptions.failed' => 'Descriptions could not be saved. Your text is still here; try again.',
     'media.descriptions.load_failed' => 'Open the library to describe these uploaded images.',
     'media.descriptions.missing' => 'Describe this image in {languages} before publishing.',
     'media.descriptions.review' => 'Review current library details in a new tab',
+    'media.descriptions.conflict' => 'Someone else changed this image’s details meanwhile. Your text is still here and your next change saves it over theirs.',
     'media.descriptions.incomplete' => 'The description form was incomplete. No descriptions were changed; open the images again.',
 ];
