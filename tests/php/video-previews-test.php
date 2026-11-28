@@ -112,7 +112,7 @@ $tests['video preview visual choices work through native actions and leave playe
         assertSameValue(null, $cleared['trailer'], 'native clear restores an empty reference');
         foreach (['en', 'ca', 'es', 'fr', 'de'] as $locale) {
             $t = Translator::load($locale);
-            assertTrueValue($t->text('video.duration_unknown') !== '' && $t->text('video.codec', ['codec' => 'H.264']) !== '', 'video labels exist in every locale');
+            assertTrueValue($t->text('video.duration_unknown') !== '' && $t->text('video.upload_video') !== '' && $t->text('video.upload_poster') !== '', 'video labels exist in every locale');
         }
     } finally {
         removeMediaProcessingTree($f['root']);

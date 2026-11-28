@@ -13,6 +13,8 @@ $document = json_decode((string) file_get_contents($profilePath), flags: JSON_TH
 foreach ($document->recordTypes as &$type) {
     if ($type->id === 'project') {
         $type->fields[] = (object) ['id' => 'libraryFilm', 'label' => 'Other films', 'type' => 'video_reference', 'localized' => false, 'requiredOnDraft' => false, 'requiredOnPublish' => false, 'settings' => (object) ['posterRequired' => true, 'maximumBytes' => 41943040]];
+        // Narrower than the committed 160 pixel clip, so the browser can refuse it before uploading.
+        $type->fields[] = (object) ['id' => 'narrowLoop', 'label' => 'Narrow loop', 'type' => 'video_reference', 'localized' => false, 'requiredOnDraft' => false, 'requiredOnPublish' => false, 'settings' => (object) ['posterRequired' => true, 'maximumBytes' => 41943040, 'maximumWidth' => 100]];
     }
 }
 unset($type);

@@ -40,6 +40,9 @@ final readonly class EditorialMediaFields
         $descriptions = [];
         $uploads = $operation !== 'add-media';
         $ids = [];
+        // For a video field: what each uploaded file becomes, and whether a video was refused by the field's limits.
+        $kinds = [];
+        $refused = false;
         if ($uploads) {
             if ($this->uploads === null || $saved === null || $type->kind !== 'collection' || $nested !== null) {
                 throw new \InvalidArgumentException('Field uploads need a saved collection record.');
@@ -75,9 +78,13 @@ final readonly class EditorialMediaFields
                     if ($field->type === 'video_reference' && str_starts_with($session->declaredType, 'video/')) {
                         try {
                             $this->uploads->assertVideoField($sessionId, $actor, $field);
+                            $kinds[$session->mediaId] ??= 'video';
                         } catch (\InvalidArgumentException $error) {
                             $errors[$id] = Message::fromFailure($error);
+                            $refused = true;
                         }
+                    } elseif ($field->type === 'video_reference') {
+                        $kinds[$session->mediaId] ??= 'poster';
                     }
                     $ids[] = $session->mediaId;
                     $media = $this->library->find($session->mediaId);
@@ -96,7 +103,19 @@ final readonly class EditorialMediaFields
             }
         }
         if ($field->type === 'video_reference') {
-            return ['values' => $values, 'errors' => $errors, 'notice' => new Message('video.accepted', ['count' => count($ids)]), 'descriptions' => array_values($descriptions)];
+            // Uploads fill the field: the first video that fits becomes its video and the first image its
+            // poster. A refused video stays in the library, and a poster sent with it does not join the field.
+            $chosen = [];
+            foreach ($kinds as $mediaId => $kind) {
+                $chosen[$kind] ??= $mediaId;
+            }
+            if ($refused) {
+                unset($chosen['poster']);
+            }
+            foreach ($uploads ? $chosen : [] as $kind => $mediaId) {
+                $values = EditorialControls::apply(new Request('POST', $request->path, form: ['_editor_action' => 'select-' . $kind . ':' . $id . ':' . $mediaId]), $type, $this->profile, $values, $this->random);
+            }
+            return ['values' => $values, 'errors' => $errors, 'notice' => null, 'descriptions' => []];
         }
         $selected = EditorialControls::selections($nested === null ? ($values[$id] ?? null) : $nested['value']);
         $added = 0;

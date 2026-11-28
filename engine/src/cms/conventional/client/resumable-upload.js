@@ -1,5 +1,6 @@
 import { mountMediaDescriptions } from "./media-descriptions.js";
 import { messages } from "./messages.js";
+import { inspectVideo, videoLimitProblem } from "./video-previews.js";
 
 const STORAGE_PREFIX = "utsuri-portable-cms:media-upload:";
 const JOB_POLL_ATTEMPTS = 90;
@@ -214,20 +215,22 @@ export function submitUploadSelection(panel, sessions, failed = false) {
 /** One row per chosen file in the field's list, with its own progress, until the field takes the files. */
 function uploadRows(panel, files) {
 	const list = panel
-		.closest("[data-reference-control]")
-		?.querySelector(".admin-selections");
+		.closest("[data-reference-control], [data-video-reference]")
+		?.querySelector(".admin-selections, .admin-video-rows");
 	if (!list) return null;
 	const document = panel.ownerDocument;
+	const video = list.classList.contains("admin-video-rows");
 	for (const row of list.querySelectorAll("[data-upload-row]")) row.remove();
 	return files.map((file) => {
 		const row = document.createElement("li");
-		row.className = "admin-selection";
+		row.className = video ? "admin-video-row" : "admin-selection";
 		row.dataset.uploadRow = "";
 		const thumbnail = document.createElement("span");
 		thumbnail.className = "admin-thumbnail admin-thumbnail--pending";
 		thumbnail.setAttribute("aria-hidden", "true");
 		thumbnail.textContent = "…";
 		const text = document.createElement("span");
+		if (video) text.className = "admin-video-row__text";
 		text.textContent = file.name;
 		const progress = document.createElement("progress");
 		progress.className = "admin-progress";
@@ -287,11 +290,33 @@ export function showPreparation(row, item) {
 		image.alt = "";
 		thumbnail.replaceWith(image);
 	}
-	// The ready image can now be kept with the record.
+	if (item.thumbnail && row.dataset.videoRow === "poster") {
+		// A video without a frame of its own shows its poster once the poster is ready.
+		const frame = row.parentElement?.querySelector(
+			'[data-video-row="video"] [data-video-frame-image][hidden]',
+		);
+		if (frame) {
+			frame.src = item.thumbnail;
+			frame.hidden = false;
+			const fallback = frame.parentElement?.querySelector(
+				"[data-video-frame-fallback]",
+			);
+			if (fallback) fallback.hidden = true;
+		}
+	}
+	if (!item.thumbnail && thumbnail && row.dataset.videoRow === "video") {
+		// A ready video without a frame of its own shows its poster, or the play sign.
+		const poster = row.parentElement?.querySelector(
+			'[data-video-row="poster"] img.admin-thumbnail',
+		);
+		if (poster) thumbnail.replaceWith(poster.cloneNode(true));
+		else thumbnail.textContent = "▶";
+	}
+	// The ready file can now be kept with the record.
 	const view = row.ownerDocument.defaultView ?? globalThis;
-	row
-		.querySelector("input[type=hidden]")
-		?.dispatchEvent(new view.Event("change", { bubbles: true }));
+	(row.querySelector("input[type=hidden]") ?? row).dispatchEvent(
+		new view.Event("change", { bubbles: true }),
+	);
 }
 
 /** Rows of files still being prepared ask where they stand until each is ready or failed. */
@@ -332,8 +357,14 @@ export function watchPreparation(
 
 if (globalThis.document) watchPreparation(globalThis.document);
 
+/** The poster's file name: the video's own name with the poster's ending. */
+function posterName(name) {
+	return `${name.replace(/\.[a-z0-9]+$/i, "")}-poster.jpg`;
+}
+
 for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]") ??
 	[]) {
+	const document = panel.ownerDocument;
 	const input = panel.querySelector("[data-media-upload-files]");
 	const button = panel.querySelector("[data-media-upload-start]");
 	const progress = panel.querySelector("[data-media-upload-progress]");
@@ -354,24 +385,57 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 			.catch(() => {});
 	}
 	if (nativeButton) nativeButton.hidden = true;
-	const choose = panel.querySelector("[data-media-upload-choose]");
+	const chooseButtons = [...panel.querySelectorAll("[data-media-upload-choose]")];
 	const disclosure = panel.closest(".admin-picker__upload");
+	const videoField =
+		panel.dataset.uploadKind === "video"
+			? panel.closest("[data-video-reference]")
+			: null;
+	let choose = chooseButtons[0] ?? null;
+	let kind = "";
 	if (choose && disclosure) {
 		// One step: the field's button opens the file chooser and choosing starts the upload.
 		// Each file shows as a row of the field with its progress; failures say what to do.
-		disclosure.parentElement.after(panel);
-		disclosure.replaceWith(choose);
+		if (videoField) {
+			// A video field asks for what is missing: the video, then its poster image.
+			videoField.querySelector(".admin-video-choosers")?.after(panel);
+			disclosure.remove();
+			for (const each of chooseButtons)
+				videoField
+					.querySelector(
+						`[data-video-choosers="${each.dataset.mediaUploadChoose}"] .admin-picker__add`,
+					)
+					?.prepend(each);
+		} else {
+			disclosure.parentElement.after(panel);
+			disclosure.replaceWith(choose);
+		}
 		panel.classList.add("admin-upload--direct");
-		choose.hidden = false;
-		choose.addEventListener("click", () => {
-			if (!owner.hasAttribute("data-upload-busy")) input.click();
-		});
+		for (const each of chooseButtons) {
+			each.hidden = false;
+			each.addEventListener("click", () => {
+				if (owner.hasAttribute("data-upload-busy")) return;
+				choose = each;
+				kind = each.dataset.mediaUploadChoose;
+				if (videoField) {
+					input.accept =
+						kind === "video" ? panel.dataset.videoTypes : panel.dataset.imageTypes;
+					input.multiple = false;
+				}
+				input.click();
+			});
+		}
 		input.addEventListener("change", () => {
 			if (input.files.length > 0) button.click();
 		});
 	} else if (button) button.hidden = false;
+	const posterMissing = () =>
+		videoField?.querySelector('[data-video-value="poster"]')?.value === "";
 	const refuse = (message) => {
+		owner.removeAttribute("data-upload-busy");
 		status.classList.remove("admin-visually-hidden");
+		// A refusal is a problem to fix, said where the upload button is.
+		status.classList.toggle("admin-field__error", choose !== null);
 		status.textContent = message;
 		(choose ?? input).focus();
 		if (choose) input.value = "";
@@ -395,6 +459,36 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 				);
 		}
 		owner.setAttribute("data-upload-busy", "");
+		const chosenVideo =
+			videoField && kind === "video"
+				? files.find((file) => file.type.startsWith("video/"))
+				: null;
+		if (chosenVideo) {
+			// The browser measures what it can before uploading, and draws the first frame as the poster.
+			const url = URL.createObjectURL(chosenVideo);
+			let facts = null;
+			try {
+				facts = await inspectVideo(url, document);
+			} finally {
+				URL.revokeObjectURL(url);
+			}
+			const problem = facts
+				? videoLimitProblem(facts, JSON.parse(panel.dataset.videoLimits || "{}"))
+				: null;
+			if (problem)
+				return refuse(
+					t(`video.limit_${problem.key}`, {
+						actual: problem.actual,
+						limit: problem.limit,
+					}),
+				);
+			if (facts?.frame && posterMissing())
+				files.push(
+					new File([facts.frame], posterName(chosenVideo.name), {
+						type: "image/jpeg",
+					}),
+				);
+		}
 		const starts = [
 			...owner.querySelectorAll(
 				"[data-media-upload-start], [data-media-upload-choose]",
@@ -405,6 +499,7 @@ for (const panel of globalThis.document?.querySelectorAll("[data-media-upload]")
 		const rows = choose ? uploadRows(panel, files) : null;
 		// The rows show progress; the status line still narrates it to assistive technology.
 		status.classList.toggle("admin-visually-hidden", rows !== null);
+		status.classList.remove("admin-field__error");
 		if (!rows) {
 			progress.hidden = false;
 			progress.value = 0;

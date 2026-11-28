@@ -386,6 +386,7 @@ function contentTestApplication(
     ?\Utsuri\PortableCms\Conventional\Content\AdministrationLabels $administrationLabels = null,
     ?\Utsuri\PortableCms\Conventional\Preview\PreviewCheckHistory $previewChecks = null,
     ?\Utsuri\PortableCms\Conventional\Preview\PreviewStartup $previewStartup = null,
+    bool $videoUploads = false,
 ): array {
     $identityRepository = new MemoryIdentityRepository();
     $identityRepository->addUser(
@@ -411,6 +412,7 @@ function contentTestApplication(
             new FilesystemUploadStorage($mediaRoot),
             $clock,
             $random,
+            $videoUploads,
         );
         $mediaJobs = new ContentTestMediaJobs($uploadRepository);
     }

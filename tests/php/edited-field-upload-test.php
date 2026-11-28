@@ -249,3 +249,68 @@ $tests['multipart transfer errors preserve field input without admitting untrust
         editedFieldCleanup($f);
     }
 };
+
+/**
+ * The reference trailer field on a host that takes videos, optionally narrowed so the committed one-second clip breaks a limit.
+ *
+ * @return array<string, mixed>
+ */
+function editedVideoFixture(?int $maximumWidth = null): array
+{
+    $document = json_decode(editedFieldProfile()->definitionJson ?? throw new RuntimeException('expanded profile missing'), flags: JSON_THROW_ON_ERROR);
+    foreach ($document->recordTypes as $type) {
+        foreach ($type->id === 'project' && $maximumWidth !== null ? $type->fields : [] as $field) {
+            if ($field->id === 'trailer') {
+                $field->settings->maximumWidth = $maximumWidth;
+            }
+        }
+    }
+    $path = sys_get_temp_dir() . '/portable-video-profile-' . bin2hex(random_bytes(6)) . '.json';
+    file_put_contents($path, json_encode($document, JSON_THROW_ON_ERROR));
+    try {
+        $profile = ProfileManifest::load($path);
+    } finally {
+        unlink($path);
+    }
+    $media = editorialMediaFixture();
+    $state = contentTestApplication(withMediaUploads: true, profileOverride: $profile, library: $media['library'], videoUploads: true);
+    $cookies = authenticatedTestCookies($state['app']);
+    $service = new ContentService($state['contentRepository'], $profile, $state['clock'], new IdentityTestRandom(), $media['library']);
+    $record = $service->create('project', ['title' => ['ca' => 'Saved', 'es' => 'Saved', 'en' => 'Saved'], 'gallery' => '[]'], str_repeat('1', 32));
+    assertTrueValue($record instanceof RecordSnapshot, 'the upload owner exists');
+    $state['uploadRepository']->records[$record->id] = ['typeId' => 'project', 'revisionNumber' => 1];
+    $form = ['_csrf' => $cookies[IdentityService::CSRF_COOKIE], '_revision' => '1', '_editorial_end' => '1', 'title__ca' => 'Unsaved title', 'title__es' => 'Saved', 'title__en' => 'Saved',
+        '_present_trailer' => '1', 'trailer__video' => '', 'trailer__poster' => '', '_upload_field' => 'trailer'];
+    return [...$state, 'media' => $media, 'profile' => $profile, 'service' => $service, 'record' => $record, 'cookies' => $cookies, 'form' => $form, 'path' => '/records/project/' . $record->id];
+}
+function editedVideoClip(): UploadedFile
+{
+    $bytes = (string) file_get_contents(dirname(__DIR__) . '/fixtures/video/prepared.mp4');
+    return new UploadedFile('loop.mp4', 'video/mp4', strlen($bytes), RequestBody::fromString($bytes));
+}
+
+$tests['a video field upload puts the video and its poster in the field and refuses a video outside the limits in plain words'] = static function (): void {
+    $f = editedVideoFixture();
+    try {
+        $response = $f['app']->handle(new Request('POST', $f['path'] . '/upload', contentMutationHeaders(), $f['form'], $f['cookies'], files: [editedVideoClip(), editedFieldImage('loop-poster.png')]));
+        assertSameValue(200, $response->status, 'the field upload returns the editing form');
+        preg_match('/name="trailer__video" value="([a-f0-9]{32})"/', $response->body, $video);
+        preg_match('/name="trailer__poster" value="([a-f0-9]{32})"/', $response->body, $poster);
+        assertTrueValue(isset($video[1], $poster[1]) && $video[1] !== $poster[1], 'the video becomes the field video and the image its poster');
+        assertTrueValue(!str_contains($response->body, 'data-media-upload-result') && !str_contains($response->body, 'accepted. Preparation'), 'no notice far from the field');
+        assertTrueValue(str_contains($response->body, 'data-video-choosers="video" hidden>') && str_contains($response->body, 'data-video-choosers="poster" hidden>'), 'a full field offers nothing more');
+        assertTrueValue(str_contains($response->body, 'value="Unsaved title"'), 'the rest of the unsaved record is kept');
+    } finally {
+        editedFieldCleanup($f);
+    }
+    $f = editedVideoFixture(100);
+    try {
+        $response = $f['app']->handle(new Request('POST', $f['path'] . '/upload', contentMutationHeaders(), $f['form'], $f['cookies'], files: [editedVideoClip(), editedFieldImage('loop-poster.png')]));
+        assertSameValue(422, $response->status, 'a video outside the limits is refused');
+        assertTrueValue(str_contains($response->body, 'Trailer takes videos up to 100 pixels wide, and this one is 160. Export it smaller and upload it again.'), 'the refusal says the limit, the measure and what to do');
+        assertTrueValue(str_contains($response->body, 'name="trailer__video" value=""') && str_contains($response->body, 'name="trailer__poster" value=""'), 'neither the refused video nor the poster sent with it joins the field');
+        assertTrueValue(str_contains($response->body, 'data-video-choosers="video">'), 'Upload video is offered again');
+    } finally {
+        editedFieldCleanup($f);
+    }
+};

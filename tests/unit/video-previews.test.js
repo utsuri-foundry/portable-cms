@@ -3,6 +3,7 @@ import test from "node:test";
 import {
 	frameDimensions,
 	frameImage,
+	videoLimitProblem,
 } from "../../engine/src/cms/conventional/client/video-previews.js";
 
 test("video frame capture bounds geometry without enlarging small clips", () => {
@@ -27,4 +28,35 @@ test("frame capture waits for decoded pixels and rejects unsupported or oversize
 	assert.equal(frameImage(video, document), "UklGRg==");
 	assert.equal(canvas.width, 160);
 	assert.equal(canvas.height, 90);
+});
+
+test("a measured video is checked against its field before uploading, with the numbers to say it", () => {
+	const limits = { duration: 15, width: 1920, height: 1080 };
+	assert.equal(
+		videoLimitProblem({ duration: 15.02, width: 1920, height: 1080 }, limits),
+		null,
+		"a container's rounding is not a longer video",
+	);
+	assert.deepEqual(
+		videoLimitProblem({ duration: 20, width: 640, height: 360 }, limits),
+		{
+			key: "duration",
+			limit: 15,
+			actual: 20,
+		},
+	);
+	assert.deepEqual(
+		videoLimitProblem({ duration: 4, width: 2560, height: 1440 }, limits),
+		{ key: "width", limit: 1920, actual: 2560 },
+		"the first broken limit is said",
+	);
+	assert.deepEqual(
+		videoLimitProblem({ duration: 4, width: 1080, height: 1920 }, limits),
+		{ key: "height", limit: 1080, actual: 1920 },
+	);
+	assert.equal(
+		videoLimitProblem({ duration: null, width: 0, height: 0 }, {}),
+		null,
+		"a field without limits, or a video the browser cannot read, is left to the server",
+	);
 });

@@ -62,3 +62,16 @@
 	width: 100%;
 	height: 100%;
 }
+/* What a video field still needs, one choice to a line: the video, then its poster. */
+.admin-video-choice {
+	display: grid;
+	flex: 1 1 100%;
+	gap: var(--admin-space-2, 0.5rem);
+}
+.admin-video-choice > p {
+	margin: 0;
+}
+.admin-video-row__text > small {
+	font-size: var(--admin-text-xs, 0.75rem);
+	font-weight: 400;
+}

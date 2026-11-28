@@ -84,7 +84,7 @@ $tests['video field limits reject each measured violation in pickers saves publi
             $html = VideoReferenceControl::field($field, $reference, null, $profile, new Request('GET', '/'), $library, Translator::english());
             $saved = $service->create('project', ['title' => array_fill_keys($profile->locales, 'Loop'), 'trailer' => json_encode($reference, JSON_THROW_ON_ERROR)], str_repeat('a', 32));
             preg_match('/data-video-rule>(.*?)<\/p>/', $html, $rule);
-            assertSameValue('An MP4 or WebM video up to 10 MiB, up to 15 seconds, at most 1920 by 1080 pixels, without sound, and a poster image.', $rule[1] ?? '', 'the field states every limit in one sentence');
+            assertSameValue('An MP4 or WebM video up to 10 MiB, up to 15 seconds, at most 1920 by 1080 pixels, without sound.', $rule[1] ?? '', 'the field states every limit in one sentence');
             assertSameValue(1, substr_count($html, 'data-video-rule'), 'the rule is stated once');
             if ($variant === 'fitting') {
                 assertTrueValue($saved instanceof RecordSnapshot, 'fitting silent clip saves');
@@ -98,7 +98,8 @@ $tests['video field limits reject each measured violation in pickers saves publi
                 assertTrueValue(!str_contains($html, 'data-video-choose="video"') || str_contains($html, ' disabled aria-label='), 'picker disables ' . $variant);
                 assertTrueValue(str_contains($html, '_retained_trailer__video'), 'native form preserves the invalid ID');
                 $text = Translator::english()->message($saved->errors['trailer']);
-                assertTrueValue(str_contains($text, $variant === 'sound' ? 'audio track' : 'maximum'), 'measured rule is named: ' . $text);
+                assertSameValue(1, substr_count(\Utsuri\PortableCms\Conventional\View\EditorialRecordLayout::fieldMessage($saved->errors['trailer'], $field, Translator::english()), 'Trailer'), 'the field is named once in the message beside it');
+                assertTrueValue(str_contains($text, $variant === 'sound' ? 'has sound' : 'upload it again'), 'measured rule is named: ' . $text);
                 $id = str_repeat('a', 32);
                 $repository->records[$id] = new RecordSnapshot($id, 'project', 'draft', str_repeat('b', 32), 1, [...$fittingBody, 'trailer' => $reference], $clock->now());
                 $published = $service->workflow()->transition('project', $id, 1, 'published', workflowTestActor());
@@ -245,12 +246,12 @@ $tests['restore and current-content import inspect portable blobs before enforci
             $report = $service->dryRun($plan, $store, str_repeat('a', 32));
             assertSameValue($variant === 'fitting' ? 'compatible' : 'blocked', $report['status'], 'actual restore dry run checks field rules');
             if ($variant !== 'fitting') {
-                assertTrueValue(str_contains($report['issues'][0]['reason'], $variant === 'sound' ? 'audio track' : 'maximum'), 'restore reports the violated field limit');
+                assertTrueValue(str_contains($report['issues'][0]['reason'], $variant === 'sound' ? 'has sound' : 'upload it again'), 'restore reports the violated field limit');
                 try {
                     $service->apply($plan, $store, str_repeat('a', 32), $plan->sha256);
                     throw new RuntimeException('Restore accepted an incompatible clip');
                 } catch (\Utsuri\PortableCms\Conventional\Restore\RestoreRejected $error) {
-                    assertTrueValue(str_contains($error->reason, $variant === 'sound' ? 'audio track' : 'maximum'), 'restore apply keeps the measured rule');
+                    assertTrueValue(str_contains($error->reason, $variant === 'sound' ? 'has sound' : 'upload it again'), 'restore apply keeps the measured rule');
                 }
             }
             if ($variant === 'fitting') {
