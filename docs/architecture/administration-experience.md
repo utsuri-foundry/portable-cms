@@ -100,7 +100,10 @@ The persistent shell groups ordinary editing and publication work as follows:
 2. Overview: when the content last changed and what the website shows, work to
    continue, items needing attention and content totals; installation problems
    appear to owners only while they exist.
-3. Navigation groups, each omitted when empty, in the order of the work:
+3. Navigation groups, each omitted when empty, in the order of the work. Group
+   headings are small, slightly spaced uppercase in a subtle color, and the
+   groups stand clearly apart while the items within one stay tight; no rule
+   separates the identity from the first group:
    - Content contains every record type the profile lists, in its order
      (collections with record counts, singleton pages, taxonomies and the
      site settings record), then Media. A singleton destination opens its
@@ -129,8 +132,9 @@ The persistent shell groups ordinary editing and publication work as follows:
      manifest label and purpose. Field errors use the same name; missing-wording
      preview reports resolve saved wording identities in the reader's language.
      These names do not translate the website's authored text or alter its build.
-4. The sidebar's foot holds the agency's pages under a "For the agency"
-   heading, visibly apart from the editorial groups and absent for editors:
+4. The sidebar's foot holds the agency's pages, set apart from the editorial
+   groups by a rule and absent for editors. Their "For the agency" heading is
+   visually hidden and still labels the group for screen readers:
    Installation details at `/settings/installation`, read-only for owners and
    administrators, which labels the website name, profile ID, site version
    (profile), Portable CMS engine version and installed CMS release separately
@@ -252,8 +256,10 @@ and Export is reached from the navigation alone.
 Lists use a real table on wider screens with an optional thumbnail, record
 title, slug or revision, language completeness, workflow state, and a readable
 update time whose exact instant stays in the `time` element. The whole row is a
-link to the record. A native GET form searches and filters by workflow state
-with links that keep the query. Taxonomies show how many records use each term
+link to the record; its last cell holds a quiet `⋯` menu, a native disclosure
+named after the record, whose **Duplicate** opens beside it and submits a native
+form. Escape or a click elsewhere folds it. A native GET form searches and
+filters by workflow state with links that keep the query. Taxonomies show how many records use each term
 instead of languages. Below 42rem each row becomes a compact two-line item
 while keeping meaningful cell labels. An empty or filtered list explains the
 state and keeps the create action available.
@@ -263,7 +269,8 @@ state and keeps the create action available.
 The header shows the record name, workflow state and saved time; revision
 numbers appear nowhere on the page. At wide widths, a sticky rail shows one card
 with the save state, the record's state with one sentence on what it means and
-Mark as ready as the primary action (Change status folded quietly beneath), one
+Mark as ready as the primary action (Change status folded quietly beneath, then
+a quiet **Duplicate** on collections and taxonomies), one
 card with **Preview while editing** and **Preview the website**, then section
 links with issue/change counts and language completeness. Scripted forms show
 automatic-keeping status; native
@@ -277,11 +284,35 @@ only when every field is optional, empty and error-free; validation must never
 focus a hidden required control. Profiles may select the bounded
 `editorialSection` value, but cannot supply section markup.
 
+A record type's `slug` field is its page address, edited inside the address it
+makes (`…/projects/`). Typing folds accents and capitals and turns spaces and
+symbols into single hyphens; leaving the field drops a trailing hyphen. While a
+record is new or a draft, its slug follows the title in each language until the
+editor writes a different one. Save, automatic keeping and Mark as ready refuse
+a slug that is not lowercase letters, digits and single hyphens, proposing the
+one it would make, and a slug another record of the same type uses in that
+language, naming that record. A slug saved before this rule stays while it
+remains a valid route and is unchanged.
+
+Duplicate saves pending edits first, then creates a new draft of the same type
+with every value copied: the title marked as a copy in its own language
+("(còpia)", "(copy)"), each slug the original's plus the first free `-2`, `-3`
+and so on, and the same media and record references (files are not copied). The
+new draft opens; the audit event `record_duplicated` names the source record and
+revision. Singletons never offer it.
+
 Image fields show each image as one row: thumbnail, name, **Image details**
-and a quiet remove control, never a numbered card. One **Add images**
-disclosure (**Choose image** on a field that holds one) offers library
-selection and uploads; a full field offers nothing more, and removing a row is
-the way to change it. Show the field's actual limits. Completed uploads append
+and a quiet remove control, never a numbered card. Two choices sit side by
+side under the rows: **Upload images** (**Upload image** on a field that holds
+one) and **Choose from library**. With scripts, Upload images is one button
+that opens the browser's file chooser; choosing files starts the upload at
+once, with no further submit. Without scripts it opens the native upload form
+in place. A field whose record cannot take uploads keeps one **Add images**
+disclosure (**Choose image**) for the library. A full field offers nothing
+more, and removing a row is the way to change it. In Choose from library each
+ready image is one button: activating it puts the image in the field, or adds
+it to a list, and closes the chooser; removing the row is the undo. The field's actual limits
+stay with the upload control and are said in any rejection. Completed uploads append
 in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
 Removing a selection keeps the library image. See the
@@ -455,6 +486,24 @@ sites with published content keep their messages. The first problem Save or the
 profile would report is returned as a plain reason. A render never creates
 revisions, audit events or files.
 
+When the only problem is that the record's own required fields are empty
+(those Save requires, or else those publication requires), nothing is drawn and
+the status names every one of them, in profile order, by its label in the
+interface language: "To update the preview, fill in Title and Main still." A
+localized field empty in only some of the public languages also names them,
+"Title (English)"; one empty in all of them, or on a site with one public
+language, is named alone. Each name is a button that opens the field's section,
+switches to Edit on narrow windows and to the missing language when the one
+being edited is filled, and focuses the field's control (a closed picker's
+summary when that is all it shows, never its explanation control). The field
+carries the required star while it is empty in the language being edited, in the
+danger colour, with "Needed for the preview" for assistive technology; a field
+whose own star is already shown keeps it, coloured. The mark goes as soon as the
+field holds a value and returns if it is emptied; the next drawn page clears
+every mark. Update preview stays hidden, since the next change draws the page.
+Without scripts the same sentence explains the page that could not be drawn.
+Other problems of the record or the site keep their plain reason.
+
 The render is stored in `cms_live_previews` under the SHA-256 of an
 unguessable workspace token and a render ID, bound to the signed-in session:
 it ends ten minutes after the render, when the session signs out or expires,
@@ -561,7 +610,18 @@ group identities. Their ownership and security bounds are defined in
 [editorial controls](../development/editorial-controls.md).
 
 Upload progress uses native `progress` and a polite live status. Processing and
-preview states use stable text and status semantics. Queued pages can refresh
+preview states use stable text and status semantics. In an image field each
+chosen file is a row with its own progress while it uploads; a transfer that
+fails says so in its row with what to do, and the upload button keeps the
+focus. Once the files join the field, a row whose image is being prepared says
+when it will be ready: in a moment where the host prepares files right after
+the response, otherwise in about the minutes until the scheduled worker's next
+pass, read from its heartbeat ("a few minutes" until the cadence is known, and
+whom to tell when the schedule has stopped). The row asks again by itself and
+shows the thumbnail once the image is ready, and the record keeps the image then.
+Waiting for preparation is not a failed save: the rest of the record is kept
+and no error is shown. An image that could not be prepared says to remove it
+and upload it again. Queued pages can refresh
 through HTTP without JavaScript. Export explains exactly what is and is not in
 the downloaded file before its action.
 
@@ -726,8 +786,9 @@ Engine islands are `admin-shell.js` (appearance and account panel),
 (row reordering and menus), `rich-text-editor.js`
 with the pure `rich-text-surface.js` mapping, `composition-editor.js`,
 `live-preview.js` (the workspace, with `live-preview-bridge.js` inside live
-pages), and `resumable-upload.js`. Each enhances the server form, preserves submitted
-names, exposes its state to assistive technology, disposes cleanly, and leaves
+pages and `live-preview-missing.js` leading to empty required fields), and
+`resumable-upload.js`. Each enhances the server form, preserves submitted names,
+exposes its state to assistive technology, disposes cleanly, and leaves
 a complete no-script path. Fields without an engine editor remain explicit and
 their content is preserved.
 

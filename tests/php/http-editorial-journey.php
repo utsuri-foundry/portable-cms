@@ -412,6 +412,7 @@ try {
         JSON_THROW_ON_ERROR,
     );
     assertSameValue(2, $heartbeat['formatVersion'] ?? null, 'worker heartbeat should use the soak-report format');
+    assertTrueValue(array_key_exists('intervalSeconds', $heartbeat) && ($heartbeat['intervalSeconds'] === null || is_int($heartbeat['intervalSeconds'])), 'the heartbeat says how long the host waited since the previous pass, once known');
     assertSameValue(2, count($heartbeat['mediaRuns'] ?? []), 'worker retains separate measurements for the default and eligible extra width');
     assertSameValue(true, $heartbeat['mediaRuns'][0]['completed'] ?? null, 'measured media run should complete');
     assertSameValue(true, $heartbeat['mediaRuns'][1]['completed'] ?? null, 'the measured extra width completes independently');

@@ -74,7 +74,7 @@ final class StaticSiteCompiler
         try {
             $files = [];
             // Every reference to a file with a stable name carries this build's version.
-            $assetVersion = AssetVersion::of($snapshot->id, $package->checksum, $request->compiler);
+            $assetVersion = AssetVersion::of(AssetVersion::content($snapshot), $package->checksum, $request->compiler);
             $sharingImages = [];
             if ($builder instanceof SharingSiteBuilder && $snapshot->publicUrlContext !== null) {
                 $selected = $builder->sharingMediaIds($snapshot);

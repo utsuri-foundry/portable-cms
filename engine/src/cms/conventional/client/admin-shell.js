@@ -219,6 +219,27 @@ export function mountCopyButtons(
 	};
 }
 
+/** Native row menus fold on Escape, returning focus to their control, and on a click elsewhere. */
+export function mountRowMenus(root) {
+	const open = () => [...root.querySelectorAll("details[data-row-menu][open]")];
+	const keydown = (event) => {
+		if (event.key !== "Escape") return;
+		const menu = event.target.closest?.("details[data-row-menu][open]");
+		if (!menu) return;
+		menu.open = false;
+		menu.querySelector("summary")?.focus();
+	};
+	const click = (event) => {
+		for (const menu of open()) if (!menu.contains(event.target)) menu.open = false;
+	};
+	root.addEventListener("keydown", keydown);
+	root.addEventListener("click", click);
+	return () => {
+		root.removeEventListener("keydown", keydown);
+		root.removeEventListener("click", click);
+	};
+}
+
 export function mountAccountMenu(details) {
 	const reveal = () => {
 		if (details.open) details.lastElementChild?.scrollIntoView?.({ block: "nearest" });
@@ -237,5 +258,6 @@ if (typeof document !== "undefined") {
 		mountAccountMenu(details);
 	mountHelpControls(document);
 	mountCopyButtons(document);
+	mountRowMenus(document);
 	document.dispatchEvent(new CustomEvent("admin-enhanced", { detail: "shell" }));
 }

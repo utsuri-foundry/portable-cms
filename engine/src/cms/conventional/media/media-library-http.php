@@ -26,7 +26,7 @@ final class MediaLibraryHttp
     public static function matches(Request $request): bool
     {
         return in_array($request->method, ['GET', 'POST'], true)
-            && preg_match('#\A/media(?:/descriptions|/[a-f0-9]{32}(?:/(?:thumbnail|video|video-frame))?)?\z#', $request->path) === 1;
+            && preg_match('#\A/media(?:/descriptions|/status|/[a-f0-9]{32}(?:/(?:thumbnail|video|video-frame))?)?\z#', $request->path) === 1;
     }
 
     public function handle(Request $request, SessionContext $session, string $correlationId): Response
@@ -34,10 +34,13 @@ final class MediaLibraryHttp
         if ($request->path === '/media/descriptions') {
             return (new MediaDescriptionsHttp($this->library, $this->profile, $this->chrome))->handle($request, $session);
         }
+        if ($request->path === '/media/status') {
+            return $request->method === 'GET' ? $this->status($request) : new Response(405);
+        }
         if ($request->path === '/media' && $request->method === 'GET') {
             $page = filter_var($request->queryValue('page'), FILTER_VALIDATE_INT);
             $listing = $this->library->browse($request->queryValue('q'), is_int($page) ? $page : 1, $request->queryValue('show'), $this->profile->locales, $this->profile->defaultLocale);
-            return new Response(200, MediaLibraryPage::listing($listing, $this->profile, $this->chrome, $this->uploadsAvailable ? $this->content : null, $session->csrfToken, $this->library->videoUploads, $this->cronOnly));
+            return new Response(200, MediaLibraryPage::listing($listing, $this->profile, $this->chrome, $this->uploadsAvailable ? $this->content : null, $session->csrfToken, $this->library->videoUploads, $this->cronOnly, $this->library->preparation));
         }
         $id = explode('/', $request->path)[2] ?? '';
         $media = $this->library->find($id);
@@ -126,5 +129,35 @@ final class MediaLibraryHttp
             }
         }
         return new Response($status, MediaLibraryPage::detail($media, $this->profile, $this->content, $this->library, $session->csrfToken, $error, $name, $this->chrome, $submittedText, $submittedPoint));
+    }
+
+    /**
+     * Where each waiting file stands, for rows that update themselves until it is ready. Read-only
+     * and bounded by the query length to twelve identities; unknown identities are left out.
+     */
+    private function status(Request $request): Response
+    {
+        $raw = $request->query['ids'] ?? '';
+        if (!is_string($raw) || strlen($raw) > 400) {
+            return Response::json(['error' => 'too_many_media'], 422);
+        }
+        $ids = array_values(array_unique(explode(',', $raw)));
+        $t = $this->translator();
+        $items = [];
+        foreach ($ids as $id) {
+            $media = preg_match('/\A[a-f0-9]{32}\z/', $id) === 1 ? $this->library->find($id) : null;
+            if ($media === null) {
+                continue;
+            }
+            $failed = MediaPreparation::failed($media);
+            $ready = !$failed && $media->status === 'ready';
+            $items[] = [
+                'id' => $media->id,
+                'state' => $failed ? 'failed' : ($ready ? 'ready' : 'preparing'),
+                'text' => $ready ? null : ($failed ? $t->text('picker.preparation_failed') : $t->message($this->library->preparation->message($media))),
+                'thumbnail' => $ready && $media->thumbnail?->mime === 'image/webp' ? '/media/' . $media->id . '/thumbnail' : null,
+            ];
+        }
+        return Response::json(['items' => $items, 'poll' => $this->library->preparation->pollSeconds()]);
     }
 }

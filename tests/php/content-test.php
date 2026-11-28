@@ -210,10 +210,12 @@ final class ContentTestMediaJobs implements MediaJobRepository
     }
 }
 
-final class MemoryRecordRepository implements RecordRepository, \Utsuri\PortableCms\Conventional\Content\RecordBrowser, \Utsuri\PortableCms\Conventional\Content\PublishedRecordRepository
+final class MemoryRecordRepository implements RecordRepository, \Utsuri\PortableCms\Conventional\Content\RecordBrowser, \Utsuri\PortableCms\Conventional\Content\PublishedRecordRepository, \Utsuri\PortableCms\Conventional\Content\RecordSlugLookup, \Utsuri\PortableCms\Conventional\Content\RecordDuplicationRepository
 {
     /** @var array<string, RecordSnapshot> */
     public array $records = [];
+    /** @var array<string, string> Copy ID to the ID of the record it was made from. */
+    public array $duplicates = [];
     /** @var array<string, list<\Utsuri\PortableCms\Conventional\Content\RelationshipProjection>> */
     public array $relationships = [];
     /** @var array<string, RecordSnapshot> */
@@ -233,6 +235,23 @@ final class MemoryRecordRepository implements RecordRepository, \Utsuri\Portable
             && ($state === '' || ($state === 'published_changes' ? $record->hasUnpublishedChanges() : $record->workflowState === $state))
             && ($query === '' || mb_stripos(json_encode($record->body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), $query) !== false)));
         return new \Utsuri\PortableCms\Conventional\Content\RecordPage(array_slice($items, ($page - 1) * 20, 20), count($items) > $page * 20, $page, $query);
+    }
+
+    public function duplicate(RecordSnapshot $source, string $recordId, string $revisionId, string $profileId, string $profileVersion, array $body, array $relationships, string $actorUserId, string $auditId, DateTimeImmutable $now): RecordSnapshot
+    {
+        $this->duplicates[$recordId] = $source->id;
+        return $this->create($recordId, $revisionId, $source->typeId, $profileId, $profileVersion, $body, $relationships, $actorUserId, $auditId, $now);
+    }
+
+    public function slugOwner(string $typeId, ?string $locale, string $slug, ?string $exceptRecordId): ?RecordSnapshot
+    {
+        foreach ($this->records as $record) {
+            $value = $record->body['slug'] ?? null;
+            if ($record->typeId === $typeId && $record->id !== $exceptRecordId && ($locale === null ? $value : ($value[$locale] ?? null)) === $slug) {
+                return $record;
+            }
+        }
+        return null;
     }
 
     public function stateCounts(string $typeId): array
@@ -887,7 +906,7 @@ $tests['authenticated JSON upload routes preserve security and resumable semanti
         ));
         assertTrueValue(str_contains($edit->body, 'data-media-upload'), 'saved record should expose the upload island');
         assertTrueValue(
-            str_contains($edit->body, '/assets/resumable-upload.js?v=7'),
+            str_contains($edit->body, '/assets/resumable-upload.js?v=8'),
             'island should use a versioned external module',
         );
 

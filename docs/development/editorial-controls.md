@@ -160,9 +160,11 @@ processing, and reports accepted counts on partial failure. Post-response wake
 runs at most the existing worker allowance; cron remains recovery. No-script
 editors can reload the library to inspect status.
 
-Every supported top-level image field on a saved collection record has one
-Add images disclosure (Choose image on a single-image field) offering library
-selection and a collapsed native uploader while the field has room; a field at
+Every supported top-level image field on a saved collection record offers
+Upload images (Upload image on a single-image field) beside Choose from library
+while the field has room. With scripts, Upload images is one button: it opens
+the file chooser and the chosen files upload at once. Without scripts it is a
+collapsed native uploader; a field at
 its maximum offers nothing to add, except right after an upload it received, so
 the new images can still be described.
 Native multipart submission includes the complete unsaved editorial
@@ -178,6 +180,11 @@ separate description form, so metadata saves exclude the pending record and
 other panels' batches. Native cards are available before derivative processing;
 native description saves open a separate tab to retain the pending record.
 The enhanced page saves inline and refreshes thumbnails as the original jobs complete.
+A selected image that is not ready yet carries `data-media-pending`; the page asks
+the read-only `GET /media/status?ids=` (at most twelve identities, editors only)
+for its state, its line and its thumbnail, at the interval the response names.
+Automatic keeping treats files still being prepared as a quiet retry rather than
+an error, and keeps the image as soon as it is ready.
 Neither path saves a content revision. A stale native request accepts no bytes;
 transient operations preserve the conflict and original base until explicit
 resolution. Scripted uploads wait for pending edits before reading their revision;
@@ -194,10 +201,13 @@ ordinary Save still requires media to satisfy the normal validation contract.
 Generic library and video uploads keep their separate form and do not target an
 image field.
 
-The library picker offers native checkboxes and **Add selected images** for one
-bounded page of at most 20 choices. They append in picker order, preserve every
-other unsaved field and use the same maximum and overflow notice. Removing a
-selection never deletes or changes its library image.
+In the library picker each ready image is one native submit button. Activating
+it, by pointer or keyboard, with or without scripts, appends the image after
+the existing selection (or fills a single-image field), preserves every other
+unsaved field and closes the chooser; removing the row is the undo. The
+bounded `add-media` action for up to 20 choices remains accepted for forms
+rendered before this change. Removing a selection never deletes or changes its
+library image.
 
 The local sandbox seeds checksum-verified fictional originals through that
 same pipeline. Development seeding is excluded from installed bundles and

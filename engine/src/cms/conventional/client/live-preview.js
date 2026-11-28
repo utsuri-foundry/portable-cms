@@ -1,3 +1,4 @@
+import { missingFields, mountMissingGuide } from "./live-preview-missing.js";
 import { mountLiveVimeo } from "./live-vimeo.js";
 import { messages } from "./messages.js";
 import { rowText } from "./rich-text-preview.js";
@@ -248,6 +249,7 @@ export function mountLivePreview(
 		previous.src = "about:blank";
 		visible = index;
 		shown = { locale: language, fields };
+		guide.clear();
 		renderedAt = Date.now();
 		root.removeAttribute("aria-busy");
 		if (open) {
@@ -268,8 +270,23 @@ export function mountLivePreview(
 					: drafts || t("live.ready"),
 		);
 	};
-	const fail = (reason) => {
+	const guide = mountMissingGuide({
+		form,
+		status,
+		t,
+		locale,
+		reveal: (id) => reveal(id),
+		choose: (language) =>
+			switcher?.querySelector(`[data-locale-tab="${language}"]`)?.click(),
+	});
+	const fail = (reason, missing = []) => {
 		root.removeAttribute("aria-busy");
+		// Empty required fields are named as buttons leading to them; the next change updates the page.
+		if (missing.length && guide.show(missing)) {
+			if (update) update.hidden = !manual;
+			return;
+		}
+		guide.clear();
 		say(reason ? t("live.failed", { reason }) : t("live.unavailable"));
 		if (update) update.hidden = false;
 	};
@@ -329,7 +346,10 @@ export function mountLivePreview(
 					!current(sequence, result) ||
 					typeof result.url !== "string"
 				)
-					return fail(typeof result?.reason === "string" ? result.reason : "");
+					return fail(
+						typeof result?.reason === "string" ? result.reason : "",
+						missingFields(result),
+					);
 				token =
 					new window.URL(result.url, window.location.href).pathname.split("/")[2] ?? "";
 				const index = 1 - visible;
@@ -423,11 +443,15 @@ export function mountLivePreview(
 			if (node.localName === "details") node.open = true;
 		if (element.localName === "details") element.open = true;
 		const scope = element.querySelector(`[data-locale-panel="${locale()}"]`) ?? element;
+		const usable = (candidate) =>
+			(candidate.checkVisibility?.() ?? candidate.getClientRects().length > 0) &&
+			// A label's explanation control is not the field.
+			!candidate.classList?.contains("admin-help-control__toggle");
 		let control =
 			scope.querySelector(".admin-rich-surface") ??
-			[...scope.querySelectorAll(FOCUSABLE)].find(
-				(candidate) => candidate.getClientRects().length > 0,
-			);
+			[...scope.querySelectorAll(FOCUSABLE)].find(usable) ??
+			// A closed disclosure's summary leads to the choices it hides, which cannot take focus.
+			[...scope.querySelectorAll("summary")].find(usable);
 		if (!control) {
 			if (!element.hasAttribute("tabindex")) element.setAttribute("tabindex", "-1");
 			control = element;
@@ -573,6 +597,7 @@ export function mountLivePreview(
 		pending = null;
 		editing = null;
 		stale = false;
+		guide.clear();
 		shell.classList.remove("admin-shell--live");
 		delete shell.dataset.liveView;
 		shell.style.removeProperty("--admin-live-form");
@@ -616,6 +641,8 @@ export function mountLivePreview(
 	});
 	listen(form, "input", later);
 	listen(form, "change", later);
+	listen(form, "input", guide.refresh);
+	listen(form, "change", guide.refresh);
 	listen(form, "focusin", focusField);
 	listen(form, "focusout", (event) => {
 		if (!form.contains(event.relatedTarget)) focused = "";
@@ -638,6 +665,7 @@ export function mountLivePreview(
 		// A language switch supersedes in-page typing, even if its final blur message is late.
 		editing = null;
 		stale = false;
+		guide.refresh();
 		void request();
 	});
 	locales.observe(form, { attributes: true, attributeFilter: ["data-record-locale"] });

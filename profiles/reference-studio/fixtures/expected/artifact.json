@@ -11,7 +11,7 @@
     "compiler": {
         "id": "portable-cms-compiler",
         "version": "0.1.0",
-        "sha256": "860c2b312a5d103cd2308883ead5b39877f2d290c513297a478e567f7b2e5ac8"
+        "sha256": "8ddc92412b12387a784bd0d0347b20e9a4143ae65122409980a14156ccaf2240"
     },
     "searchFormatVersion": 1,
     "files": [
@@ -26,7 +26,7 @@
             "path": "assets/design.css",
             "mime": "text/css; charset=utf-8",
             "byteSize": 1116,
-            "sha256": "90d84752166f7aabaa82ac247a433a5a27a99e98fd29b4517c49165c3b0acb63",
+            "sha256": "df49a24bc6d81931ab1772a464470a2358843b74de1898587f22c92cac7c5c66",
             "cachePolicy": "immutable"
         },
         {
@@ -82,119 +82,119 @@
             "path": "ca/about/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4278,
-            "sha256": "cbef6749230b1ee9fbb923ba070cdd70f34dc85e012cf00e890ca774c81aca25",
+            "sha256": "d66aee1a15294113ed2b9efa11172533ac74447bad377704fa8d17109447ef1a",
             "cachePolicy": "route"
         },
         {
             "path": "ca/articles/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4644,
-            "sha256": "578cf58bfb88a9407e314712aed46c35ec652ca8871664d69d4a42163a925a35",
+            "sha256": "fedb8d1bf0506cadc58eda9f3dbd24eace1a419493a6103c381b0358696fd2fa",
             "cachePolicy": "route"
         },
         {
             "path": "ca/articles/mesurar-lombra/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5703,
-            "sha256": "7a303121f309390f6356f1b5c376e8906e9d697b0b69ac9ef64f2c4cf45df594",
+            "sha256": "0a8bc65923698cfef81fa0e50394740169ce3a21d0d745879048bb9fbee56c30",
             "cachePolicy": "route"
         },
         {
             "path": "ca/disciplines/arquitectura/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5521,
-            "sha256": "6d943854a6237b2fc29ad799308671482329bceadd0f0d7eaecbc38c088df654",
+            "sha256": "58b64619df802690848523f5a17e62818eaa5d3eed2a4df2fe3d76a803dbe0ce",
             "cachePolicy": "route"
         },
         {
             "path": "ca/disciplines/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4728,
-            "sha256": "e6e14a8ee80a3916cc6a32c82d1b8e7a4e840314677f4b0399eafe6a5bfe6373",
+            "sha256": "f3fc4e6cc32f34f62ee03609a6b98d910426657799002c30c0b7615e72283f6a",
             "cachePolicy": "route"
         },
         {
             "path": "ca/disciplines/recerca/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4354,
-            "sha256": "cb9dfa98f808a8b790a72a7bb265e2b03ffad8959141dc86466577c104294b05",
+            "sha256": "92a62455863da6d4aa740c2b865a017cbc2a7d17d7da45232a5957070be944cf",
             "cachePolicy": "route"
         },
         {
             "path": "ca/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 7928,
-            "sha256": "8eb31eee1788240fd861de06d9c9ff1653f7e6e0f0d188fa9d2c5539b9cab6d5",
+            "sha256": "00f6677e79150aa9b508d9f6eb86af3d42027133b0f4ff166f166fc038a02cc5",
             "cachePolicy": "route"
         },
         {
             "path": "ca/landing/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4785,
-            "sha256": "07b796822bf5962105fb8d22cacf856800c4e40d1b11d72b1d049f33efcaf857",
+            "sha256": "c139b07ab8b73f1dd8c494f66931d904633a94ef3952b1371019d5b96ae6d297",
             "cachePolicy": "route"
         },
         {
             "path": "ca/people/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4578,
-            "sha256": "23df31e73fe873146cc11c702985d390068ccb6bfa764204cbeab39e33695f89",
+            "sha256": "d491a95fff4bf4a9471219c64d7eb509ce8b6b0b0d43e525bc0817e8f3f651cd",
             "cachePolicy": "route"
         },
         {
             "path": "ca/people/nora-vidal/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4291,
-            "sha256": "cf2a504cfebf8350ad0166024321253cad0bf2379872762a057e0df8c4cb0dc1",
+            "sha256": "e59c71d09d0b73d55f7dbcfb93c1c9f7bfc561cae6e0b5766664d2d93e4a34dc",
             "cachePolicy": "route"
         },
         {
             "path": "ca/projects/arxiu-de-la-boira/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 6191,
-            "sha256": "03f3b284f0ac42458fed9a0a541002a2fe26e692ab0dfde799786bb04b4f94c1",
+            "sha256": "084d5d60593862f7b73504c01b263ea57dcabde5f783ecc548ece7ec52b04cda",
             "cachePolicy": "route"
         },
         {
             "path": "ca/projects/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5370,
-            "sha256": "c778fe8e41123b9825f22c11a28eb1306db2c8b437d08032fcc0ef272e83e94a",
+            "sha256": "14a288f9b618081f85f334cf42953d27cd720388cd664f5892c7f46c696f426c",
             "cachePolicy": "route"
         },
         {
             "path": "ca/search/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 6953,
-            "sha256": "f426c6fc5fbd636fd4ecb8d2820f26cabd945efc1b30c46ad66627ae91bc5efb",
+            "sha256": "19a9d8f9e4a88be41fcd9ef8448fc5b020474b6065bd2d942630571af703c248",
             "cachePolicy": "route"
         },
         {
             "path": "ca/sectors/cultura/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4710,
-            "sha256": "105d43e59872394348706f85d1c22f34213fe78e19158cc9c3b77038c6aef95b",
+            "sha256": "ffa2b794b96a43e92ce2ae1140ff8339d98c032ac9df5b3ed8843332359e6243",
             "cachePolicy": "route"
         },
         {
             "path": "ca/sectors/habitatge/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4338,
-            "sha256": "b4cd7cae9e25718a8d8f80417da06be839d8b2d66d5644cafb2d06127703664b",
+            "sha256": "f18b62eb2ba6af8cb04c0011b2f7da80ad43e12f98037314fa28734d8bdae92d",
             "cachePolicy": "route"
         },
         {
             "path": "ca/sectors/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4663,
-            "sha256": "dce93b9d5672c58ece5de43348d89b97e35c3b78b3d26691d6d20a600afd3a6e",
+            "sha256": "a4a253f8a4fd9ad5bf7fcc9734570dd88674b2f4e9de924be53a62c0c357f971",
             "cachePolicy": "route"
         },
         {
             "path": "ca/settings/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 3362,
-            "sha256": "21b7824ea5b3c986b66c62d5163e00df7d702414690ebdbafbe112118f89d7e0",
+            "sha256": "b4b280d7967c9f5ecc1e45063a173d137dd4cb38de4a8ea7c7294718dedfdfda",
             "cachePolicy": "route"
         },
         {
@@ -208,238 +208,238 @@
             "path": "en/about/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4255,
-            "sha256": "c2eb020ce26c89bc9a7ffb514355697ff3e183a772ea6e26be0be77846e941bf",
+            "sha256": "e794cc7e09ddb46fc52d6a334b25cd4cbd73dd43de035b1b7915dd4dc7e51ac6",
             "cachePolicy": "route"
         },
         {
             "path": "en/articles/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4586,
-            "sha256": "8bb64010c052ba9a31e5ccfcbbe60fa6366112b96100c72ee1e213196f6252df",
+            "sha256": "ee8f3167420b542f698061292ef3797f53c476401095b570bdb51d528f5e4890",
             "cachePolicy": "route"
         },
         {
             "path": "en/articles/measuring-shade/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5614,
-            "sha256": "58ce0c68ebbe1b2b1deccbdac66ea031a8e244d275c3aafe95bae5092e4c86dc",
+            "sha256": "ca306da6ec647e2ac885e912f388370c9ac280624c8ce9ab47c292c77074a3ac",
             "cachePolicy": "route"
         },
         {
             "path": "en/disciplines/architecture/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5457,
-            "sha256": "7e89f6c2659863ae96b73b9ca6067922f72bb7bbf07778c8ce1ecdcaa7f116ab",
+            "sha256": "b4f27c643ec99822ad4e4945f4e2c24098551a6340b52caf0bc3b5b724b6304f",
             "cachePolicy": "route"
         },
         {
             "path": "en/disciplines/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4684,
-            "sha256": "43469999124dd675d0c0319d7a81807af531f51a27419aeefd6b078f7e4a6f88",
+            "sha256": "c072ecd874494ca61e93d8e75feb3dde153de141686834d098a7aa1371aad1e9",
             "cachePolicy": "route"
         },
         {
             "path": "en/disciplines/research/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4315,
-            "sha256": "d9fbd7590b8bdff2d687d91ae49e0fe15e8c262804f915eea1ffd6ecc5497999",
+            "sha256": "41ef00ab436b6a9b062a121006290dd28a2c18407267e18ec07b5d1d9e586010",
             "cachePolicy": "route"
         },
         {
             "path": "en/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 7879,
-            "sha256": "6c249a4b31d15a41615f78e941e668d42dd1f71073f169efe1238062b9d915ff",
+            "sha256": "d38f4e5c8631db09dfae48b7cd55de61bf306dcf2224ef8a4fa4588e48aadf0b",
             "cachePolicy": "route"
         },
         {
             "path": "en/landing/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4692,
-            "sha256": "95ac2b0ace407e920db61d8d003948395ef7d0e5cb4d5788a3aaafb2f2b2fb33",
+            "sha256": "a11c4a41e29a5af07bd2b1f77333d300dae9b9e5999a4a0d71821cf73abcfe3d",
             "cachePolicy": "route"
         },
         {
             "path": "en/people/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4521,
-            "sha256": "b4f99b3eecb8a100fdf1181d168152de57a1ad28a897576f8c2d92035630f83f",
+            "sha256": "6924c417f0eb39a27c4cb6e2d7d6778964c8e3fbc1de36f8eb7010b10bcc88a6",
             "cachePolicy": "route"
         },
         {
             "path": "en/people/nora-vidal/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4267,
-            "sha256": "05cc9ccb89d9d477486e205947849a62d14e22e7e8d9b53cff85afe67bbce2c0",
+            "sha256": "f1b3947311bd6a41f21b73c0238c6523f09aa51de84455589389d660a3921f14",
             "cachePolicy": "route"
         },
         {
             "path": "en/projects/archive-of-mist/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 6167,
-            "sha256": "50f74e427ab8b4f3c1cc64067303b8342055cc90bae8843ce747d926f9f8c701",
+            "sha256": "a6530c60273dcff2989b704bff684377b84094b5bae821dfe2f001a853220a44",
             "cachePolicy": "route"
         },
         {
             "path": "en/projects/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5281,
-            "sha256": "a3b3f9e24fa01b5eee8de3d15ac3b7016d9a0e8f2946627d9a219542f6cd8c8f",
+            "sha256": "ee8254c90b08d596368a21389d7181980e052f40363b170012f4d82ab2a91db0",
             "cachePolicy": "route"
         },
         {
             "path": "en/search/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 6834,
-            "sha256": "5473b4202cf6a27a408ca298818966ae023ca80c0f9610811a3cde2d04ebe612",
+            "sha256": "c82163f9380132f64d63a9936ae73379221ad3cd05c4bd0fd914efa0190c2372",
             "cachePolicy": "route"
         },
         {
             "path": "en/sectors/culture/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4652,
-            "sha256": "13b93d52730db68b4373d42b2eed86bfce2f7210bc14b648deef694a8d17070f",
+            "sha256": "a22bc60220b80548107504c8b68ba9566c40a881824df793df9681afb4fc4b48",
             "cachePolicy": "route"
         },
         {
             "path": "en/sectors/housing/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4275,
-            "sha256": "8bebf90175189f1fbf36b19bbb9295c7ea8d3c823ff0fd70857a989f37ba7fc7",
+            "sha256": "183eaa1b275d98809342393c4da90edf67228f0afc5d90a1a998b94a10daec03",
             "cachePolicy": "route"
         },
         {
             "path": "en/sectors/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4610,
-            "sha256": "f1dbee1fc219d4a1651228899f70f9f526ce7cdaa242baffdc552edc95dad209",
+            "sha256": "2dd64e4720ead2b65706fe98558cb07c4445e6ffc477e806faed15be3b9fc83c",
             "cachePolicy": "route"
         },
         {
             "path": "en/settings/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 3296,
-            "sha256": "37913e0ee6f5c4bac76732b0c1edbebaa70884ac41eca3e565d1150bd14d2c8f",
+            "sha256": "5a8cca82935aa4917aa2b5921aa64ad66166a70b3e0d875963c942d9e736de8e",
             "cachePolicy": "route"
         },
         {
             "path": "es/about/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4320,
-            "sha256": "04ee909f93c847a8453371f765251392a1992263f66f6228eeb1b597b95a9951",
+            "sha256": "7450fdecb3188c4c18e2088a2457b7e4c9ce844e7de4db572d5823c1e82b9549",
             "cachePolicy": "route"
         },
         {
             "path": "es/articles/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4659,
-            "sha256": "f12620ebb2294c91ea41f95e082fd85d72d2f350fc7845a09ac0c9af9b1a2a67",
+            "sha256": "7b8b32b288434d8aba250a2b1a3468bf493a987c7e52b82b7168a66d8120c26b",
             "cachePolicy": "route"
         },
         {
             "path": "es/articles/medir-la-sombra/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5696,
-            "sha256": "0186078794fb701055f2004e3be1d83e21c6b10c771e0f5b77b88a80fe14b966",
+            "sha256": "f165f17900a6beed2fb57921f6ae5e10744d77090541c1cdc979e11036ea7499",
             "cachePolicy": "route"
         },
         {
             "path": "es/disciplines/arquitectura/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5555,
-            "sha256": "551f061fe56d0e0cd717edbe627d1abd4fc2e313215a08b645b863bb590a46cd",
+            "sha256": "86ba39c81f6382c3407c59aec5153f6a5bf14e7f51e551ef38ea8edc34e5768d",
             "cachePolicy": "route"
         },
         {
             "path": "es/disciplines/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4767,
-            "sha256": "3732bce1f8be6724bbb1566f62a6e4f39cca5316be8a572dcb46c0588bdde25b",
+            "sha256": "ad89961ead874f092fc2df38c578d083938130852beacd2961ac4c548956bef8",
             "cachePolicy": "route"
         },
         {
             "path": "es/disciplines/investigacion/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4426,
-            "sha256": "2e94989fa39f38bab149fc5ba622db85f116007cd2a2768b6301f3f637a23a78",
+            "sha256": "545e2df65669f9819b9e3c03e2489a83d7cd6c91afc07ced7e94d16cd4a3bb63",
             "cachePolicy": "route"
         },
         {
             "path": "es/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 7984,
-            "sha256": "70e3bd0bdd00a0fedd920340ed41e5a2b18d0ce36f0d69a817289d3bfbfed8b8",
+            "sha256": "c11df81513a8a9beb261cdcd962a6a160bf738072c8e85bd46c8460fcd9bb7dd",
             "cachePolicy": "route"
         },
         {
             "path": "es/landing/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4833,
-            "sha256": "7bc52646665dfeeafb8cec312ca6c6d6a1f8c961f304b8539f843801a7538449",
+            "sha256": "116a61cc359249007f7cf183b1c53b05cfdb093be04909210ccb431c7b247978",
             "cachePolicy": "route"
         },
         {
             "path": "es/people/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4597,
-            "sha256": "3abb944948644aa76fad807f586cb90a42364e6e5fad6f3652d79db6c4486203",
+            "sha256": "143c6120e8bfbd5ba9cbc310995201af78a4976d639eeaa9414afca9cbabfe59",
             "cachePolicy": "route"
         },
         {
             "path": "es/people/nora-vidal/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4301,
-            "sha256": "4452b5e56927b46a2b77eeffcd5c64ac0dbf55c4c9256e85ee77243d19653565",
+            "sha256": "0d14edfabfd2a38f34aecd000b7374cec44c988bb9a5b8aad9d2868549476dc3",
             "cachePolicy": "route"
         },
         {
             "path": "es/projects/archivo-de-la-niebla/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 6241,
-            "sha256": "5509b071825bc7df2f7882d00322900b04022177a500377743d382493b235084",
+            "sha256": "019b1b71ddca3660a312c11584c384f6d12013ccb71566a7cf6c08e5d86f94ff",
             "cachePolicy": "route"
         },
         {
             "path": "es/projects/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 5404,
-            "sha256": "d246e2dcd91a05155ab9028c837f0004849b2d7eecd9236159cbb7c3586a55e6",
+            "sha256": "b4cfe9b7e56df3f541b5c3cb992fa018005f8f394a6218f7b143c352fb624cda",
             "cachePolicy": "route"
         },
         {
             "path": "es/search/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 7017,
-            "sha256": "ef2443457c5409c273f7d4338bcccee388fd8f2dbc3e5a5b42549d9caba12533",
+            "sha256": "49643f5e9307fdbce4065e167d798bbb4f817504b7048a5f3c8f3359380566f9",
             "cachePolicy": "route"
         },
         {
             "path": "es/sectors/cultura/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4720,
-            "sha256": "7985cb3ac21b6adc363fdc577df6d9b4a19d18ba7d2a2010f16b1efc2ef2017e",
+            "sha256": "83a0cc1223b10905d31c44e47171cf0f419f3149a3e421e3fe6fec1c80c6c884",
             "cachePolicy": "route"
         },
         {
             "path": "es/sectors/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4684,
-            "sha256": "fd32b9b16dcc6c87e01b6069977a7f98743c61f2a0c0ea46a6a56bc29baf3fe8",
+            "sha256": "e387c790f22079698a1955f7fc0d4626e81ca1d093a87acffd890a9c5234484c",
             "cachePolicy": "route"
         },
         {
             "path": "es/sectors/vivienda/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 4349,
-            "sha256": "4758ef1ad948a08de545ad023349bebdad279ddd744c6e740b4ad32ea4563803",
+            "sha256": "61c36f5dca9b73dc1664123e2ede640392c07fbcabc2f765a8100e404b250cf0",
             "cachePolicy": "route"
         },
         {
             "path": "es/settings/index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 3384,
-            "sha256": "b4b9a415871c2d18b25e9b277768a0035fd4244692ee9fdabe4b44a5fe7b9fc1",
+            "sha256": "0facf5ee8ab505faafb09ad2b585ee763dee1944382e670dcd02ab96b43ed776",
             "cachePolicy": "route"
         },
         {
@@ -509,7 +509,7 @@
             "path": "index.html",
             "mime": "text/html; charset=utf-8",
             "byteSize": 7901,
-            "sha256": "f78ec4b58aea31282b1fb0ed8f297ff61b5ceb0a22a383784cb916f291bfd296",
+            "sha256": "00df8c02ce7ffea17936611fff691b8ec05f3e2eabeddcf3b7efaacfd73fb503",
             "cachePolicy": "route"
         },
         {

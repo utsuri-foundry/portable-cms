@@ -104,6 +104,8 @@ final class RecordWorkflowService
         $type = $this->profile->type($record->typeId);
         $errors = [];
         $this->fields($type->fields, $record->body, $type, $errors, recordId: $record->id);
+        // Only a slug that makes a unique address in every public language can reach the website.
+        $errors += $this->content->slugs()->problems($type, $record->body, $record->body, $record->id, true, $this->content->requiredLocales());
         foreach ($validated->relationships as $relationship) {
             $field = null;
             foreach ($type->fields as $candidate) {

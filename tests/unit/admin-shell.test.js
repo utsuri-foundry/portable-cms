@@ -5,6 +5,7 @@ import {
 	mountAccountMenu,
 	mountCopyButtons,
 	mountHelpControls,
+	mountRowMenus,
 	mountThemeForm,
 	toggleHelp,
 } from "../../engine/src/cms/conventional/client/admin-shell.js";
@@ -269,4 +270,51 @@ test("copy buttons write their own value and say so for a moment", async () => {
 	await Promise.resolve();
 	assert.equal(button.textContent, "Copy");
 	refused();
+});
+
+test("row menus fold on Escape back to their control and on a click elsewhere", () => {
+	const document = new EventTarget();
+	const menu = (name) => {
+		const summary = {
+			focused: false,
+			focus() {
+				this.focused = true;
+			},
+		};
+		const action = { name, closest: () => details };
+		const details = {
+			open: true,
+			querySelector: () => summary,
+			contains: (node) => node === action,
+		};
+		return { details, summary, action };
+	};
+	const first = menu("first");
+	const second = menu("second");
+	document.querySelectorAll = () =>
+		[first.details, second.details].filter((item) => item.open);
+	const dispose = mountRowMenus(document);
+	const keydown = new Event("keydown");
+	Object.defineProperties(keydown, {
+		key: { value: "Escape" },
+		target: { value: first.action },
+	});
+	document.dispatchEvent(keydown);
+	assert.equal(first.details.open, false);
+	assert.equal(first.summary.focused, true, "focus returns to the menu's control");
+	assert.equal(
+		second.details.open,
+		true,
+		"Escape folds only the menu it was pressed in",
+	);
+	first.details.open = true;
+	const click = new Event("click");
+	Object.defineProperty(click, "target", { value: second.action });
+	document.dispatchEvent(click);
+	assert.equal(first.details.open, false, "a click elsewhere folds an open menu");
+	assert.equal(second.details.open, true, "a click inside a menu keeps it open");
+	dispose();
+	first.details.open = true;
+	document.dispatchEvent(click);
+	assert.equal(first.details.open, true, "disposal removes the listeners");
 });

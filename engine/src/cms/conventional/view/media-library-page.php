@@ -13,12 +13,16 @@ use Utsuri\PortableCms\Conventional\Media\LibraryMedia;
 use Utsuri\PortableCms\Conventional\Media\MediaContract;
 use Utsuri\PortableCms\Conventional\Media\MediaLibrary;
 use Utsuri\PortableCms\Conventional\Media\MediaPage;
+use Utsuri\PortableCms\Conventional\Media\MediaPreparation;
 use Utsuri\PortableCms\Conventional\Media\VideoUploadPolicy;
 
 final class MediaLibraryPage
 {
-    /** @param bool $cronOnly Uploads wait for the scheduled worker, so a pending card says minutes rather than a moment. */
-    public static function listing(MediaPage $page, ProfileManifest $profile, ?AdminChrome $chrome = null, ?ContentService $content = null, string $csrf = '', ?VideoUploadPolicy $policy = null, bool $cronOnly = false): string
+    /**
+     * @param bool $cronOnly Uploads wait for the scheduled worker, so a pending card says minutes rather than a moment.
+     * @param ?MediaPreparation $preparation When known, a pending card says when its file will be ready.
+     */
+    public static function listing(MediaPage $page, ProfileManifest $profile, ?AdminChrome $chrome = null, ?ContentService $content = null, string $csrf = '', ?VideoUploadPolicy $policy = null, bool $cronOnly = false, ?MediaPreparation $preparation = null): string
     {
         $policy ??= new VideoUploadPolicy();
         $t = AdminShell::translator($chrome);
@@ -34,7 +38,7 @@ final class MediaLibraryPage
             . self::filters($page, $video, $t) . '</div>';
         $items = '';
         foreach ($page->items as $media) {
-            $items .= self::card($media, $profile, $cronOnly, $t);
+            $items .= self::card($media, $profile, $cronOnly, $t, $preparation);
         }
         $markup .= $items === ''
             ? self::empty($page, $t)
@@ -89,14 +93,14 @@ final class MediaLibraryPage
     }
 
     /** Thumbnail and name; a line only where the editor has something to do or to wait for. */
-    private static function card(LibraryMedia $media, ProfileManifest $profile, bool $cronOnly, Translator $t): string
+    private static function card(LibraryMedia $media, ProfileManifest $profile, bool $cronOnly, Translator $t, ?MediaPreparation $preparation = null): string
     {
         $failed = $media->status === 'needs_attention' || $media->errorCode !== null;
         $pending = !$failed && $media->status !== 'ready';
         $warning = $failed || $pending ? '' : MediaDescriptionsForm::warning($media, $profile, $t);
         return '<li class="admin-card admin-media-card" data-media-card="' . ($failed ? 'failed' : ($pending ? 'pending' : 'ready')) . '"><a href="' . Html::url('/media/' . $media->id) . '">' . ReferenceControls::thumbnail($media, true)
             . '<strong>' . Html::text($media->name) . '</strong></a>'
-            . ($pending ? '<p class="admin-meta" role="status">' . $t->html($cronOnly ? 'media.pending.minutes' : 'media.pending.moment') . '</p>' : '')
+            . ($pending ? '<p class="admin-meta" role="status">' . ($preparation === null ? $t->html($cronOnly ? 'media.pending.minutes' : 'media.pending.moment') : Html::text($t->message($preparation->message($media)))) . '</p>' : '')
             . ($failed ? '<p class="admin-field__error">' . $t->html('media.processing_attention') . '</p>' : '')
             . ($warning === '' ? '' : '<p class="admin-field__error">' . Html::text($warning) . '</p>')
             . (str_starts_with($media->mime, 'image/') && !$failed ? '<label class="admin-checkbox"><input type="checkbox" name="media_ids[]" value="' . $media->id . '"><span class="admin-visually-hidden">' . $t->html('media.descriptions.choose', ['name' => $media->name]) . '</span></label>' : '')

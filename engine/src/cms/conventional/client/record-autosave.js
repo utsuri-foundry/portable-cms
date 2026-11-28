@@ -116,7 +116,7 @@ export function mountRecordAutosave(form, window = form.ownerDocument.defaultVie
 			if (!field || !form.contains(field)) continue;
 			const note = document.createElement("p");
 			note.dataset.keepError = "true";
-			note.className = "admin-field-error";
+			note.className = "admin-field__error";
 			note.textContent = message;
 			note.id = `keep-error-${id}`;
 			const control = field.matches("input,textarea,select")
@@ -456,10 +456,9 @@ export function mountRecordAutosave(form, window = form.ownerDocument.defaultVie
 		if (url.origin !== window.location.origin) return;
 		event.preventDefault();
 		void keeper.flush().then((clean) => {
-			if (clean) {
-				navigating = true;
-				window.location.assign(url.href);
-			}
+			if (clean) navigating = true;
+			// With only files still being prepared, the browser asks before leaving them out.
+			if (clean || keeper.waiting()) window.location.assign(url.href);
 		});
 	});
 	keeper.change();

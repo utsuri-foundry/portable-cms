@@ -17,10 +17,24 @@ final class AssetVersion
 {
     private const UNVERSIONED = ['robots.txt', 'sitemap.xml', 'llms.txt', 'artifact.json'];
 
-    /** The version of a build: its frozen content, its profile package and its compiler. */
-    public static function of(string $snapshotId, string $packageChecksum, CompilerIdentity $compiler): string
+    /**
+     * The version of a build: its frozen content, its profile package and its compiler. Two builds of
+     * equal content, such as before and after a backup is restored, get the same version.
+     */
+    public static function of(string $contentDigest, string $packageChecksum, CompilerIdentity $compiler): string
     {
-        return substr(hash('sha256', implode("\n", ['portable-cms-asset-version-1', $snapshotId, $packageChecksum, $compiler->checksum])), 0, 12);
+        return substr(hash('sha256', implode("\n", ['portable-cms-asset-version-1', $contentDigest, $packageChecksum, $compiler->checksum])), 0, 12);
+    }
+
+    /**
+     * A digest of a snapshot's frozen content without its own id and creation time, so a
+     * snapshot taken again of equal content, such as after a backup is restored, digests equally.
+     */
+    public static function content(FrozenSnapshot $snapshot): string
+    {
+        $content = get_object_vars($snapshot);
+        unset($content['id'], $content['createdAt']);
+        return hash('sha256', serialize($content));
     }
 
     /** Whether a path from the site root names a file whose address the version keeps current. */

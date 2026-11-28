@@ -5,6 +5,7 @@ import { messages } from "./messages.js";
 import { mountRecordAutosave } from "./record-autosave.js";
 import { mountRichTextEditor } from "./rich-text-editor.js";
 import { createRichPreviewEditors } from "./rich-text-preview.js";
+import { mountSlugFields } from "./slug-fields.js";
 
 /** Per-locale state shown on the record language switch and coverage card. */
 export function localeState(panels) {
@@ -47,6 +48,7 @@ function enhanceEditorialForm(form, window, own) {
 		...form.querySelectorAll("[data-composition-editor]"),
 	].map((root) => own(mountCompositionEditor(root, autosave?.flush)));
 	const disposeRows = own(mountGroupRows(form, window));
+	const disposeSlugs = own(mountSlugFields(form));
 	const livePane = document.querySelector("[data-live-preview]");
 	const disposeLive = livePane
 		? own(mountLivePreview(livePane, form, previewEditors, autosave?.flush))
@@ -378,6 +380,7 @@ function enhanceEditorialForm(form, window, own) {
 		for (const dispose of richEditors) dispose();
 		for (const dispose of compositionEditors) dispose();
 		disposeRows();
+		disposeSlugs();
 		disposeLive();
 		if (switcher) switcher.hidden = true;
 		delete form.dataset.recordLocale;

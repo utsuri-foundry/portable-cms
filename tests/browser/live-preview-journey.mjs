@@ -206,6 +206,54 @@ try {
 		"live preview waits for the edit to be kept",
 	);
 
+	const before = await activeSource();
+	await evaluate(
+		"(()=>{const i=document.querySelector('#field-title-ca');i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));})()",
+	);
+	await ready(
+		`${settled} && !!document.querySelector('[data-live-status] .admin-live__field')`,
+	);
+	const needed =
+		"(()=>{const f=document.querySelector('[data-field=title]');const s=f.querySelector('.admin-field__required');return {needed:f.hasAttribute('data-live-needed'),star:s.classList.contains('admin-field__required--needed'),color:getComputedStyle(s).color,muted:getComputedStyle(document.querySelector('.admin-form__required')).color}})()";
+	const missing = await evaluate(
+		"({status:document.querySelector('[data-live-status]').textContent,buttons:[...document.querySelectorAll('[data-live-status] button')].map((b)=>b.textContent),update:document.querySelector('[data-live-update]').hidden})",
+	);
+	assert.match(
+		missing.status,
+		/^To update the preview, fill in Title( \(Català\))?\.$/,
+		"an empty required field is named instead of drawing the page",
+	);
+	assert.deepEqual(
+		[missing.buttons.length, missing.update, await activeSource()],
+		[1, true, before],
+		"its name is a button, Update preview stays away and the last page stays",
+	);
+	const marked = await evaluate(needed);
+	assert.ok(
+		marked.needed && marked.star && marked.color !== marked.muted,
+		`the field's star marks it in the danger colour: ${JSON.stringify(marked)}`,
+	);
+	await evaluate("document.querySelector('#field-year').focus()");
+	await evaluate("document.querySelector('[data-live-status] button').click()");
+	await ready("document.activeElement?.id === 'field-title-ca'");
+	await evaluate(
+		"(()=>{const i=document.querySelector('#field-title-ca');i.value='Arxiu de la boira, sense desar';i.dispatchEvent(new Event('input',{bubbles:true}));})()",
+	);
+	const filled = await evaluate(needed);
+	assert.deepEqual(
+		[filled.needed, filled.star],
+		[false, false],
+		"the mark goes as soon as the field is filled",
+	);
+	await ready(
+		`${settled} && document.querySelector('[data-live-frame][data-live-active]').getAttribute('src') !== ${JSON.stringify(before)}`,
+	);
+	assert.equal(
+		(await inPage(isolation)).heading,
+		"Arxiu de la boira, sense desar",
+		"the page is drawn again once the field is filled",
+	);
+
 	await inPage(
 		"document.querySelector('h1').dispatchEvent(new PointerEvent('pointerover',{bubbles:true}))",
 	);
@@ -594,7 +642,7 @@ try {
 	await command("Emulation.setScriptExecutionDisabled", { value: false });
 	assert.deepEqual(browserErrors, [], "the workspace runs without browser errors");
 	process.stdout.write(
-		"PASS live preview journey: workspace, isolation, updates, scroll, field linking both ways, editing in place, own scripts, screens, separator, full size, narrow and no-script\n",
+		"PASS live preview journey: workspace, isolation, updates, scroll, empty required fields, field linking both ways, editing in place, own scripts, screens, separator, full size, narrow and no-script\n",
 	);
 } catch (error) {
 	throw new Error(

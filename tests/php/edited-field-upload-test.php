@@ -83,14 +83,13 @@ $tests['field native uploads append in order within the maximum and preserve the
     $f = editedFieldFixture();
     try {
         $existing = array_key_first($f['media']['repository']->items);
-        $form = [...$f['form'], 'gallery' => [$existing], '_pick_otherImages' => [$existing], '_upload_field' => 'gallery'];
+        $form = [...$f['form'], 'gallery' => [$existing], '_upload_field' => 'gallery'];
         $response = $f['app']->handle(new Request('POST', $f['path'] . '/upload', contentMutationHeaders(), $form, $f['cookies'], files: [editedFieldImage('first.png'), editedFieldImage('second.png'), editedFieldImage('third.png')]));
         assertSameValue(200, $response->status, 'native completion returns the editing form');
         $uploaded = array_column(array_values($f['uploadRepository']->media), 'id');
         assertSameValue(3, count($uploaded), 'images beyond the maximum still enter the library');
         assertSameValue([$existing, $uploaded[0]], editedFieldSelections($response->body), 'new images follow the existing selection in upload order');
         assertSameValue([], editedFieldSelections($response->body, 'otherImages'), 'the other field stays untouched');
-        assertTrueValue(str_contains($response->body, 'name="_pick_otherImages[]" value="' . $existing . '" checked'), 'unsubmitted choices in another picker remain checked');
         assertTrueValue(str_contains($response->body, 'Kept only in the library: 2.') && str_contains($response->body, 'data-media-upload-result'), 'the editor sees the overflow count');
         assertTrueValue(str_contains($response->body, 'value="Unsaved title"') && str_contains($response->body, 'data-pending-input="true"'), 'unsaved non-media text survives');
         assertSameValue(['Saved', 1], [$f['contentRepository']->find('project', $f['record']->id)->body['title']['ca'], $f['contentRepository']->find('project', $f['record']->id)->revisionNumber], 'uploading never saves or changes a content revision');
@@ -102,6 +101,8 @@ $tests['field native uploads append in order within the maximum and preserve the
         assertSameValue(200, $receipt->status, 'completed upload receipts return description controls with the pending selection');
         assertSameValue(3, substr_count($receipt->body, ' data-description-job='), 'all completed uploads remain describable, including overflow');
         assertTrueValue(str_contains($receipt->body, 'name="description_' . $uploaded[2] . '__alternativeText__ca"') && str_contains($receipt->body, 'form="media-descriptions-form-gallery"'), 'overflow descriptions belong to a separate field-specific form');
+        assertTrueValue(str_contains($receipt->body, '<li class="admin-selection" data-media-pending="' . $uploaded[0] . '">') && str_contains($receipt->body, '<small class="admin-meta" data-media-state>Being prepared. Ready in a moment.</small>'), 'a new image being prepared says so in its row, which asks again until it is ready');
+        assertTrueValue(!str_contains($receipt->body, '>processing<'), 'no engine state word is shown');
     } finally {
         editedFieldCleanup($f);
     }
@@ -133,7 +134,7 @@ $tests['field upload interruption keeps completed images and native stale reques
     }
 };
 
-$tests['media picker bulk selection is one bounded transient action with conflicts and independent removal'] = static function (): void {
+$tests['media picker adds an image per activation and keeps the bounded bulk action with conflicts and independent removal'] = static function (): void {
     $f = editedFieldFixture();
     try {
         [$one, $two, $three] = array_keys($f['media']['repository']->items);
@@ -147,8 +148,12 @@ $tests['media picker bulk selection is one bounded transient action with conflic
         assertTrueValue(str_contains($response->body, 'Kept only in the library: 1.'), 'excess library selections are explained');
         $removed = $f['app']->handle(new Request('POST', $f['path'], contentMutationHeaders(), [...$f['form'], 'gallery' => [$one, $two], '_editor_action' => 'remove:gallery:' . $two], $f['cookies']));
         assertSameValue([$one], editedFieldSelections($removed->body), 'removal only changes the pending field');
-        assertTrueValue(!str_contains($response->body, 'name="_pick_gallery[]"'), 'a full field offers nothing to add');
-        assertTrueValue(str_contains($removed->body, 'name="_pick_gallery[]"') && str_contains($removed->body, 'value="add-media:gallery"'), 'a field with room exposes native checkboxes and one submit button');
+        assertTrueValue(!str_contains($response->body, 'value="select:gallery:'), 'a full field offers nothing to add');
+        assertTrueValue(preg_match('#<button type="submit" name="_editor_action" value="select:gallery:' . $three . '" formnovalidate class="admin-picker__pick" aria-label="Select [^"]+">(?:<img [^>]+>|<span class="admin-thumbnail[^"]*"[^>]*>[^<]*</span>)<span><span>[^<]+</span><small class="admin-meta">#', $removed->body) === 1, 'a field with room offers each ready image as one native button that adds it');
+        assertTrueValue(!str_contains($removed->body, 'name="_pick_gallery[]"') && !str_contains($removed->body, 'value="add-media:gallery"'), 'there is nothing to tick and no second submit');
+        $picked = $f['app']->handle(new Request('POST', $f['path'], contentMutationHeaders(), [...$f['form'], 'gallery' => [$one], '_query_gallery' => 'a', '_editor_action' => 'select:gallery:' . $three], $f['cookies']));
+        assertSameValue([$one, $three], editedFieldSelections($picked->body), 'activating an image adds it after the existing selection');
+        assertSameValue(1, preg_match('#id="field-gallery"[^>]* autofocus>.*?<details class="admin-picker__(?:library|browse)">#s', $picked->body), 'the chooser closes and the field takes focus, even with a search');
         assertTrueValue($f['media']['library']->find($two) !== null && $f['media']['repository']->writes === 0, 'removal never deletes library media');
         $f['service']->update('project', $f['record']->id, 1, ['title' => ['ca' => 'Other editor', 'es' => 'Saved', 'en' => 'Saved'], 'gallery' => '[]'], str_repeat('1', 32));
         $conflict = $f['app']->handle(new Request('POST', $f['path'], contentMutationHeaders(), [...$f['form'], '_editor_action' => 'add-media:gallery', '_pick_gallery' => [$two, $three]], $f['cookies']));

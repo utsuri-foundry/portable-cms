@@ -153,7 +153,9 @@ Profiles that build their own addresses can follow the same pattern with
 Taxonomies have no manifest public routes. Opt them in explicitly, for example
 `taxonomyPaths: ['discipline' => '/topics/']`. A `segment` closure accepting
 `(FrozenRecord, locale)` can map a different slug field or normalize an authored
-taxonomy label. It must return one nonempty directory segment, not a URL.
+taxonomy label. The administration keeps the `slug` field of every collection and
+taxonomy one valid segment, unique per type and language, so the default route
+needs no profile check; a different field mapped by `segment` has no such guard. It must return one nonempty directory segment, not a URL.
 Traversal, separators, encoded paths, query strings and fragments fail before
 rendering. Profiles with more specialized route policies may use the existing
 `DiscoveryRoute` and `RouteDiscovery` contracts directly.

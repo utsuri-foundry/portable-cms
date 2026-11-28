@@ -31,7 +31,7 @@ final class EditorialRecordHttp
         private readonly ?\Utsuri\PortableCms\Conventional\Preview\EditorExactPreview $exact = null,
     ) {}
 
-    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live', typeId: string, recordId: string|null} $route */
+    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live'|'duplicate', typeId: string, recordId: string|null} $route */
     public function handle(Request $request, array $route, SessionContext $session, string $correlationId): Response
     {
         $response = $this->record($request, $route, $session, $correlationId);
@@ -40,7 +40,7 @@ final class EditorialRecordHttp
             ? $response->withVimeoWorkspace() : $response;
     }
 
-    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live', typeId: string, recordId: string|null} $route */
+    /** @param array{kind: 'list'|'new'|'record'|'workflow'|'live'|'duplicate', typeId: string, recordId: string|null} $route */
     private function record(Request $request, array $route, SessionContext $session, string $correlationId): Response
     {
         $type = $this->profile->type($route['typeId']);
@@ -56,6 +56,12 @@ final class EditorialRecordHttp
         }
         if ($route['kind'] === 'live') {
             return $this->live($request, $type, $saved, $session, $correlationId);
+        }
+        if ($route['kind'] === 'duplicate' && $saved !== null) {
+            if ($request->method !== 'POST' || $type->kind === 'singleton') {
+                return new Response($request->method !== 'POST' ? 405 : 404, Pages::error($request->method !== 'POST' ? 405 : 404, $correlationId, $this->chrome?->translator()));
+            }
+            return Response::redirect('/records/' . $type->id . '/' . $this->content->duplicate($type->id, $saved->id, $session->userId)->id);
         }
         if ($route['kind'] === 'workflow' && $saved !== null) {
             if ($request->method !== 'POST') {
@@ -356,6 +362,17 @@ final class EditorialRecordHttp
         return is_int($sequence) ? $sequence : 0;
     }
 
+    private function holdsFailedMedia(FieldDefinition $field, mixed $value): bool
+    {
+        foreach (EditorialControls::selections($value, $field) as $id) {
+            $media = $this->media?->find($id);
+            if ($media !== null && \Utsuri\PortableCms\Conventional\Media\MediaPreparation::failed($media)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** @param array<string, mixed> $values */
     private function keep(Request $request, RecordTypeDefinition $type, ?RecordSnapshot $saved, array $values, SessionContext $session): Response
     {
@@ -372,9 +389,17 @@ final class EditorialRecordHttp
         $t = $this->chrome?->translator() ?? \Utsuri\PortableCms\Conventional\I18n\Translator::english();
         $errors = [];
         foreach ($result->errors as $fieldId => $message) {
+            if ($message->key === 'validation.media_preparing') {
+                // Not an error: the field's rows say when its new files will be ready, and keeping retries until then.
+                continue;
+            }
             $field = EditorialControls::nestedDefinition($type, $this->profile, $values, $fieldId);
             foreach ($type->fields as $candidate) {
                 $field = $candidate->id === $fieldId ? $candidate : $field;
+            }
+            if ($field?->type === 'media_references' && $this->holdsFailedMedia($field, $values[$fieldId] ?? null)) {
+                // The row of the image that could not be prepared already says what to do.
+                continue;
             }
             $errors[$fieldId] = \Utsuri\PortableCms\Conventional\View\EditorialRecordLayout::fieldMessage($message, $field, $t);
         }
@@ -396,10 +421,20 @@ final class EditorialRecordHttp
             : new Response(422, \Utsuri\PortableCms\Conventional\View\AdminShell::focused($t->text('live.failed.title'), \Utsuri\PortableCms\Conventional\View\TrustedHtml::fromEngineMarkup(
                 '<h1>' . $t->html('live.failed.title') . '</h1><p class="admin-help">' . \Utsuri\PortableCms\Conventional\Http\Html::text($reason) . '</p>',
             ), $t));
+        // Empty required fields are named as the form labels them, so the workspace can lead to each.
+        $lead = function (array $missing) use ($json, $sequence, $failure, $type, $t): Response {
+            $named = \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::named($missing, $type, $this->profile, $this->content->requiredLocales());
+            $reason = $t->message(\Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::message($named));
+            return $json ? Response::json(['sequence' => $sequence, 'reason' => $reason, 'missing' => $named], 422) : $failure($reason);
+        };
         $locale = in_array($request->formValue('_live_locale'), $this->profile->locales, true) ? $request->formValue('_live_locale') : $this->profile->defaultLocale;
         $page = $request->formValue('_live_page') === 'home' ? 'home' : 'record';
         $validated = $this->content->unsaved($type->id, EditorialForm::input($request, $type, $this->profile, $saved), $saved);
         if ($validated instanceof ValidationFailure) {
+            $missing = \Utsuri\PortableCms\Conventional\Preview\LivePreviewMissing::fromValidation($validated->errors, $validated->values, $type, $this->content->requiredLocales());
+            if ($missing !== []) {
+                return $lead($missing);
+            }
             $fieldId = (string) array_key_first($validated->errors);
             $field = null;
             foreach ($type->fields as $candidate) {
@@ -416,6 +451,9 @@ final class EditorialRecordHttp
         try {
             $result = $this->live->render(new \Utsuri\PortableCms\Conventional\Preview\LivePreviewRequest($type->id, $saved?->id, $validated->body, $relationships, $page, $locale), $session->id, $request->formValue('_live_token'));
         } catch (\Utsuri\PortableCms\Conventional\Preview\LivePreviewFailure $error) {
+            if ($error->missing !== []) {
+                return $lead($error->missing);
+            }
             return $failure($t->message(\Utsuri\PortableCms\Conventional\Preview\PreviewDiagnostics::present($error->reason, $this->profile)));
         }
         if (!$json) {

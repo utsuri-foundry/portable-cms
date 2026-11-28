@@ -78,9 +78,9 @@ final readonly class AdminChrome
 
 final class AdminShell
 {
-    public const STYLESHEET_VERSION = '30';
+    public const STYLESHEET_VERSION = '31';
     public const GROUP_STYLESHEET_VERSION = '3';
-    public const SCRIPT_VERSION = '8';
+    public const SCRIPT_VERSION = '9';
 
     public static function translator(?AdminChrome $chrome): Translator
     {
@@ -309,13 +309,14 @@ final class AdminShell
     private static function footer(string $current, ?AdminChrome $chrome, Translator $t, ?ProfileManifest $profile): string
     {
         $markup = '<div class="admin-sidebar__footer">';
-        // The agency's pages: visibly apart from the editorial groups, and absent for editors.
+        // The agency's pages: apart from the editorial groups behind the foot's rule, and absent for
+        // editors. The rule sets them apart, so their heading is kept for screen readers only.
         if ($chrome !== null && $chrome->role !== 'editor' && $profile !== null) {
             $markup .= '<nav class="admin-navigation" aria-label="' . $t->html('shell.group.agency') . '">' . self::navigationGroup('agency', $t->text('shell.group.agency'), [
                 self::link('/settings/installation', $t->text('shell.nav.installation'), $current === 'installation'),
                 self::link('/settings/history', $t->text('history.title'), $current === 'history'),
                 self::link('/exports', $t->text('shell.nav.export'), $current === 'exports'),
-            ]) . '</nav>';
+            ], labelHidden: true) . '</nav>';
         }
         if ($chrome === null) {
             return $markup . '</div>';
@@ -357,11 +358,11 @@ final class AdminShell
     }
 
     /** @param list<string> $links */
-    private static function navigationGroup(string $group, string $label, array $links): string
+    private static function navigationGroup(string $group, string $label, array $links, bool $labelHidden = false): string
     {
         $id = 'nav-' . $group;
         return '<section class="admin-navigation__group" aria-labelledby="' . Html::attribute($id) . '">'
-            . '<h2 class="admin-navigation__label" id="' . Html::attribute($id) . '">' . Html::text($label) . '</h2>'
+            . '<h2 class="admin-navigation__label' . ($labelHidden ? ' admin-visually-hidden' : '') . '" id="' . Html::attribute($id) . '">' . Html::text($label) . '</h2>'
             . '<ul class="admin-navigation__list"><li>' . implode('</li><li>', $links) . '</li></ul></section>';
     }
 

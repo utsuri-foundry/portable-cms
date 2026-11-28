@@ -179,6 +179,21 @@ final class ContentService
         );
     }
 
+    /**
+     * A new draft with every value of a record of a collection or taxonomy: its title marked as a
+     * copy, a free slug in each language, and the same media and record references.
+     */
+    public function duplicate(string $typeId, string $recordId, string $actorUserId): RecordSnapshot
+    {
+        $type = $this->requiredType($typeId);
+        if ($type->kind === 'singleton' || !$this->repository instanceof RecordDuplicationRepository) {
+            throw new \InvalidArgumentException('This record cannot be duplicated');
+        }
+        $source = $this->find($typeId, $recordId) ?? throw new RecordNotFound();
+        $copy = $this->validateCanonical($typeId, $this->slugs()->copy($type, $source->body), $this->design?->load());
+        return $this->repository->duplicate($source, $this->randomId(), $this->randomId(), $this->profile->id, $this->profile->version, $copy->body, $copy->relationships, $actorUserId, $this->randomId(), $this->clock->now());
+    }
+
     /** @param array<string, mixed> $input */
     public function update(
         string $typeId,
@@ -199,7 +214,7 @@ final class ContentService
         if ($current->revisionNumber !== $expectedRevisionNumber || ($expectedEditSequence !== null && $current->editSequence !== $expectedEditSequence)) {
             return new RecordConflict($current);
         }
-        $validated = $this->validate($type, $input, $current->body);
+        $validated = $this->validate($type, $input, $current->body, $recordId);
         if ($validated instanceof ValidationFailure) {
             return $validated;
         }
@@ -240,8 +255,9 @@ final class ContentService
         foreach ($type->fields as $original) {
             $field = EditingFields::incomplete($original);
             $value = $this->validateFields([$field], $input, $current->body ?? [], $type);
-            if ($value instanceof ValidationFailure) {
-                $errors += $value->errors;
+            $slug = $value instanceof ValidationFailure || $field->id !== RecordSlugs::FIELD ? [] : $this->slugs()->problems($type, $value->body + $input, $current->body ?? [], $recordId);
+            if ($value instanceof ValidationFailure || $slug !== []) {
+                $errors += $value instanceof ValidationFailure ? $value->errors : $slug;
                 if ($this->preparingMedia($field, $input[$field->id] ?? null, $recordId)) {
                     $errors[$field->id] = new Message('validation.media_preparing', ['field' => $field->label]);
                     $retryable = true;
@@ -329,16 +345,26 @@ final class ContentService
      */
     public function unsaved(string $typeId, array $input, ?RecordSnapshot $saved = null): ValidatedContent|ValidationFailure
     {
-        return $this->validate($this->requiredType($typeId), $input, $saved->body ?? []);
+        return $this->validate($this->requiredType($typeId), $input, $saved->body ?? [], $saved?->id);
     }
 
     /**
      * @param array<string, mixed> $input
      * @param array<string, mixed> $saved
      */
-    private function validate(RecordTypeDefinition $type, array $input, array $saved = []): ValidatedContent|ValidationFailure
+    private function validate(RecordTypeDefinition $type, array $input, array $saved = [], ?string $recordId = null): ValidatedContent|ValidationFailure
     {
-        return $this->validateFields($type->fields, $input, $saved, $type);
+        $validated = $this->validateFields($type->fields, $input, $saved, $type);
+        $values = $validated instanceof ValidationFailure ? $validated->values : $validated->body;
+        $errors = $validated instanceof ValidationFailure ? $validated->errors : [];
+        $slug = isset($errors[RecordSlugs::FIELD]) ? [] : $this->slugs()->problems($type, $values, $saved, $recordId);
+        return $slug === [] ? $validated : new ValidationFailure($values, $errors + $slug);
+    }
+
+    /** The rules that keep record slugs unique web addresses, over this installation's records. */
+    public function slugs(): RecordSlugs
+    {
+        return new RecordSlugs($this->repository, $this->profile);
     }
 
     /**

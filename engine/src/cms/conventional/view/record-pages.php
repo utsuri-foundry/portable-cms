@@ -40,9 +40,9 @@ final readonly class RecordListing
 
 final class RecordPages
 {
-    public const EDITOR_SCRIPT_VERSION = '19';
-    private const MEDIA_UPLOAD_ASSET_VERSION = '7';
-    private const LIVE_PREVIEW_STYLE_VERSION = '2';
+    public const EDITOR_SCRIPT_VERSION = '20';
+    private const MEDIA_UPLOAD_ASSET_VERSION = '8';
+    private const LIVE_PREVIEW_STYLE_VERSION = '3';
 
     /** Every record type, whatever its kind, is listed under Content in the sidebar and in breadcrumbs. */
     public static function groupLabel(RecordTypeDefinition $type, ?Translator $translator = null): string
@@ -50,7 +50,7 @@ final class RecordPages
         return ($translator ?? Translator::english())->text('shell.group.content');
     }
 
-    public static function listing(ProfileManifest $profile, RecordTypeDefinition $type, RecordListing $listing, ?AdminChrome $chrome): string
+    public static function listing(ProfileManifest $profile, RecordTypeDefinition $type, RecordListing $listing, ?AdminChrome $chrome, string $csrfToken = ''): string
     {
         $t = AdminShell::translator($chrome);
         $taxonomy = $type->kind === 'taxonomy';
@@ -59,9 +59,10 @@ final class RecordPages
         $rows = '';
         foreach ($listing->records as $record) {
             $url = $base . '/' . $record->id;
+            $title = RecordLabels::label($record, $profile);
             $thumbnail = $listing->thumbnail === null ? '' : ($listing->thumbnail)($record);
             $rows .= '<tr><td data-column="title"><div class="admin-table__record">' . $thumbnail . '<span><a class="admin-table__title" href="' . Html::url($url) . '">'
-                . Html::text(RecordLabels::label($record, $profile)) . '</a><span class="admin-table__sub">' . Html::text(self::subtitle($record, $profile, $t)) . '</span></span></div></td>';
+                . Html::text($title) . '</a><span class="admin-table__sub">' . Html::text(self::subtitle($record, $profile, $t)) . '</span></span></div></td>';
             if ($languages) {
                 $rows .= '<td data-column="languages">' . self::coverage($type, $record->body, $profile, $t) . '</td>';
             }
@@ -70,7 +71,7 @@ final class RecordPages
             }
             $rows .= '<td data-column="status">' . AdminShell::status($record->hasUnpublishedChanges() ? 'published_changes' : $record->workflowState, null, $t) . '</td>'
                 . '<td data-column="updated">' . AdminShell::time($record->updatedAt, $chrome?->now, $t) . '</td>'
-                . '<td class="admin-table__chevron" aria-hidden="true">›</td></tr>';
+                . '<td data-column="actions">' . ($csrfToken === '' ? '' : self::rowMenu($url, $title, $csrfToken, $t)) . '</td></tr>';
         }
         $singular = $t->inlineLabel($type->singularLabel);
         $plural = $t->inlineLabel($type->label);
@@ -81,7 +82,7 @@ final class RecordPages
                 . ($filtered ? '<a class="admin-button" href="' . Html::url($base) . '">' . $t->html('records.clear_filters') . '</a>' : '') . '</div>'
             : '<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th scope="col">' . $t->html('records.column.title') . '</th>'
                 . ($languages ? '<th scope="col">' . $t->html('records.column.languages') . '</th>' : '') . ($taxonomy ? '<th scope="col">' . $t->html('records.column.used_by') . '</th>' : '')
-                . '<th scope="col">' . $t->html('records.column.status') . '</th><th scope="col">' . $t->html('records.column.updated') . '</th><th scope="col"><span class="admin-visually-hidden">' . $t->html('records.column.open') . '</span></th></tr></thead><tbody>' . $rows . '</tbody></table></div>';
+                . '<th scope="col">' . $t->html('records.column.status') . '</th><th scope="col">' . $t->html('records.column.updated') . '</th><th scope="col"><span class="admin-visually-hidden">' . $t->html('records.column.actions') . '</span></th></tr></thead><tbody>' . $rows . '</tbody></table></div>';
         $total = array_sum(array_intersect_key($listing->states, array_flip(['draft', 'published', 'archived'])));
         $toolbar = '<form class="admin-toolbar" method="get" action="' . Html::url($base) . '" role="search">'
             . '<label class="admin-visually-hidden" for="record-query">' . $t->html('records.search.label', ['plural' => $plural]) . '</label>'
@@ -174,6 +175,11 @@ final class RecordPages
             $videoTiles = $videoTiles || $candidate->type === 'video_reference';
         }
         $unbound = $uploads && $tileFields === [] && !$videoTiles;
+        // The slug is edited inside the address it makes; a draft's slug follows its title until the editor writes one.
+        $slugField = \Utsuri\PortableCms\Conventional\Content\RecordSlugs::field($type);
+        $titleField = \Utsuri\PortableCms\Conventional\Content\RecordSlugs::titleField($type);
+        $addressPrefix = '…/' . ($type->route === null ? '' : $type->route . '/');
+        $slugFrom = $titleField !== null && ($record === null || $record->workflowState === 'draft') ? 'field-' . $titleField->id . ($titleField->localized ? '-' : '') : '';
         $parts = EditorialRecordLayout::parts(
             $type,
             $values,
@@ -182,7 +188,7 @@ final class RecordPages
                 $uploads && $field->type === 'video_reference' && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision)), $field, $t),
                 in_array($field->id, $tileFields, true) && $referenceControls !== null && $record !== null => FieldHint::render($referenceControls->field($field, $value, $error, self::uploadPanel($csrfToken, $type, $record, $t, $profile, $referenceControls->videoUploads(), $field->id, $submittedRevision, $uploadDescriptions[$field->id] ?? [])), $field, $t),
                 $field->type === 'group' && isset($field->settings['searchSharing']) && $referenceControls !== null => FieldHint::render($referenceControls->searchSharing($type, $field, $values, $error, static fn(FieldDefinition $child, mixed $childValue): string => self::field($child, $childValue, null, $profile, [], $referenceControls, null, $t)), $field, $t),
-                default => self::field($field, $value, $error, $profile, $choices[$field->id] ?? [], $referenceControls, $compositionEditor, $t, $field->id === 'slug' && $type->route !== null ? '…/' . $type->route . '/' : '', $errors),
+                default => self::field($field, $value, $error, $profile, $choices[$field->id] ?? [], $referenceControls, $compositionEditor, $t, $field === $slugField ? $addressPrefix : '', $errors, $field === $slugField ? $slugFrom : ''),
             },
             $technicalData,
             $errors !== [] || $conflict !== null ? ($record === null ? [] : $record->body) : null,
@@ -233,10 +239,12 @@ final class RecordPages
         $statusMarkup = $scriptStatus === null ? Html::text($status)
             : '<span data-script-fallback="editor">' . Html::text($status) . '</span><span data-script-control="editor" hidden>' . Html::text($scriptStatus) . '</span>';
         // One card for saving and the state with its next step, one for the two previews, then the sections and languages.
+        $duplicable = $record !== null && $type->kind !== 'singleton' && $conflict === null;
         $rail = '<aside class="admin-editor__rail" aria-label="' . $t->html('editor.rail') . '"><div class="admin-save-bar"><p id="record-save-status" tabindex="-1" class="admin-save-bar__status" role="status" data-save-status>' . $statusMarkup . '</p>'
             . '<button type="submit" class="admin-button--primary" data-record-save' . ($conflict === null ? ' data-script-fallback="editor"' : '') . '>' . ($conflict === null ? $t->html($record !== null && $record->workflowState !== 'draft' ? 'workflow.save' : 'editor.save') : $t->html('editor.save_over', ['revision' => (string) $conflict->revisionNumber])) . '</button>'
             . '<button type="button" data-keep-retry hidden>' . $t->html('client.keep.retry') . '</button><span class="admin-visually-hidden" role="status" aria-live="polite" data-keep-announcement></span>'
-            . $facts . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::controls($record, $t, allowDelete: $type->kind === 'collection')) . '</div>'
+            . $facts . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::controls($record, $t, allowDelete: $type->kind === 'collection'))
+            . ($duplicable ? '<button type="submit" class="admin-rail-action" form="record-duplicate-form">' . $t->html('records.duplicate') . '</button>' : '') . '</div>'
             . ($previewControls === '' ? '' : '<div class="admin-rail-card admin-preview-card">' . $previewControls . '</div>') . $parts['properties']
             . '<nav class="admin-outline admin-rail-card" aria-label="' . $t->html('editor.sections') . '"><h2>' . $t->html('editor.outline') . '</h2><ul>' . $parts['outline'] . '</ul></nav>'
             . ($localized ? self::coverageCard($type, $values, $profile, $t) : '') . '</aside>';
@@ -271,6 +279,7 @@ final class RecordPages
             . '<input type="hidden" name="_editorial_end" value="1"></form>'
             . ($exact ? '<form id="record-exact-preview-form" method="post" action="' . Html::url('/records/' . $type->id . '/' . ($record->id ?? 'new') . '/exact-preview') . '" target="_blank" rel="noopener"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_exact_locale" value="' . Html::attribute($profile->defaultLocale) . '"></form>' : '')
             . ($live ? self::livePane($liveEndpoint, $profile, $t) : '') . ($record === null || $chrome?->role === 'editor' ? '' : RecordWorkflowPage::form($record, $csrfToken)) . $upload
+            . ($duplicable ? '<form id="record-duplicate-form" method="post" action="' . Html::url('/records/' . $type->id . '/' . $record->id . '/duplicate') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"></form>' : '')
             . implode('', array_map(static fn(string $suffix): string => '<form id="media-descriptions-form' . Html::attribute($suffix) . '" method="post" action="/media/descriptions" target="_blank" rel="noopener"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '"><input type="hidden" name="_descriptions_end" value="1"></form>', [...($unbound ? [''] : []), ...array_map(static fn(string $id): string => '-' . $id, $tileFields)]))
             . '<script type="module" data-admin-enhancement="editor" src="' . Html::url('/assets/editorial-form.js?v=' . self::EDITOR_SCRIPT_VERSION) . '"></script>'
             . ($uploads ? '<script type="module" src="' . Html::url('/assets/resumable-upload.js?v=' . self::MEDIA_UPLOAD_ASSET_VERSION) . '"></script>' : '');
@@ -310,6 +319,14 @@ final class RecordPages
             . ' aria-controls="live-preview" aria-valuemin="20" aria-valuemax="60" aria-valuenow="30" data-live-separator hidden></div>';
     }
 
+    /** A row's native actions menu. Its form leaves the row's link alone and works without scripts. */
+    private static function rowMenu(string $url, string $title, string $csrfToken, Translator $t): string
+    {
+        return '<details class="admin-table__menu" data-row-menu><summary aria-label="' . $t->html('records.row_actions', ['title' => $title]) . '"><span aria-hidden="true">⋯</span></summary>'
+            . '<form class="admin-table__actions" method="post" action="' . Html::url($url . '/duplicate') . '"><input type="hidden" name="_csrf" value="' . Html::attribute($csrfToken) . '">'
+            . '<button type="submit" class="admin-button--small">' . $t->html('records.duplicate') . '</button></form></details>';
+    }
+
     /** @param list<RecordSnapshot> $choices
      * @param array<string, Message> $errors
      */
@@ -324,14 +341,15 @@ final class RecordPages
         ?Translator $translator = null,
         string $addressPrefix = '',
         array $errors = [],
+        string $slugFrom = '',
     ): string {
-        return self::languageVisibility(FieldHint::render(self::control($field, $value, $error, $profile, $choices, $referenceControls, $compositionEditor, $translator, $addressPrefix, $errors), $field, $translator), $profile);
+        return self::languageVisibility(FieldHint::render(self::control($field, $value, $error, $profile, $choices, $referenceControls, $compositionEditor, $translator, $addressPrefix, $errors, $slugFrom), $field, $translator), $profile);
     }
 
     /** @param list<RecordSnapshot> $choices
      * @param array<string, Message> $errors
      */
-    private static function control(FieldDefinition $field, mixed $value, ?string $error, ProfileManifest $profile, array $choices, ?ReferenceControls $referenceControls, ?CompositionEditor $compositionEditor, ?Translator $translator, string $addressPrefix, array $errors): string
+    private static function control(FieldDefinition $field, mixed $value, ?string $error, ProfileManifest $profile, array $choices, ?ReferenceControls $referenceControls, ?CompositionEditor $compositionEditor, ?Translator $translator, string $addressPrefix, array $errors, string $slugFrom = ''): string
     {
         $t = $translator ?? Translator::english();
         if ($field->type === 'blocks') {
@@ -379,6 +397,9 @@ final class RecordPages
         $invalid = $error !== null ? ' aria-invalid="true" aria-describedby="error-' . Html::attribute($field->id) . '"' : '';
         $errorMarkup = $error !== null ? '<p class="admin-field__error" id="error-' . Html::attribute($field->id) . '">' . Html::text($error) . '</p>' : '';
         $label = Html::text($field->label) . ($field->required ? FieldHelp::required($t) : '');
+        // A slug control normalizes as it is typed and, with a source, proposes the address from a title control (`field-title-` takes the language).
+        $slug = static fn(string $locale): string => $addressPrefix === '' ? '' : ' data-slug spellcheck="false" autocapitalize="off" autocomplete="off"'
+            . ($slugFrom === '' ? '' : ' data-slug-from="' . Html::attribute(str_ends_with($slugFrom, '-') ? $slugFrom . ($locale === '' ? $profile->defaultLocale : $locale) : $slugFrom) . '"');
 
         if ($field->localized && in_array($field->type, ['localized_short_text', 'multiline_text'], true)) {
             $localized = is_array($value) ? $value : [];
@@ -391,7 +412,7 @@ final class RecordPages
                     ? '<textarea id="' . Html::attribute($controlId) . '" name="' . Html::attribute($field->id . '__' . $locale) . '" maxlength="'
                         . $field->maximumLength . '" rows="5"' . ($localeDefinition->preparation ? '' : $required) . $invalid . '>' . Html::text($localeValue) . '</textarea>'
                     : '<input id="' . Html::attribute($controlId) . '" name="' . Html::attribute($field->id . '__' . $locale) . '" type="text" maxlength="'
-                        . $field->maximumLength . '" value="' . Html::attribute($localeValue) . '"' . ($localeDefinition->preparation ? '' : $required) . $invalid . '>';
+                        . $field->maximumLength . '" value="' . Html::attribute($localeValue) . '"' . $slug($locale) . ($localeDefinition->preparation ? '' : $required) . $invalid . '>';
                 if ($addressPrefix !== '') {
                     // The page address is edited inside the route prefix it produces.
                     $control = '<div class="admin-input-group admin-address"><span class="admin-input-unit" aria-hidden="true">' . Html::text($addressPrefix) . '</span>' . $control . '</div>';
@@ -464,7 +485,10 @@ final class RecordPages
             ? '<textarea id="' . Html::attribute($fieldId) . '" name="' . Html::attribute($field->id) . '" maxlength="' . $field->maximumLength . '" rows="6"' . $required . $invalid . '>'
                 . Html::text($text) . '</textarea>'
             : '<input id="' . Html::attribute($fieldId) . '" name="' . Html::attribute($field->id) . '" type="text" maxlength="' . $field->maximumLength . '" value="'
-                . Html::attribute($text) . '"' . $required . $invalid . '>';
+                . Html::attribute($text) . '"' . $slug('') . $required . $invalid . '>';
+        if ($addressPrefix !== '' && !$multiline) {
+            $control = '<div class="admin-input-group admin-address"><span class="admin-input-unit" aria-hidden="true">' . Html::text($addressPrefix) . '</span>' . $control . '</div>';
+        }
         return '<div class="admin-field' . ($multiline || $field->maximumLength > 160 ? '' : ' admin-field--short') . '"><label for="' . Html::attribute($fieldId) . '">' . $label . '</label>'
             . $control . $errorMarkup . '</div>';
     }
@@ -556,21 +580,26 @@ final class RecordPages
         $policy ??= new \Utsuri\PortableCms\Conventional\Media\VideoUploadPolicy();
         $maximum = min($policy->maximumBytes, \Utsuri\PortableCms\Conventional\Media\MediaContract::videoFieldMaximum($type->fields));
         $videoField = false;
+        $single = false;
         foreach ($type->fields as $candidate) {
             if ($candidate->id === $field && $candidate->type === 'video_reference') {
                 $videoField = true;
                 $maximum = min($policy->maximumBytes, \Utsuri\PortableCms\Conventional\Media\MediaContract::videoFieldMaximum([$candidate]));
             }
+            $single = $single || ($candidate->id === $field && $candidate->maximumItems === 1);
         }
+        // An image field uploads in one step: its button opens the file chooser and choosing starts the upload.
+        $direct = $field !== null && !$videoField;
         $video = ($field === null || $videoField) && \Utsuri\PortableCms\Conventional\Media\MediaContract::profileVideoEnabled($profile) && $maximum > 0;
         $suffix = $field === null ? '' : '-' . $field;
         $form = $field === null ? ' form="media-upload-form"' : '';
         $native = $field === null ? $form : ' name="_upload_field" value="' . Html::attribute($field) . '" formaction="' . Html::url('/records/' . $type->id . '/' . $record->id . '/upload') . '" formenctype="multipart/form-data" formnovalidate';
         $types = implode(',', \Utsuri\PortableCms\Conventional\Media\MediaContract::uploadTypes($video));
-        return ($field === null ? '<details class="admin-library-upload"><summary>' . $t->html('editor.upload.section') . '</summary>' : '') . '<div class="admin-upload" data-media-upload data-upload-field="' . Html::attribute($field ?? '') . '" data-messages="' . $t->bundleAttribute('client') . '" data-record-type="' . Html::attribute($type->id) . '" data-record-id="' . Html::attribute($record->id) . '"'
+        return ($field === null ? '<details class="admin-library-upload"><summary>' . $t->html('editor.upload.section') . '</summary>' : '') . '<div class="admin-upload" data-media-upload data-upload-field="' . Html::attribute($field ?? '') . '"' . ($direct ? ' data-upload-direct' : '') . ' data-messages="' . $t->bundleAttribute('client') . '" data-record-type="' . Html::attribute($type->id) . '" data-record-id="' . Html::attribute($record->id) . '"'
             . ' data-image-max-bytes="41943040" data-video-max-bytes="' . $maximum . '" data-record-revision="' . Html::attribute((string) ($revision ?? $record->revisionNumber)) . '" data-csrf-token="' . Html::attribute($csrfToken) . '">'
             . '<label class="admin-upload__label' . ($field !== null ? ' admin-visually-hidden' : '') . '" for="media-upload-files' . Html::attribute($suffix) . '">' . $t->html($video ? 'video.upload_label' : 'editor.upload.label') . '</label>'
-            . '<div class="admin-upload__controls"><input id="media-upload-files' . Html::attribute($suffix) . '" name="' . Html::attribute($field === null ? 'images' : 'images_' . $field) . '[]" type="file" accept="' . Html::attribute($types) . '" multiple' . $form . ' data-media-upload-files aria-describedby="media-upload-help' . Html::attribute($suffix) . '">'
+            . '<div class="admin-upload__controls"><input id="media-upload-files' . Html::attribute($suffix) . '" name="' . Html::attribute($field === null ? 'images' : 'images_' . $field) . '[]" type="file" accept="' . Html::attribute($types) . '"' . ($single ? '' : ' multiple') . $form . ' data-media-upload-files aria-describedby="media-upload-help' . Html::attribute($suffix) . '">'
+            . ($direct ? '<button type="button" class="admin-picker__upload-button" data-media-upload-choose aria-describedby="media-upload-help' . Html::attribute($suffix) . '" hidden>' . $t->html($single ? 'picker.upload_image' : 'picker.upload_images') . '</button>' : '')
             . '<button type="button" data-media-upload-start hidden>' . $t->html($video ? 'video.upload_submit' : 'editor.upload.submit') . '</button>'
             . '<button type="submit"' . $native . ' data-native-upload-start>' . $t->html($video ? 'video.upload_submit' : 'editor.upload.submit') . '</button></div>'
             . '<small class="admin-upload__limits" id="media-upload-help' . Html::attribute($suffix) . '">' . $t->html('editor.upload.limits') . ($video ? ' ' . VideoUploadHelp::limits($t, $policy, $maximum) : '') . '</small>'

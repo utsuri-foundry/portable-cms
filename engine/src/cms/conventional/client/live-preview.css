@@ -8,6 +8,13 @@
 .admin-live__actions a[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
 .admin-live__state { display: flex; min-height: 2.5rem; align-items: center; justify-content: space-between; gap: var(--admin-space-3); padding: var(--admin-space-1) var(--admin-space-4); }
 .admin-live__status { margin: 0; color: var(--admin-muted); font-size: var(--admin-text-xs); }
+/* Fields the page still needs read as links in the status and lead to the field; its star takes the danger colour until it is filled. */
+button.admin-live__field {
+  display: inline; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; color: var(--admin-text); font: inherit; font-weight: 500;
+  text-align: inherit; text-decoration: underline; text-decoration-color: var(--admin-border-strong); text-decoration-thickness: 0.08em; text-underline-offset: 0.2em; white-space: normal;
+}
+button.admin-live__field:hover { background: none; text-decoration-color: currentColor; }
+.admin-field__required--needed { color: var(--admin-danger); }
 .admin-live__stage { min-height: 0; margin: 0 var(--admin-space-4) var(--admin-space-4); overflow: hidden; }
 .admin-live__box { position: relative; height: 100%; max-width: 100%; margin-inline: auto; overflow: hidden; border: 1px solid var(--admin-border); border-radius: var(--admin-radius-small); background: var(--admin-preview-ground); box-shadow: var(--admin-shadow); }
 .admin-live__box iframe { position: absolute; top: 0; left: 0; border: 0; background: var(--admin-preview-ground); transform-origin: top left; }

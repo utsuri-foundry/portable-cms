@@ -5,6 +5,42 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.15.3
+
+- Image fields: Upload images opens the file chooser and uploads what is chosen at
+  once, beside Choose from library; without scripts it opens the upload form in
+  place. Choosing an image from the library puts it in the field in one click or
+  key press and closes the chooser.
+- Uploads in an image field show each file's progress, say when an image being
+  prepared will be ready, from the worker's heartbeat, update by themselves when
+  it is, and say what to do when an upload or its preparation fails. Automatic
+  keeping no longer reports an image in preparation as a failed save. The worker
+  heartbeat records `intervalSeconds`, the time since its previous pass, and a
+  read-only `GET /media/status?ids=` serves editors the states.
+- Record slugs stay valid, unique web addresses. A collection's or taxonomy's
+  slug is cleaned up as editors type, follows the title while a record is new or
+  a draft, and is edited inside the address prefix it makes. Save, automatic
+  keeping, the live preview and Mark as ready refuse a slug that is not lowercase
+  letters, digits and single hyphens, proposing the address it would make, or one
+  another record of the same type uses in that language, naming that record.
+- Records of collections and taxonomies can be duplicated from their page and
+  from a row menu in their list: a new draft with every value, the title marked
+  as a copy in each language and a free slug (-2, -3, ...) in each language. It
+  opens at once, is audited as `record_duplicated` and works without scripts.
+- When the live preview cannot draw the page because required fields are empty,
+  it names each by its label in the interface language, with the languages a
+  translated field still misses, as a button that leads to the field; the field
+  carries the required star in the danger colour until it is filled.
+- The sidebar is easier to scan: small, slightly spaced uppercase section
+  headings, more space between sections, no line under the logo, and the
+  agency's heading read only by screen readers. The rich text toolbar's undo and
+  redo are drawn as line icons.
+- Automatic keeping errors use the field error style, and retyping a refused
+  value keeps the refusal visible instead of showing Saving.
+- A website build's asset version now comes from its frozen content instead of
+  the snapshot's id, so two builds of equal content, such as before and after a
+  backup is restored, are byte for byte the same again.
+
 ## 0.15.2
 
 - The Website design page no longer scrolls sideways on narrow or zoomed

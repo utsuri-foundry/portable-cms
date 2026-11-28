@@ -873,7 +873,7 @@ final class IdentityApplication
         ], 202);
     }
 
-    /** @return array{kind: 'list'|'new'|'record'|'workflow'|'live', typeId: string, recordId: string|null}|null */
+    /** @return array{kind: 'list'|'new'|'record'|'workflow'|'live'|'duplicate', typeId: string, recordId: string|null}|null */
     private function recordRoute(string $path): ?array
     {
         if ($this->livePreviews !== null && preg_match('#\A/records/([a-z][a-z0-9]*(?:[-_][a-z0-9]+)*)/([a-f0-9]{32}|new)/live-preview\z#', $path, $match) === 1) {
@@ -881,6 +881,9 @@ final class IdentityApplication
         }
         if (preg_match('#\A/records/([a-z][a-z0-9]*(?:[-_][a-z0-9]+)*)/([a-f0-9]{32})/status\z#', $path, $match) === 1) {
             return ['kind' => 'workflow', 'typeId' => $match[1], 'recordId' => $match[2]];
+        }
+        if (preg_match('#\A/records/([a-z][a-z0-9]*(?:[-_][a-z0-9]+)*)/([a-f0-9]{32})/duplicate\z#', $path, $match) === 1) {
+            return ['kind' => 'duplicate', 'typeId' => $match[1], 'recordId' => $match[2]];
         }
         if (preg_match('#\A/records/([a-z][a-z0-9]*(?:[-_][a-z0-9]+)*)\z#', $path, $match) === 1) {
             return ['kind' => 'list', 'typeId' => $match[1], 'recordId' => null];

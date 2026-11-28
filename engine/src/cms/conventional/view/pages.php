@@ -447,7 +447,7 @@ final class Pages
         foreach ($records as $record) {
             $states[$record->workflowState] = ($states[$record->workflowState] ?? 0) + 1;
         }
-        return RecordPages::listing($profile, $type, $listing ?? new RecordListing($records, states: $states), $chrome);
+        return RecordPages::listing($profile, $type, $listing ?? new RecordListing($records, states: $states), $chrome, $csrfToken);
     }
 
     /**
