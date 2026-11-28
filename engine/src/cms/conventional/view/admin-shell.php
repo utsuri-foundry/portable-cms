@@ -78,7 +78,7 @@ final readonly class AdminChrome
 
 final class AdminShell
 {
-    public const STYLESHEET_VERSION = '31';
+    public const STYLESHEET_VERSION = '32';
     public const GROUP_STYLESHEET_VERSION = '3';
     public const SCRIPT_VERSION = '9';
 

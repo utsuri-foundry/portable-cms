@@ -5,6 +5,20 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.15.4
+
+- Image descriptions written after an upload keep themselves like the rest of
+  the record page, with the same "Saving" and "Saved at" status and quiet retry,
+  and no Save button. A refused description shows its reason in its card in the
+  field error style. Without scripts the native form and its Save button remain.
+- An image that still needs a description says so once, in its field row,
+  instead of also in its card below, and the row updates as soon as the
+  description is kept, without a reload. While the image is being prepared the
+  line is a quiet hint; it becomes the warning when the image is ready.
+- Caption and credit open from a compact dashed "+ Caption and credit", like the
+  image field's own Upload image and Choose from library, on the record page and
+  on the media pages alike.
+
 ## 0.15.3
 
 - Image fields: Upload images opens the file chooser and uploads what is chosen at

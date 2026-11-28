@@ -41,7 +41,7 @@ final readonly class RecordListing
 final class RecordPages
 {
     public const EDITOR_SCRIPT_VERSION = '20';
-    private const MEDIA_UPLOAD_ASSET_VERSION = '8';
+    private const MEDIA_UPLOAD_ASSET_VERSION = '9';
     private const LIVE_PREVIEW_STYLE_VERSION = '3';
 
     /** Every record type, whatever its kind, is listed under Content in the sidebar and in breadcrumbs. */

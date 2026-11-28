@@ -906,7 +906,7 @@ $tests['authenticated JSON upload routes preserve security and resumable semanti
         ));
         assertTrueValue(str_contains($edit->body, 'data-media-upload'), 'saved record should expose the upload island');
         assertTrueValue(
-            str_contains($edit->body, '/assets/resumable-upload.js?v=8'),
+            str_contains($edit->body, '/assets/resumable-upload.js?v=9'),
             'island should use a versioned external module',
         );
 
