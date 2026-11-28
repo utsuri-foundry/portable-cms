@@ -42,20 +42,21 @@ final class MediaDescriptionsForm
         return $t->text('media.descriptions.pair', ['first' => implode(', ', $names), 'second' => $last]);
     }
 
-    /** A card in an image field leaves its missing description to the field's row, which says it once.
+    /** A card in an image field leaves its picture, name and missing description to the field's row above
+     * it, which shows them once; the cards follow the rows' order and the name stays for screen readers.
      * @param ?array<string, mixed> $submitted
      */
-    public static function card(LibraryMedia $media, ProfileManifest $profile, Translator $t, string $form = '', ?array $submitted = null, ?string $error = null, bool $saved = false, ?string $jobId = null, bool $warning = true): string
+    public static function card(LibraryMedia $media, ProfileManifest $profile, Translator $t, string $form = '', ?array $submitted = null, ?string $error = null, bool $saved = false, ?string $jobId = null, bool $standalone = true): string
     {
         $prefix = 'description_' . $media->id . '__';
         $association = $form === '' ? '' : ' form="' . Html::attribute($form) . '"';
-        $missing = $warning ? self::warning($media, $profile, $t) : '';
-        return '<fieldset class="admin-section admin-media-description" data-media-description="' . $media->id . '"' . ($jobId === null ? '' : ' data-description-job="' . Html::attribute($jobId) . '"') . '><legend data-description-name>' . Html::text($media->name) . '</legend>'
-            . ReferenceControls::thumbnail($media)
+        $missing = $standalone ? self::warning($media, $profile, $t) : '';
+        return '<fieldset class="admin-section admin-media-description" data-media-description="' . $media->id . '"' . ($jobId === null ? '' : ' data-description-job="' . Html::attribute($jobId) . '"') . '><legend data-description-name' . ($standalone ? '' : ' class="admin-visually-hidden"') . '>' . Html::text($media->name) . '</legend>'
+            . ($standalone ? ReferenceControls::thumbnail($media) : '')
             . '<input type="hidden" name="media_ids[]" value="' . $media->id . '"' . $association . '>'
             . '<input type="hidden" data-description-revision name="' . $prefix . 'revision" value="' . $media->metadataRevision . '"' . $association . '>'
             . '<p data-description-result role="' . ($error === null ? 'status' : 'alert') . '"' . ($error === null && !$saved ? ' hidden' : '') . '>' . Html::text($error ?? ($saved ? $t->text('media.descriptions.saved') : '')) . '</p>'
-            . ($warning ? '<p class="admin-field__error" data-description-warning' . ($missing === '' ? ' hidden' : '') . '>' . Html::text($missing) . '</p>' : '')
+            . ($standalone ? '<p class="admin-field__error" data-description-warning' . ($missing === '' ? ' hidden' : '') . '>' . Html::text($missing) . '</p>' : '')
             . ($error === null ? '' : '<p><a href="' . Html::url('/media/' . $media->id) . '" target="_blank" rel="noopener">' . $t->html('media.descriptions.review') . '</a></p>')
             . MediaTextForm::render($media->text, $profile, $t, $submitted, $prefix, $form, instructions: false) . '</fieldset>';
     }
@@ -77,7 +78,7 @@ final class MediaDescriptionsForm
     /** With scripts the cards keep themselves as the record does, so the Save button stays for the native form only.
      * @param list<array{media: LibraryMedia, jobId: ?string}> $items
      */
-    public static function template(ProfileManifest $profile, Translator $t, array $items = [], string $form = 'media-descriptions-form', bool $instructions = true, bool $warnings = true): string
+    public static function template(ProfileManifest $profile, Translator $t, array $items = [], string $form = 'media-descriptions-form', bool $instructions = true, bool $standalone = true): string
     {
         $media = new LibraryMedia(self::TEMPLATE_ID, self::TEMPLATE_ID, '', 'uploaded', 'image/webp', 0, null, null, 1, null, null);
         // Automatic keeping speaks the record keeper's words: "Saving", "Saved at" and its failures.
@@ -85,9 +86,9 @@ final class MediaDescriptionsForm
         $messages = array_combine(array_map(static fn(string $key): string => 'keep.' . $key, array_keys($keep)), $keep) + ['load_failed' => $t->text('media.descriptions.load_failed'), 'title' => $t->text('media.descriptions.title'), 'review' => $t->text('media.descriptions.review')];
         $cards = '';
         foreach ($items as $item) {
-            $cards .= self::card($item['media'], $profile, $t, $form, jobId: $item['jobId'], warning: $warnings);
+            $cards .= self::card($item['media'], $profile, $t, $form, jobId: $item['jobId'], standalone: $standalone);
         }
-        return '<template data-media-description-template>' . self::card($media, $profile, $t, $form, warning: $warnings) . '</template>'
+        return '<template data-media-description-template>' . self::card($media, $profile, $t, $form, standalone: $standalone) . '</template>'
             . '<section data-upload-descriptions data-descriptions-form="' . Html::attribute($form) . '"' . ($items === [] ? ' hidden' : '') . ' data-messages="' . Html::attribute(json_encode($messages, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)) . '">' . ($instructions ? FieldHelp::heading('<h3>' . $t->html('media.descriptions.title') . '</h3>', $form . '-text-help', $t->text('media.descriptions.title'), $t) : '<h3>' . $t->html('media.descriptions.title') . '</h3>')
             . ($instructions ? FieldHelp::text($form . '-text-help', $t->html('media.text.help', ['locale' => $profile->defaultLocale])) . '<noscript><p class="admin-help">' . $t->html('media.descriptions.keep_record') . '</p></noscript>' : '')
             . '<div data-description-cards>' . $cards . '</div><button type="submit" form="' . Html::attribute($form) . '">' . $t->html('media.descriptions.save') . '</button>'

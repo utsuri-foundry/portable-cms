@@ -1,20 +1,32 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { connectLocalBrowser } from "./local-browser.mjs";
 
+let chooserOpened = null;
+const uploads = [];
 const browser = await connectLocalBrowser(
 	process.env.CMS_BROWSER_ORIGIN,
 	process.env.CMS_BROWSER_DEBUG_URL,
+	(method, params) => {
+		if (method === "Page.fileChooserOpened") chooserOpened?.(params);
+		if (
+			method === "Network.requestWillBeSent" &&
+			params.request.method === "POST" &&
+			params.request.url.includes("/media-uploads")
+		)
+			uploads.push(params.request.url);
+	},
 );
 const { command, evaluate, navigate, ready, browserErrors } = browser;
 const record = "/records/project/10000000000000000000000000000001";
 const messages = {
-	duration: /16 seconds; maximum 15 seconds/,
-	width: /2000 pixels wide; maximum 1920 pixels/,
-	height: /1200 pixels high; maximum 1080 pixels/,
-	sound: /audio track; no sound/,
-	bytes: /maximum 1048576 bytes/,
+	duration:
+		/takes videos up to 15 seconds, and this one lasts 16\. Shorten it and upload it again\./,
+	width: /up to 1920 pixels wide, and this one is 2000\. Export it smaller/,
+	height: /up to 1080 pixels high, and this one is 1200\. Export it smaller/,
+	sound: /takes silent videos only, and this one has sound\. Remove the sound/,
+	bytes: /the limit is 1048576\. Export it smaller/,
 };
 try {
 	await command("Page.enable");
@@ -28,7 +40,7 @@ try {
 	await navigate(record, "[name=trailer__video]");
 	assert.match(
 		await evaluate("document.querySelector('#field-trailer').textContent"),
-		/up to 15 seconds, at most 1920 by 1080 pixels, without sound, and a poster image\./,
+		/up to 15 seconds, at most 1920 by 1080 pixels, without sound\./,
 	);
 	assert.equal(
 		await evaluate(
@@ -74,7 +86,7 @@ try {
 	);
 	await navigate(record, "[name=trailer__video]");
 	const choices = await evaluate(
-		"Object.fromEntries([...document.querySelectorAll('#field-trailer [data-video-choose=video]')].map(o=>[o.dataset.mediaName,{id:o.dataset.mediaId,disabled:o.disabled,text:o.closest('li').textContent}]))",
+		"Object.fromEntries([...document.querySelectorAll('#field-trailer [data-video-choosers=video] .admin-picker__results > li')].map(li=>{const pick=li.querySelector('[data-video-choose=video]');return [pick?.dataset.mediaName ?? li.dataset.mediaName,{id:pick?.dataset.mediaId ?? li.dataset.mediaId,disabled:!pick,text:li.textContent}]}))",
 	);
 	assert.equal(choices["limits-fitting.mp4"].disabled, false);
 	for (const [variant, message] of Object.entries(messages)) {
@@ -105,6 +117,41 @@ try {
 	await ready(
 		"document.readyState==='complete' && !document.querySelector('[data-validation-summary]') && document.querySelector('[name=_editorial_end]')",
 	);
+	// With scripts, the browser measures a chosen clip and refuses it before any byte is sent.
+	await command("Emulation.setScriptExecutionDisabled", { value: false });
+	await command("Network.enable");
+	await navigate(record, "#field-narrowLoop [data-media-upload-choose=video]");
+	await command("Page.setInterceptFileChooserDialog", { enabled: true });
+	const opened = new Promise((done) => {
+		chooserOpened = done;
+	});
+	await evaluate(
+		"document.querySelector('#field-narrowLoop [data-media-upload-choose=video]').click()",
+	);
+	const chooser = await opened;
+	await command("DOM.setFileInputFiles", {
+		backendNodeId: chooser.backendNodeId,
+		files: [resolve("tests/fixtures/video/prepared.webm")],
+	});
+	await command("Page.setInterceptFileChooserDialog", { enabled: false });
+	await ready(
+		"document.querySelector('#field-narrowLoop [data-media-upload-status]')?.textContent.includes('100 pixels wide')",
+	);
+	assert.equal(
+		await evaluate(
+			"document.querySelector('#field-narrowLoop [data-media-upload-status]').textContent",
+		),
+		"Narrow loop takes videos up to 100 pixels wide, and this one is 160. Export it smaller and upload it again.",
+		"the refusal says the limit, the measure and what to do",
+	);
+	assert.deepEqual(uploads, [], "nothing is uploaded");
+	assert.equal(
+		await evaluate(
+			"document.activeElement===document.querySelector('#field-narrowLoop [data-media-upload-choose=video]') && document.querySelector('[name=narrowLoop__video]').value===''",
+		),
+		true,
+		"the field stays empty and the upload button keeps the focus",
+	);
 	await command("Emulation.setDeviceMetricsOverride", {
 		width: 360,
 		height: 780,
@@ -117,7 +164,7 @@ try {
 	);
 	assert.deepEqual(browserErrors, []);
 	console.log(
-		"PASS video field limits: native field uploads, retained library assets, measured unavailable choices, forged saves, silent fitting clip and 360px layout.",
+		"PASS video field limits: refusal before upload in the browser, native field uploads, retained library assets, measured unavailable choices, forged saves, silent fitting clip and 360px layout.",
 	);
 } finally {
 	await command("Emulation.setScriptExecutionDisabled", { value: false });

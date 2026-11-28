@@ -40,7 +40,7 @@ For a decorative video loop, keep the name short and put the brief in the hint:
 Set the engine minimum to `0.5.0` when using hints. In the optional
 `administration-labels.json`, a language may add a `hints` map using the same
 field paths as `fields`, for example
-`"ca": {"hints": {"film.homeLoop": "Bucle decoratiu per a ordinador; fes servir el primer fotograma com a pòster."}}`.
+`"ca": {"hints": {"film.homeLoop": "Loop decoratiu per a ordinador; fes servir el primer fotograma com a pòster."}}`.
 Each translation has the same 160-character bound; a missing translation uses
 the profile's hint. The administration language selects the hint independently
 of the record's content language. Profiles without hints keep their existing

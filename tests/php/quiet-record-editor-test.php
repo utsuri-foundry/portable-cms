@@ -53,12 +53,14 @@ $tests['quiet record with five image and two video fields has native choices and
         $xpath = quietEditorDom($html);
         assertSameValue(0, $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Add images"]')->length, 'an image field that uploads has no Add images step before its choices');
         assertSameValue(5, $xpath->query('//div[@class="admin-picker__add"]/details[@class="admin-picker__upload"]/summary[text()="Upload images"]')->length, 'each image field shows Upload images directly');
-        assertSameValue(5, $xpath->query('//div[@class="admin-picker__add"]/details[@class="admin-picker__library"]/summary[text()="Choose from library"]')->length, 'beside Choose from library');
+        assertSameValue(9, $xpath->query('//div[@class="admin-picker__add"]/details[@class="admin-picker__library"]/summary[text()="Choose from library"]')->length, 'beside Choose from library, and in video fields for the video and for its poster');
         assertSameValue(5, $xpath->query('//*[@data-upload-direct]//button[@data-media-upload-choose and @hidden and text()="Upload images"]')->length, 'scripts get one button per image field that opens the file chooser');
-        assertSameValue(0, $xpath->query('//*[@data-upload-field="loop" or @data-upload-field="trailer"][@data-upload-direct]')->length, 'video fields keep their upload step');
+        assertSameValue(2, $xpath->query('//*[@data-upload-field="loop" or @data-upload-field="trailer"][@data-upload-direct][@data-upload-kind="video"]')->length, 'video fields upload in one step too');
+        assertSameValue(2, $xpath->query('//*[@data-upload-kind="video"]//button[@data-media-upload-choose="video" and @hidden and text()="Upload video"]')->length + $xpath->query('//*[@data-upload-kind="video"]//button[@data-media-upload-choose="poster" and @hidden and text()="Upload poster image"]')->length - 2, 'with one button for the video and one for its poster');
+        assertSameValue(2, $xpath->query('//div[@data-video-choosers="video"]/div[@class="admin-picker__add"]/details[@class="admin-picker__upload"]/summary[text()="Upload video"]')->length, 'without scripts, an empty video field offers Upload video');
         assertSameValue(7, $xpath->query('//details[@class="admin-picker__upload" and not(@open)]')->length, 'upload choices start collapsed without requiring scripts, in video fields too');
-        assertSameValue(7, $xpath->query('//details[@class="admin-picker__library" and not(@open)]')->length, 'library selection is the other native choice');
-        assertSameValue(2, $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Choose video"]')->length + $xpath->query('//details[contains(@class,"admin-picker__browse")]/summary[text()="Choose poster image"]')->length - 2, 'one Choose video and one Choose poster image control per video field');
+        assertSameValue(9, $xpath->query('//details[@class="admin-picker__library" and not(@open)]')->length, 'library selection is the other native choice');
+        assertSameValue(2, $xpath->query('//div[@data-video-choosers="poster" and @hidden]')->length, 'the poster choice waits for a video');
         foreach (['loop' => 6, 'trailer' => 18] as $id => $limit) {
             $upload = quietEditorElement($xpath, '//*[@data-upload-field="' . $id . '"]');
             assertSameValue((string) ($limit * 1048576), $upload->getAttribute('data-video-max-bytes'), 'the upload island receives this field limit');

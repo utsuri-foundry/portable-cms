@@ -114,8 +114,11 @@ final class SecurityHeaders
 {
     public static function apply(Response $response, string $correlationId, bool $insecureLoopback = false): Response
     {
-        $contentSecurityPolicy = "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'";
+        // Administration pages may play a file the editor has just chosen (a local blob), to check a video
+        // against its field before uploading it and to draw its first frame as the poster.
+        $contentSecurityPolicy = "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob:; font-src 'self'; connect-src 'self'";
         if ($response->sameOriginFrame) {
+            $contentSecurityPolicy = str_replace("media-src 'self' blob:", "media-src 'self'", $contentSecurityPolicy);
             $contentSecurityPolicy = str_replace("frame-ancestors 'none'", "frame-ancestors 'self'", $contentSecurityPolicy);
             $script = $response->vimeoScriptHash();
             $contentSecurityPolicy = str_replace("script-src 'self'", $script === null ? "script-src 'none'" : "script-src 'sha256-" . $script . "'", $contentSecurityPolicy);

@@ -317,8 +317,9 @@ in file order up to the field maximum; overflow remains in the library with an
 announced count. Uploads preserve unsaved record input and do not save it.
 Removing a selection keeps the library image.
 
-After an upload, Describe images under the field lists the new images, each with a
-Description per language, caption and credit folded behind a compact dashed
+After an upload, Describe images under the field has a card per new image, in the
+order of the rows above, repeating neither the picture nor the name (screen
+readers still hear the name), each with a Description per language, caption and credit folded behind a compact dashed
 "+ Caption and credit" like the field's own additions, and the decorative choice.
 With scripts the descriptions keep themselves as the record does, with the same
 words ("Saving", "Saved at 10:42", a quiet retry) and no Save button; a refusal
@@ -332,12 +333,22 @@ for receipts, conflicts and separate description forms.
 
 Video fields draw the same rows for the video and its poster image, each with
 its thumbnail, name, **Video details** or **Image details** and a quiet remove
-control; an empty row waits hidden and no player is drawn. Each choice has one
-disclosure, **Choose video** or **Choose poster image** (**Change** once
-chosen), side by side, holding the rule in one line (format, size and the
-field's limits, and that a poster image goes with the video), the library
-search and paging; the upload sits under the video one, and the poster choice
-appears once there is a video. A Vimeo field carries one help control, its
+control; an empty row waits hidden and no player is drawn. Like an image field,
+the field offers what is missing and nothing more: **Upload video** beside
+**Choose from library** while there is no video, with the rule in one line
+under them (format, size and the field's limits), then **Upload poster image**
+beside **Choose from library** while there is no poster. Removing a row is the
+way to change it. With scripts, each upload choice is one button that opens the
+file chooser and uploads at once. Before uploading a video, the browser checks
+what it can measure (size, duration, width and height) against the field and
+refuses in plain words, saying the limit, the measure and what to do; sound is
+checked by the server right after the upload, in the same words. When the field
+has no poster, the browser draws the chosen video's first frame and uploads it
+with the video as the poster image, which the editor can remove and replace.
+The upload rows, the preparation line and the failure line are those of image
+fields. Without scripts the upload opens the native form in place and the
+poster stays a manual choice. A library choice fills the field at once and
+loads no video. A Vimeo field carries one help control, its
 poster as the same row and its search inside **Choose poster image**.
 
 One header switch selects the language for every localized field. It supports

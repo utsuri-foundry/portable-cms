@@ -27,9 +27,86 @@ export function frameImage(video, document = video.ownerDocument) {
 	return encoded.length <= Math.ceil(MAX_BYTES / 3) * 4 ? encoded : null;
 }
 
+/** A video as the browser reads it: duration and size, and its first frame as a full-size JPEG. */
+export function inspectVideo(source, document, timeout = 10000) {
+	const window = document.defaultView;
+	return new Promise((resolve) => {
+		const video = document.createElement("video");
+		video.muted = true;
+		video.playsInline = true;
+		video.preload = "auto";
+		let finished = false;
+		const finish = (value) => {
+			if (finished) return;
+			finished = true;
+			window.clearTimeout(timer);
+			video.removeAttribute("src");
+			video.load();
+			resolve(value);
+		};
+		const timer = window.setTimeout(() => finish(null), timeout);
+		video.addEventListener("error", () => finish(null), { once: true });
+		video.addEventListener(
+			"loadeddata",
+			() => {
+				const facts = {
+					duration: Number.isFinite(video.duration) ? video.duration : null,
+					width: video.videoWidth,
+					height: video.videoHeight,
+					frame: null,
+				};
+				const canvas = document.createElement("canvas");
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				const context =
+					canvas.width > 0 && canvas.height > 0
+						? canvas.getContext("2d", { alpha: false })
+						: null;
+				if (!context) return finish(facts);
+				try {
+					context.drawImage(video, 0, 0, canvas.width, canvas.height);
+					canvas.toBlob(
+						(blob) => finish({ ...facts, frame: blob }),
+						"image/jpeg",
+						0.92,
+					);
+				} catch {
+					finish(facts);
+				}
+			},
+			{ once: true },
+		);
+		video.src = source;
+	});
+}
+
+/** The first field limit a measured video exceeds, with the numbers to say it, or null. */
+export function videoLimitProblem(facts, limits) {
+	const measured = {
+		// Containers round their duration; a twentieth of a second is not a longer video.
+		duration: facts.duration === null ? null : facts.duration - 0.05,
+		width: facts.width,
+		height: facts.height,
+	};
+	for (const key of ["duration", "width", "height"]) {
+		const limit = limits[key];
+		const actual = measured[key];
+		if (!Number.isInteger(limit) || !Number.isFinite(actual) || actual <= limit)
+			continue;
+		return {
+			key,
+			limit,
+			actual: key === "duration" ? Math.round(facts.duration * 10) / 10 : actual,
+		};
+	}
+	return null;
+}
+
 /** A video field is a bounded island over its native form buttons and hidden identities. */
 export function mountVideoField(field) {
 	const document = field.ownerDocument;
+	const value = (kind) =>
+		field.querySelector(`[data-video-value="${kind}"]`)?.value ?? "";
 	const choose = (event) => {
 		const button = event.target.closest("[data-video-choose],[data-video-clear]");
 		if (!button || !field.contains(button) || button.disabled) return;
@@ -51,24 +128,22 @@ export function mountVideoField(field) {
 		}
 		// The row shows the chosen file with the thumbnail its library entry already carries.
 		const row = field.querySelector(`[data-video-row="${kind}"]`);
-		if (row) row.hidden = !id;
+		if (row) {
+			row.hidden = !id;
+			delete row.dataset.mediaPending;
+			for (const state of row.querySelectorAll("[data-media-state]")) state.remove();
+		}
 		const thumb = field.querySelector(`[data-video-thumb="${kind}"]`);
 		if (thumb) {
-			const source = id
-				? button.closest("li")?.querySelector(".admin-thumbnail")
-				: null;
+			const source = id ? button.querySelector(".admin-thumbnail") : null;
 			thumb.replaceChildren(...(source ? [source.cloneNode(true)] : []));
 		}
-		const summary = field.querySelector(`[data-video-browse="${kind}"] > summary`);
-		if (summary)
-			summary.textContent = id
-				? summary.dataset.videoChangeLabel
-				: summary.dataset.videoChooseLabel;
-		// The poster choice appears once there is a video to go with it.
-		const posterBrowse = field.querySelector('[data-video-browse="poster"]');
-		if (posterBrowse && kind === "video")
-			posterBrowse.hidden =
-				!id && !field.querySelector('[data-video-value="poster"]').value;
+		// The choice closes; what is still missing is offered, and a full field offers nothing.
+		button.closest("details")?.removeAttribute("open");
+		const video = field.querySelector('[data-video-choosers="video"]');
+		if (video) video.hidden = value("video") !== "";
+		const poster = field.querySelector('[data-video-choosers="poster"]');
+		if (poster) poster.hidden = value("video") === "" || value("poster") !== "";
 		for (const error of field.querySelectorAll("[data-video-limit-error]"))
 			error.hidden = true;
 		input.dispatchEvent(new document.defaultView.Event("input", { bubbles: true }));
@@ -76,7 +151,6 @@ export function mountVideoField(field) {
 	field.addEventListener("click", choose);
 	return () => field.removeEventListener("click", choose);
 }
-
 /** One visible library tile at a time. Fields never enter the automatic capture queue. */
 export function mountVideoPreviews(document) {
 	const window = document.defaultView;

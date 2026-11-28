@@ -154,8 +154,8 @@ final class MediaLibraryHttp
             $items[] = [
                 'id' => $media->id,
                 'state' => $failed ? 'failed' : ($ready ? 'ready' : 'preparing'),
-                'text' => $ready ? null : ($failed ? $t->text('picker.preparation_failed') : $t->message($this->library->preparation->message($media))),
-                'thumbnail' => $ready && $media->thumbnail?->mime === 'image/webp' ? '/media/' . $media->id . '/thumbnail' : null,
+                'text' => $ready ? null : ($failed ? $t->text(\Utsuri\PortableCms\Conventional\View\ReferenceControls::failedKey($media)) : $t->message($this->library->preparation->message($media))),
+                'thumbnail' => $ready && ($media->thumbnail?->mime === 'image/webp' || $media->videoFrame !== null) ? '/media/' . $media->id . '/thumbnail' : null,
             ];
         }
         return Response::json(['items' => $items, 'poll' => $this->library->preparation->pollSeconds()]);

@@ -211,8 +211,20 @@ unsupported containers are terminal failures.
 
 A `video_reference` retains exactly `mediaId` and `posterId`, naming a ready
 prepared video and a distinct ready raster image. The field shows the two as
-named rows with a link to each media page; each choice has its own disclosure
-with native library search and paging, and the upload sits under the video's.
+named rows with a link to each media page and offers what is missing: an upload
+and the native library search and paging, first for the video, then for the
+poster. A field upload puts the first video that meets the field's limits in the
+field and the first image as its poster; a refused video stays in the library
+and the poster sent with it does not join the field.
+
+With scripts, the browser reads a chosen video from a local object URL before
+uploading it. Administration pages therefore allow `media-src 'self' blob:`;
+same-origin frames keep `media-src 'self'`. The browser refuses a clip longer,
+wider or higher than the field allows, in the same words as the server, and when
+the field has no poster it draws the first frame at full size into a JPEG named
+after the video (`name-poster.jpg`) and uploads it in the same batch as an
+ordinary image. A browser that cannot decode the clip skips both steps; the
+server's checks still apply and the poster stays a manual choice.
 Editors never enter identities or JSON. Uploading adds files to the shared library, while selection remains an
 ordinary revisioned record save. Localized and group video references use the
 same domain contract, and validation/conflict responses retain both choices.
@@ -360,8 +372,8 @@ Native forms retain a previously selected unsuitable clip until the editor chang
 it, so it is rejected visibly instead of silently cleared.
 
 A saved collection's video-field upload reports a failed rule as soon as the
-completed original has been inspected. The upload remains in the library for
-other fields; choose it after normal preparation. The owning record's greatest
+completed original has been inspected, beside the field. The upload remains in
+the library for other fields; choose it after normal preparation. The owning record's greatest
 video byte allowance and the qualified host ceiling still govern upload admission.
 The native per-file ceiling remains 40 MiB. A field's narrower byte allowance is
 also enforced on selection/save, and does not discard a valid library upload.
@@ -403,8 +415,10 @@ playing the clips, and captures a WebP no larger than 320 pixels on its longest
 edge or 64 KiB. Existing clips are handled the same way; unsupported browser
 codecs, disabled JavaScript and capture failures retain the neutral fallback.
 A manually played field or loaded detail player can also supply a frame.
-There is no server video decoding and no captured frame becomes an authored
-poster. Redundant thumbnails have empty alternative text.
+There is no server video decoding and no captured preview frame becomes an
+authored poster; the first-frame poster of a field upload is a separate
+full-size image uploaded like any other. Redundant thumbnails have empty
+alternative text.
 
 `POST /media/{id}/video-frame` requires an authenticated editorial session,
 same-origin request and CSRF token. It checks the prepared source checksum,

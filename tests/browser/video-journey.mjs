@@ -5,10 +5,12 @@ import { connectLocalBrowser } from "./local-browser.mjs";
 
 const origin = process.env.CMS_BROWSER_ORIGIN;
 const videoRequests = [];
+let chooserOpened = null;
 const browser = await connectLocalBrowser(
 	origin,
 	process.env.CMS_BROWSER_DEBUG_URL,
 	(method, params) => {
+		if (method === "Page.fileChooserOpened") chooserOpened?.(params);
 		if (
 			method === "Network.requestWillBeSent" &&
 			/\/media\/[a-f0-9]{32}\/video$/.test(new URL(params.request.url).pathname)
@@ -106,11 +108,29 @@ try {
 		"document.querySelector('[data-editorial-form]').requestSubmit(document.querySelector('[data-upload-field=\"trailer\"] [data-native-upload-start]'))",
 	);
 	await ready(
-		"document.readyState==='complete' && document.querySelector('[data-media-upload-result]')",
+		"document.readyState==='complete' && document.querySelector('[name=trailer__video]')?.value!==''",
 	);
+	assert.equal(
+		await evaluate("document.querySelector('[data-media-upload-result]')"),
+		null,
+		"no notice far from the field",
+	);
+	const joined = await evaluate(
+		"[document.querySelector('#field-trailer [data-video-name=video]').textContent, document.querySelector('#field-trailer [data-video-row=video] [data-media-state]')?.textContent, document.querySelector('#field-trailer [data-video-row=video]').hasAttribute('data-media-pending')]",
+	);
+	assert.equal(joined[0], "prepared.mp4", "the first uploaded video joins the field");
 	assert.match(
-		await evaluate("document.querySelector('[data-media-upload-result]').textContent"),
-		/2 file\(s\) accepted/,
+		joined[1],
+		/^Being prepared\. Ready in /,
+		"and says when it will be ready",
+	);
+	assert.equal(joined[2], true, "its row asks again until it is ready");
+	assert.equal(
+		await evaluate(
+			"document.querySelector('#field-trailer [data-video-choosers=poster]').hidden",
+		),
+		false,
+		"the poster choice follows, with its own upload",
 	);
 	worker();
 	await navigate(record, "[name=trailer__video]");
@@ -295,12 +315,12 @@ try {
 	);
 	assert.equal(await evaluate("location.href"), beforeChoice);
 	assert.equal(videoRequests.length, 0, "candidate selection must not fetch video");
-	assert.equal(
+	assert.deepEqual(
 		await evaluate(
-			"document.querySelector('#field-trailer [data-video-browse=video] > summary').textContent",
+			"[document.querySelector('#field-trailer [data-video-choosers=video]').hidden, document.querySelector('#field-trailer [data-video-browse=video]').open, document.querySelector('#field-trailer [data-video-choosers=poster]').hidden]",
 		),
-		"Change video",
-		"a chosen video turns its disclosure into a change",
+		[true, false, false],
+		"choosing closes the library and offers what is still missing, the poster",
 	);
 	await evaluate(
 		`document.querySelector('#field-trailer [data-video-browse=poster]').open=true;document.querySelector('[value="select-poster:trailer:${poster}"]').click()`,
@@ -378,27 +398,60 @@ try {
 	await ready(
 		"document.querySelector('[data-save-status]').textContent.startsWith('Saved at ')",
 	);
-	const enhancedRoot = await command("DOM.getDocument");
-	const enhancedInput = await command("DOM.querySelector", {
-		nodeId: enhancedRoot.root.nodeId,
-		selector: "#media-upload-files-trailer",
-	});
-	await command("DOM.setFileInputFiles", {
-		nodeId: enhancedInput.nodeId,
-		files: [resolve("tests/fixtures/video/prepared.webm")],
+	await navigate(record, "#field-trailer");
+	// One step: Upload video opens the file chooser, the browser checks the clip and draws its first
+	// frame as the poster, and both upload at once and join the field.
+	await ready(
+		"document.querySelector('#field-trailer [data-media-upload-choose=video]')?.checkVisibility()",
+	);
+	await command("Page.setInterceptFileChooserDialog", { enabled: true });
+	const opened = new Promise((resolve) => {
+		chooserOpened = resolve;
 	});
 	await evaluate(
-		"document.querySelector('[data-upload-field=\"trailer\"] [data-media-upload-start]').click()",
+		"document.querySelector('#field-trailer [data-media-upload-choose=video]').click()",
 	);
-	// A field upload hands its completed session to the record form, which answers with a receipt.
+	const chooser = await opened;
+	chooserOpened = null;
+	assert.equal(chooser.mode, "selectSingle", "one video at a time");
+	assert.equal(
+		await evaluate("document.querySelector('#media-upload-files-trailer').accept"),
+		"video/mp4,video/webm",
+	);
+	await command("DOM.setFileInputFiles", {
+		backendNodeId: chooser.backendNodeId,
+		files: [resolve("tests/fixtures/video/prepared.webm")],
+	});
+	await command("Page.setInterceptFileChooserDialog", { enabled: false });
 	await ready(
-		"document.readyState==='complete' && document.querySelector('[data-media-upload-result]') && document.querySelector('[data-editorial-form] [name=_editorial_end]')?.value==='1'",
+		"document.readyState==='complete' && document.querySelector('[name=trailer__video]')?.value!=='' && document.querySelector('[name=trailer__poster]')?.value!==''",
 	);
-	assert.match(
-		await evaluate("document.querySelector('[data-media-upload-result]').textContent"),
-		/1 file\(s\) accepted/,
+	assert.deepEqual(
+		await evaluate(
+			"[...document.querySelectorAll('#field-trailer [data-video-row]:not([hidden])')].map(row=>[row.querySelector('[data-video-name]').textContent, row.hasAttribute('data-media-pending')])",
+		),
+		[
+			["prepared.webm", true],
+			["prepared-poster.jpg", true],
+		],
+		"the video and the poster made from its first frame join the field and wait to be prepared",
 	);
 	worker();
+	await ready(
+		"!document.querySelector('#field-trailer [data-media-pending]') && document.querySelector('#field-trailer [data-video-thumb=poster] img')",
+		40000,
+	);
+	// Once both are ready, the record keeps them without any action.
+	await ready(
+		"fetch(location.pathname).then(r=>r.text()).then(h=>{const d=new DOMParser().parseFromString(h,'text/html');return d.querySelector('[name=trailer__video]').value!=='' && d.querySelector('[name=trailer__poster]').value!==''})",
+	);
+	await navigate(record, "[name=trailer__video]");
+	await evaluate(
+		`for(const [name,value] of Object.entries(${JSON.stringify({ trailer__video: original.trailer__video ?? "", trailer__poster: original.trailer__poster ?? "" })})){const input=document.querySelector('[name="'+name+'"]');input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}))}`,
+	);
+	await ready(
+		`fetch(location.pathname).then(r=>r.text()).then(h=>{const d=new DOMParser().parseFromString(h,'text/html');return d.querySelector('[name=trailer__video]').value===${JSON.stringify(original.trailer__video ?? "")} && d.querySelector('[name=trailer__poster]').value===${JSON.stringify(original.trailer__poster ?? "")}})`,
+	);
 	await navigate(record, "#media-upload-files-trailer");
 	assert.equal(
 		await evaluate(
@@ -413,7 +466,7 @@ try {
 	);
 	assert.deepEqual(browserErrors, []);
 	console.log(
-		"PASS prepared video: no-script uploads, MP4/WebM names and separate poster, plainly named rows at desktop and phone widths, saved references, private native playback, validation/conflict recovery, persisted fixture restoration and narrow layout.",
+		"PASS prepared video: no-script uploads into the field, one-step upload with a first-frame poster, preparation states, MP4/WebM names and separate poster, plainly named rows at desktop and phone widths, saved references, private native playback, validation/conflict recovery, persisted fixture restoration and narrow layout.",
 	);
 } finally {
 	await command("Emulation.setScriptExecutionDisabled", { value: false });

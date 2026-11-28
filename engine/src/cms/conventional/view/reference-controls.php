@@ -182,12 +182,23 @@ final class ReferenceControls
         return $markup . '</fieldset>';
     }
 
-    /** When a file that is not ready will be, or that it failed and what to do. */
     private function preparation(LibraryMedia $media): string
     {
+        return self::preparationLine($media, $this->media, $this->t);
+    }
+
+    /** When a file that is not ready will be, or that it failed and what to do, in an image or video field's row. */
+    public static function preparationLine(LibraryMedia $media, ?MediaLibrary $library, Translator $t): string
+    {
         // In a field the failed row stays until it is removed, so the line says to remove it too.
-        $message = MediaPreparation::failed($media) ? new Message('picker.preparation_failed') : ($this->media->preparation ?? new MediaPreparation())->message($media);
-        return '<small class="' . (MediaPreparation::failed($media) ? 'admin-field__error' : 'admin-meta') . '" data-media-state>' . Html::text($this->t->message($message)) . '</small>';
+        $message = MediaPreparation::failed($media) ? new Message(self::failedKey($media)) : ($library->preparation ?? new MediaPreparation())->message($media);
+        return '<small class="' . (MediaPreparation::failed($media) ? 'admin-field__error' : 'admin-meta') . '" data-media-state>' . Html::text($t->message($message)) . '</small>';
+    }
+
+    /** What a field says about a file that could not be prepared: a video or an image to remove and upload again. */
+    public static function failedKey(LibraryMedia $media): string
+    {
+        return str_starts_with($media->mime, 'video/') ? 'video.preparation_failed' : 'picker.preparation_failed';
     }
 
     public function summary(FieldDefinition $field, mixed $value): string

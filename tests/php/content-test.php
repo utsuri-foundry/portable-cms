@@ -386,6 +386,7 @@ function contentTestApplication(
     ?\Utsuri\PortableCms\Conventional\Content\AdministrationLabels $administrationLabels = null,
     ?\Utsuri\PortableCms\Conventional\Preview\PreviewCheckHistory $previewChecks = null,
     ?\Utsuri\PortableCms\Conventional\Preview\PreviewStartup $previewStartup = null,
+    bool $videoUploads = false,
 ): array {
     $identityRepository = new MemoryIdentityRepository();
     $identityRepository->addUser(
@@ -411,6 +412,7 @@ function contentTestApplication(
             new FilesystemUploadStorage($mediaRoot),
             $clock,
             $random,
+            $videoUploads,
         );
         $mediaJobs = new ContentTestMediaJobs($uploadRepository);
     }
@@ -906,7 +908,7 @@ $tests['authenticated JSON upload routes preserve security and resumable semanti
         ));
         assertTrueValue(str_contains($edit->body, 'data-media-upload'), 'saved record should expose the upload island');
         assertTrueValue(
-            str_contains($edit->body, '/assets/resumable-upload.js?v=9'),
+            str_contains($edit->body, '/assets/resumable-upload.js?v=10'),
             'island should use a versioned external module',
         );
 

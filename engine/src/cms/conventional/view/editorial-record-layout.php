@@ -124,6 +124,11 @@ final class EditorialRecordLayout
      */
     public static function fieldMessage(Message $message, ?FieldDefinition $field, Translator $t): string
     {
+        // A detail that already names its field, such as a video limit, is a sentence of its own.
+        $detail = $message->parameters['detail'] ?? null;
+        if ($message->key === 'validation.detail' && $detail instanceof Message && isset($detail->parameters['field'])) {
+            $message = $detail;
+        }
         if ($field !== null && isset($message->parameters['field'])) {
             $message = new Message($message->key, ['field' => $field->label] + $message->parameters);
         }

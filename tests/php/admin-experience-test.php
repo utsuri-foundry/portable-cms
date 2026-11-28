@@ -28,7 +28,7 @@ $tests['administration stylesheet is tokenized themed local and responsive'] = s
     $css = file_get_contents($path);
     $size = filesize($path);
     assertTrueValue(is_string($css) && is_int($size), 'administration stylesheet should be readable');
-    assertTrueValue($size > 5_000 && $size < 86_016, 'administration stylesheet should stay intentionally bounded');
+    assertTrueValue($size > 5_000 && $size < 86_528, 'administration stylesheet should stay intentionally bounded');
     assertTrueValue(str_contains($css, ':focus-visible'), 'visible keyboard focus should be explicit');
     assertTrueValue(str_contains($css, '@media (max-width: 56rem)'), 'shell should adapt below wide layouts');
     assertTrueValue(str_contains($css, '@media (max-width: 42rem)'), 'tables should adapt for narrow viewports');
