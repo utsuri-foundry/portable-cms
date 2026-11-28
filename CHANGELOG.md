@@ -5,6 +5,27 @@ Engine versions come from `ProfileManifest::ENGINE_VERSION`. See the
 This changelog starts at the first version that covers the changes accumulated
 after 0.1.2; older commits are not assigned invented release versions.
 
+## 0.15.5
+
+- Video fields work like image fields: Upload video beside Choose from library,
+  then Upload poster image while the poster is missing. With scripts each upload
+  is one button that opens the file chooser and uploads at once; a library video
+  fills the field in one activation. Without scripts the upload form opens in
+  place.
+- An uploaded video and its poster now join the field, with progress, a
+  preparing state that says when they will be ready, and rows that update by
+  themselves.
+- When the field has no poster, the browser makes one from the chosen video's
+  first frame and uploads it with the video; the editor can replace it.
+- A video that is too long, too wide or too high is refused before uploading,
+  and one with sound right after, in plain words with the limit, the measure and
+  what to do.
+- Administration pages allow `media-src blob:` so the browser can read a chosen
+  video before uploading it.
+- The description cards under an image field no longer repeat the image's
+  picture and name shown in its row; they follow the rows' order, keep a small
+  gap between them, and screen readers still hear each name.
+
 ## 0.15.4
 
 - Image descriptions written after an upload keep themselves like the rest of
@@ -14,10 +35,7 @@ after 0.1.2; older commits are not assigned invented release versions.
 - An image that still needs a description says so once, in its field row,
   instead of also in its card below, and the row updates as soon as the
   description is kept, without a reload. While the image is being prepared the
-  line is a quiet hint; it becomes the warning when the image is ready. The
-  description cards under an image field no longer repeat the image's picture
-  and name shown in its row; they follow the rows' order, and screen readers
-  still hear each name.
+  line is a quiet hint; it becomes the warning when the image is ready.
 - Caption and credit open from a compact dashed "+ Caption and credit", like the
   image field's own Upload image and Choose from library, on the record page and
   on the media pages alike.

@@ -80,7 +80,7 @@ final class AdminShell
 {
     public const STYLESHEET_VERSION = '32';
     public const GROUP_STYLESHEET_VERSION = '3';
-    public const SCRIPT_VERSION = '9';
+    public const SCRIPT_VERSION = '10';
 
     public static function translator(?AdminChrome $chrome): Translator
     {
@@ -231,7 +231,7 @@ final class AdminShell
             . ($bodyClass === 'admin-application' ? '<script src="/assets/admin-start.js?v=2"></script>' : '')
             . '<link rel="stylesheet" href="'
             . Html::url('/assets/admin.css?v=' . self::STYLESHEET_VERSION) . '">'
-            . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=3">' : '')
+            . ($bodyClass === 'admin-application' ? '<link rel="stylesheet" href="/assets/video-previews.css?v=4">' : '')
             . ($stylesheet === null ? '' : '<link rel="stylesheet" href="' . Html::url($stylesheet) . '">')
             . '</head><body class="' . Html::attribute($bodyClass) . '">'
             . $content . '</body></html>';
