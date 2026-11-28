@@ -858,6 +858,7 @@ details > summary { cursor: pointer; }
 .admin-seo-toggle > summary { align-items: center; }
 .admin-seo__state { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--admin-space-2); }
 .admin-media-description { min-inline-size: 0; }
+.admin-media-description + .admin-media-description { margin-block-start: var(--admin-space-3); }
 .admin-media-description > legend { max-inline-size: 100%; overflow-wrap: anywhere; }
 .admin-selection .admin-field__error { display: block; }
 .admin-seo { display: grid; gap: var(--admin-space-4); min-width: 0; margin: 0; padding: 0; border: 0; container-type: inline-size; }
