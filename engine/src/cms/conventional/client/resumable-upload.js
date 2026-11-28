@@ -275,6 +275,9 @@ export function showPreparation(row, item) {
 		return;
 	}
 	state?.remove();
+	// Until now a missing description was a quiet hint; a ready image needs it before publishing.
+	const describe = row.querySelector("[data-description-warning]");
+	if (describe) describe.className = "admin-field__error";
 	if (thumbnail && item.thumbnail) {
 		const image = row.ownerDocument.createElement("img");
 		image.className = "admin-thumbnail";

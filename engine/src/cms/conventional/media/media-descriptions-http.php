@@ -58,7 +58,8 @@ final readonly class MediaDescriptionsHttp
                 try {
                     $text = MediaText::edited($submitted[$item->id], $this->profile->locales, $item->text);
                     if (!$this->library->rename($item->id, is_int($revision) ? $revision : 0, $item->name, $session->userId, $text)) {
-                        $errors[$item->id] = $t->text('media.name.conflict');
+                        // Kept automatically, a description has no Save button to press again: the next change saves it.
+                        $errors[$item->id] = $t->text($json ? 'media.descriptions.conflict' : 'media.name.conflict');
                         $status = 409;
                     } else {
                         $saved[] = $item->id;

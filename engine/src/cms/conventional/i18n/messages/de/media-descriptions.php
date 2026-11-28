@@ -11,9 +11,9 @@ return [
     'media.descriptions.select' => 'Wähle ein bis acht verfügbare Bilder aus.',
     'media.descriptions.save' => 'Bildbeschreibungen speichern',
     'media.descriptions.saved' => 'Beschreibung gespeichert.',
-    'media.descriptions.failed' => 'Die Beschreibungen konnten nicht gespeichert werden. Dein Text bleibt hier; versuche es erneut.',
     'media.descriptions.load_failed' => 'Öffne die Mediathek, um diese hochgeladenen Bilder zu beschreiben.',
     'media.descriptions.missing' => 'Beschreiben Sie dieses Bild vor der Veröffentlichung auf {languages}.',
     'media.descriptions.review' => 'Aktuelle Mediendetails in einem neuen Tab prüfen',
+    'media.descriptions.conflict' => 'Jemand anderes hat die Details dieses Bildes inzwischen geändert. Dein Text bleibt hier, und deine nächste Änderung speichert ihn anstelle des anderen.',
     'media.descriptions.incomplete' => 'Das Beschreibungsformular war unvollständig. Keine Beschreibung wurde geändert; öffne die Bilder erneut.',
 ];

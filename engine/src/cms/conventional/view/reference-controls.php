@@ -94,7 +94,9 @@ final class ReferenceControls
         foreach ($selected as $index => $id) {
             $record = !$mediaField ? $this->selectedRecord($field, $id) : null;
             $media = $mediaField ? $this->media?->find($id) : null;
-            $descriptionWarning = $media === null || MediaPreparation::failed($media) ? '' : MediaDescriptionsForm::warning($media, $this->profile, $t);
+            // An image's row is the one place that says what its description still needs; the line
+            // stays in place, hidden once described, so a description kept on this page updates it.
+            $descriptionWarning = $media === null || MediaPreparation::failed($media) || !str_starts_with($media->mime, 'image/') ? null : MediaDescriptionsForm::warning($media, $this->profile, $t);
             $name = $mediaField ? ($media->name ?? $t->text('picker.unavailable_image')) : ($record === null ? $t->text('picker.unavailable_record') : RecordLabels::label($record, $this->profile));
             // An image is one row: thumbnail, name, the way to its details, then the remove control.
             // A record row shows the picture its type shares, when it has one.
@@ -103,7 +105,8 @@ final class ReferenceControls
             $waiting = $media !== null && $media->status !== 'ready';
             $markup .= '<li class="admin-selection"' . ($waiting && !MediaPreparation::failed($media) ? ' data-media-pending="' . Html::attribute($media->id) . '"' : '') . '>' . ($media === null ? ($cover === null ? '' : self::thumbnail($cover)) : self::thumbnail($media))
                 . '<span>' . Html::text($name) . ($waiting ? $this->preparation($media) : '') . $this->referenceStatus($field, $id, $record) . ($record !== null && ($record->body['deprecated'] ?? false) === true ? ' <small>' . $t->html('picker.deprecated') . '</small>' : '')
-                . ($descriptionWarning === '' ? '' : '<small class="admin-field__error" data-description-warning="' . Html::attribute($id) . '">' . Html::text($descriptionWarning) . '</small>')
+                // While the image is being prepared the missing description is a quiet hint, not an error yet.
+                . ($descriptionWarning === null ? '' : '<small class="' . ($waiting ? 'admin-meta' : 'admin-field__error') . '" data-description-warning="' . Html::attribute($id) . '"' . ($descriptionWarning === '' ? ' hidden' : '') . '>' . Html::text($descriptionWarning) . '</small>')
                 . ($media === null ? '' : '<a class="admin-selection__link" href="' . Html::url('/media/' . $media->id) . '">' . $t->html('picker.image_details') . '</a>') . '</span>'
                 . '<input type="hidden" name="' . Html::attribute($field->id . ($field->type === 'record_reference' ? '' : '[]')) . '" value="' . Html::attribute($id) . '">'
                 . '<span class="admin-selection__actions">'
